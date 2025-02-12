@@ -1,0 +1,100 @@
+package com.bgasol.web.file.file.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.bgasol.common.core.base.controller.BaseController;
+import com.bgasol.common.core.base.exception.BaseException;
+import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.vo.PageVo;
+import com.bgasol.model.file.file.dto.FileCreateDto;
+import com.bgasol.model.file.file.dto.FilePageDto;
+import com.bgasol.model.file.file.dto.FileUpdateDto;
+import com.bgasol.model.file.file.entity.FileEntity;
+import com.bgasol.web.file.file.service.FileService;
+import com.bgasol.web.file.file.service.OssService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+@RestController
+@RequiredArgsConstructor
+@Tag(name = "文件管理")
+@RequestMapping("/file")
+@Slf4j
+public class FileController extends BaseController<
+        FileEntity,
+        FilePageDto,
+        FileCreateDto,
+        FileUpdateDto> {
+    private final FileService fileService;
+
+    private final OssService ossService;
+
+    @Override
+    public FileService commonBaseService() {
+        return fileService;
+    }
+
+    @Override
+    @PostMapping("/page")
+    @Operation(summary = "分页查询文件", operationId = "findPageFile")
+    @SaCheckPermission("file:findByPage")
+    public BaseVo<PageVo<FileEntity>> findByPage(@RequestBody @Valid FilePageDto pageDto) {
+        return super.findByPage(pageDto);
+    }
+
+    @Override
+    @PostMapping
+    @Operation(summary = "保存|上传文件", operationId = "saveFile")
+    @SaCheckPermission("file:save")
+    public BaseVo<FileEntity> save(@Valid FileCreateDto fileCreateDto) {
+        FileEntity save = null;
+        try {
+            save = fileService.save(fileCreateDto.getUploadFile());
+        } catch (IOException e) {
+            throw new BaseException("文件上传失败");
+        }
+        return BaseVo.success(save, "文件上传成功");
+    }
+
+    @Override
+    @Operation(summary = "删除文件", operationId = "deleteFile")
+    @DeleteMapping("/{ids}")
+    @SaCheckPermission("file:delete")
+    public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
+        return super.delete(ids);
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    @Operation(summary = "根据id查询文件", operationId = "findFileById")
+    @SaCheckPermission("file:findById")
+    public BaseVo<FileEntity> findById(@PathVariable("id") String id) {
+        return super.findById(id);
+    }
+
+    @GetMapping("/download/{id}")
+    @Operation(summary = "下载文件", operationId = "downloadFile")
+    @SaCheckPermission("file:download")
+    public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
+        FileEntity file = fileService.findById(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
+                        fileService.getFileName(file),
+                        StandardCharsets.UTF_8
+                ))
+                .contentType(MediaType.valueOf(file.getType()))
+                .body(new InputStreamResource(ossService.readFileStream(file.getBucket(), file.getId(), file.getName())));
+    }
+}

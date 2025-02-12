@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang='zh'>
+<head>
+    <meta charset='UTF-8'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+    <!--  字体 -->
+    <style>
+        @font-face {
+            font-family: 'Open Sans';
+            src: url('/Open_Sans/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+            font-weight: 100 900;
+            font-display: swap;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Open Sans';
+            src: url('/Open_Sans/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+            font-weight: 100 900;
+            font-display: swap;
+            font-style: italic;
+        }
+
+        /* 定义css颜色变量 */
+        html {
+            --loading-clolor: #1890ff;
+        }
+
+        .init-loading {
+            left: 50%;
+            top: 50%;
+            position: absolute;
+            width: 50px;
+            perspective: 200px;
+        }
+
+        .init-loading:before,
+        .init-loading:after {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            content: "";
+            animation: jumping 0.5s infinite alternate;
+            background: var(--loading-clolor)
+        }
+
+        .init-loading:before {
+            left: 0;
+        }
+
+        .init-loading:after {
+            right: 0;
+            animation-delay: 0.15s;
+        }
+
+        @keyframes jumping {
+            0% {
+                transform: scale(1) translateY(0px) rotateX(0deg);
+                box-shadow: 0 0 0 var(--loading-clolor);
+            }
+
+            100% {
+                transform: scale(1.2) translateY(-25px) rotateX(45deg);
+                background: var(--loading-clolor);
+                box-shadow: 0 25px 40px var(--loading-clolor);
+            }
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+<div id='app'>
+    <div class="init-loading"></div>
+</div>
+<script type='module' src='/src/main.ts'></script>
+</body>
+</html>

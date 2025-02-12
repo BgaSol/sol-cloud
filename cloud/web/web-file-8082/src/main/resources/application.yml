@@ -1,0 +1,17 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /${spring.application.name}
+system:
+  describe: 系统文件服务，服务内对接的minio，向微服务内部暴露的api接口。
+spring:
+  profiles:
+    active:
+      - database
+      - nacos
+      - redis
+      - sa-token
+      - swagger
+      - minio
+      - micrometer
+      - seata

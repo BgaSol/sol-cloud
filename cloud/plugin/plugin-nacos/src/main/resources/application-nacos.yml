@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+      username: ${NACOS_USER:nacos}
+      password: ${NACOS_PASSWORD:nacospwd}

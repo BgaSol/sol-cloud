@@ -1,0 +1,143 @@
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: "Open Sans";
+  margin: 0;
+  padding: 0;
+}
+
+// 后台标准页面布局
+.main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  // 头部查询条件
+  .filter-header {
+    margin-top: 18px;
+    margin-left: 18px;
+    width: calc(100% - 36px);
+  }
+
+  // 头部按钮
+  .controllers {
+    &:first-child {
+      margin-top: 18px;
+    }
+
+    width: calc(100% - 36px);
+    margin-left: 18px;
+    margin-right: 18px;
+    margin-bottom: 18px;
+  }
+
+  // 表格部分
+  .table {
+    flex: 1;
+    width: calc(100% - 36px);
+    margin-left: 18px;
+    margin-right: 18px;
+    position: relative;
+    margin-bottom: 18px;
+
+    &:first-child {
+      margin-top: 18px;
+    }
+
+    // 表格容器(因为要控制表格高度)
+    .table-container {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+    }
+  }
+
+  // 底部分页
+  .page-footer {
+    width: calc(100% - 36px);
+    margin-left: 18px;
+    margin-right: 18px;
+    margin-bottom: 18px;
+  }
+}
+
+// 添加修改表单中 el-form-item 内部放置的 el-tree 统一样式
+.form-item-tree {
+  border: var(--el-border);
+  border-radius: var(--el-border-radius-base);
+  width: calc(100% - 2px);
+  max-height: 400px;
+  overflow-x: auto;
+}
+
+// 添加修改表单中 el-form-item 内部放置的 el-tree 统一样式
+.is-error {
+  .form-item-tree {
+    border-color: var(--el-color-danger);
+  }
+}
+
+// 弹出层统一样式
+.el-dialog__body {
+  padding-top: 5px;
+  // 顶部阴影
+  border: var(--el-border);
+  border-radius: var(--el-border-radius-base);
+  max-height: 70vh;
+  overflow: auto;
+  padding-bottom: 5px;
+  padding-right: 5px;
+  box-shadow: var(--el-box-shadow);
+}
+
+// 上传图片表单 统一样式
+.dialog-form-img-upload {
+  .el-upload {
+    width: calc(100% - 2px);
+    border: 1px dashed var(--el-border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
+
+    .up-img {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+    }
+
+    &:hover {
+      border-color: var(--el-color-primary);
+    }
+
+    .el-icon.dialog-form-img-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 100%;
+      height: 178px;
+      text-align: center;
+    }
+  }
+}
+
+// 处理el-image的图片样式
+.el-image-block {
+  img {
+    display: block;
+  }
+}
+
+.el-image-w-auto {
+  img {
+    width: auto;
+  }
+}

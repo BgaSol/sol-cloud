@@ -1,0 +1,7 @@
+springdoc:
+  swagger-ui:
+    enabled: ${ENABLE_SWAGGER:true} # 是否启用swagger-ui
+    path: /swagger-ui # swagger-ui地址
+  api-docs:
+    enabled: ${ENABLE_SWAGGER:true} # 是否启用swagger-api
+    path: /api-docs # swagger-api地址

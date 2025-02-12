@@ -1,0 +1,263 @@
+version: '3'
+
+networks:
+  cloud-app:
+    driver: bridge
+
+services:
+  cloud-app-nginx:
+    image: nginx:alpine
+    container_name: cloud-app-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - cloud-app
+    depends_on:
+      - cloud-client
+      - cloud-server-gateway
+  cloud-server-gateway:
+    restart: unless-stopped
+    build:
+      context: ../cloud
+      dockerfile: 9527.gateway.Dockerfile
+    ports:
+      - "9527:9527"
+    networks:
+      - cloud-app
+    environment:
+      NACOS_HOST: cloud-app-nacos
+      NACOS_PORT: 8848
+      NACOS_USER: ${NACOS_USER}
+      NACOS_PASSWORD: ${NACOS_PASSWORD}
+
+      REDIS_HOST: cloud-app-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      - cloud-app-nacos
+      - cloud-app-redis
+  cloud-server-web-system:
+    restart: unless-stopped
+    build:
+      context: ../cloud
+      dockerfile: 8081.web.system.Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SYSTEM_TITLE_NAME: ${SYSTEM_TITLE_NAME}
+      SYSTEM_CAPTCHA_MAX: ${SYSTEM_CAPTCHA_MAX}
+      SYSTEM_CAPTCHA_LENGTH: ${SYSTEM_CAPTCHA_LENGTH}
+
+      POSTGRES_HOST: cloud-app-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      NACOS_HOST: cloud-app-nacos
+      NACOS_PORT: 8848
+      NACOS_USER: ${NACOS_USER}
+      NACOS_PASSWORD: ${NACOS_PASSWORD}
+
+      REDIS_HOST: cloud-app-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      SEATA_SERVER_NAME: cloud-app-seata
+      SEATA_NACOS_HOST: cloud-app-nacos
+      SEATA_NACOS_PORT: 8848
+      SEATA_NACOS_USERNAME: ${NACOS_USER}
+      SEATA_NACOS_PASSWORD: ${NACOS_PASSWORD}
+
+      ENABLE_SWAGGER: false
+    networks:
+      - cloud-app
+    depends_on:
+      - cloud-app-nacos
+      - cloud-app-redis
+      - cloud-app-seata
+      - cloud-app-postgres
+  cloud-server-web-file:
+    restart: unless-stopped
+    build:
+      context: ../cloud
+      dockerfile: 8082.web.file.Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      POSTGRES_HOST: cloud-app-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      NACOS_HOST: cloud-app-nacos
+      NACOS_PORT: 8848
+      NACOS_USER: ${NACOS_USER}
+      NACOS_PASSWORD: ${NACOS_PASSWORD}
+
+      REDIS_HOST: cloud-app-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      SEATA_SERVER_NAME: cloud-app-seata
+      SEATA_NACOS_HOST: cloud-app-nacos
+      SEATA_NACOS_PORT: 8848
+      SEATA_NACOS_USERNAME: ${NACOS_USER}
+      SEATA_NACOS_PASSWORD: ${NACOS_PASSWORD}
+
+      ENABLE_SWAGGER: false
+
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_HOST: cloud-app-minio
+      MINIO_PORT: 9000
+    networks:
+      - cloud-app
+    depends_on:
+      - cloud-server-web-system
+      - cloud-app-minio
+  cloud-client:
+    restart: unless-stopped
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - cloud-app
+  # Nacos
+  cloud-app-nacos:
+    image: nacos/nacos-server:v2.5.0
+    container_name: cloud-app-nacos
+    restart: unless-stopped
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      MODE: standalone
+      NACOS_APPLICATION_PORT: 8848
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: cloud-app-nacos-mysql
+      MYSQL_SERVICE_PORT: 3306
+      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_USER: ${NACOS_MYSQL_USER}
+      MYSQL_SERVICE_PASSWORD: ${NACOS_MYSQL_PASSWORD}
+      NACOS_AUTH_ENABLE: true
+      NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
+      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
+      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_SECRET}
+    networks:
+      - cloud-app
+    volumes:
+      - ./data/nacos/logs:/home/nacos/logs
+    depends_on:
+      - cloud-app-nacos-mysql
+  # nacos 的 MySQL
+  cloud-app-nacos-mysql:
+    image: mysql:5.7
+    container_name: cloud-app-nacos-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NACOS_MYSQL_PASSWORD}
+      MYSQL_USER: ${NACOS_MYSQL_USER}
+      MYSQL_PASSWORD: ${NACOS_MYSQL_PASSWORD}
+      MYSQL_DATABASE: nacos
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+      - ./data/mysql/logs:/var/log/mysql
+      - ./config/mysql/initdb:/docker-entrypoint-initdb.d
+    networks:
+      - cloud-app
+  # Minio
+  cloud-app-minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    container_name: cloud-app-minio
+    restart: unless-stopped
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./data/minio/data:/data
+      - ./data/minio/root/.minio:/root/.minio
+    networks:
+      - cloud-app
+  # PostgreSQL
+  cloud-app-postgres:
+    image: postgres:17.2
+    container_name: cloud-app-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data
+      - ./data/postgres/log:/var/log/postgresql
+      - ./config/postgres/initdb:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - cloud-app
+  # Redis
+  cloud-app-redis:
+    image: redis:6.2.16
+    container_name: cloud-app-redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass $$REDIS_PASSWORD
+    volumes:
+      - ./data/redis/data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - cloud-app
+  # Seata
+  cloud-app-seata:
+    image: seataio/seata-server:1.8.0.2
+    container_name: cloud-app-seata
+    restart: unless-stopped
+    ports:
+      - "8091:8091"
+      - "7091:7091"
+    environment:
+      SEATA_IP:
+      SEATA_SERVER_PORT: 7091
+      SEATA_SERVER_NAME: cloud-app-seata
+      SEATA_NACOS_HOST: cloud-app-nacos
+      SEATA_NACOS_PORT: 8848
+      SEATA_NACOS_USERNAME: ${NACOS_USER}
+      SEATA_NACOS_PASSWORD: ${NACOS_PASSWORD}
+      SEATA_POSTGRES_HOST: cloud-app-postgres
+      SEATA_POSTGRES_PORT: 5432
+      SEATA_POSTGRES_DB: seata
+      SEATA_POSTGRES_USER: ${POSTGRES_USER}
+      SEATA_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SEATA_SECRET_KEY: ${SEATA_SECRET_KEY}
+      SEATA_USER: ${SEATA_USER}
+      SEATA_PASSWORD: ${SEATA_PASSWORD}
+    command:
+      - /bin/bash
+      - /seata-server-entrypoint.sh
+    volumes:
+      - ./config/seata/resources/application.yml:/seata-server/resources/application.yml
+    networks:
+      - cloud-app
+    depends_on:
+      - cloud-app-postgres
+      - cloud-app-nacos

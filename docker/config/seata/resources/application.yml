@@ -1,0 +1,72 @@
+#  Copyright 1999-2019 Seata.io Group.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+server:
+  port: ${SEATA_SERVER_PORT}
+
+spring:
+  application:
+    name: ${SEATA_SERVER_NAME}
+
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: ${log.home:${user.home}/logs/seata}
+  extend:
+    logstash-appender:
+      destination: 127.0.0.1:4560
+    kafka-appender:
+      bootstrap-servers: 127.0.0.1:9092
+      topic: logback_to_logstash
+
+console:
+  user:
+    username: ${SEATA_USER}
+    password: ${SEATA_PASSWORD}
+seata:
+  config:
+    type: nacos
+    nacos:
+      server-addr: ${SEATA_NACOS_HOST}:${SEATA_NACOS_PORT}
+      namespace:
+      group: SEATA_GROUP
+      username: ${SEATA_NACOS_USERNAME}
+      password: ${SEATA_NACOS_PASSWORD}
+      data-id: seataServer.properties
+  registry:
+    type: nacos
+    nacos:
+      application: ${SEATA_SERVER_NAME}
+      server-addr: ${SEATA_NACOS_HOST}:${SEATA_NACOS_PORT}
+      group: SEATA_GROUP
+      namespace:
+      cluster: default
+      username: ${SEATA_NACOS_USERNAME}
+      password: ${SEATA_NACOS_PASSWORD}
+  store:
+    mode: db
+    db:
+      datasource: druid
+      dbType: postgresql
+      driverClassName: org.postgresql.Driver
+      url: jdbc:postgresql://${SEATA_POSTGRES_HOST}:${SEATA_POSTGRES_PORT}/${SEATA_POSTGRES_DB}
+      user: ${SEATA_POSTGRES_USER}
+      password: ${SEATA_POSTGRES_PASSWORD}
+  server:
+    service-port: #If not configured, the default is '${server.port} + 1000'
+  security:
+    secretKey: ${SEATA_SECRET_KEY}
+    tokenValidityInMilliseconds: 1800000
+    ignore:
+      urls: /,/**/*.css,/**/*.js,/**/*.html,/**/*.map,/**/*.svg,/**/*.png,/**/*.jpeg,/**/*.ico,/api/v1/auth/login,/health,/error
