@@ -212,7 +212,7 @@ services:
       - cloud-app
   # Redis
   cloud-app-redis:
-    image: redis:6.2.16
+    image: redis:7.4.2
     container_name: cloud-app-redis
     restart: unless-stopped
     environment:

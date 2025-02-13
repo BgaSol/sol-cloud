@@ -9,7 +9,7 @@
   - Sa-Token 1.39.0
   - Nacos 2.5.0
   - PostgreSQL 17.2
-  - Redis 6.2.16
+  - Redis 7.4.2
   - MinIO RELEASE.2024-11-07T00-52-20Z
   - Seata 1.8.0.2
 

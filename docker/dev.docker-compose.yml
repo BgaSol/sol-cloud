@@ -89,7 +89,7 @@ services:
       - cloud-app
   # Redis 服务
   cloud-app-redis:
-    image: redis:6.2.16
+    image: redis:7.4.2
     container_name: cloud-app-redis
     restart: unless-stopped
     environment:
@@ -113,7 +113,7 @@ services:
       - "8091:8091"
       - "7091:7091"
     environment:
-      SEATA_IP: 192.168.1.7
+      SEATA_IP: 192.168.1.7 # 请根据实际情况修改 IP 地址，注意不要使用 localhost 或 127.0.0.1
       SEATA_SERVER_PORT: 7091
       SEATA_SERVER_NAME: cloud-app-seata
       SEATA_NACOS_HOST: cloud-app-nacos
@@ -128,9 +128,6 @@ services:
       SEATA_SECRET_KEY: ${SEATA_SECRET_KEY}
       SEATA_USER: ${SEATA_USER}
       SEATA_PASSWORD: ${SEATA_PASSWORD}
-    command:
-      - /bin/bash
-      - /seata-server-entrypoint.sh -h $$SEATA_IP
     volumes:
       - ./config/seata/resources/application.yml:/seata-server/resources/application.yml
     networks:
