@@ -20,7 +20,7 @@ public class BaseMetaObjectHandler implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        if (ObjectUtils.isEmpty(getFieldValByName("createTime", metaObject))){
+        if (ObjectUtils.isEmpty(getFieldValByName("createTime", metaObject))) {
             this.setFieldValByName("createTime", new Date(), metaObject);
         }
         this.setFieldValByName("deleted", 0, metaObject);

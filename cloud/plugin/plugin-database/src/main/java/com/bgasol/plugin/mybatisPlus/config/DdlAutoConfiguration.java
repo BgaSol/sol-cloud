@@ -20,5 +20,4 @@ public class DdlAutoConfiguration {
     public DdlApplicationRunner ddlApplicationRunner(List<IDdl> ddlList) {
         return new DdlApplicationRunner(ddlList);
     }
-
 }

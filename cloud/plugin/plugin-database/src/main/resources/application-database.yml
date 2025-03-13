@@ -1,19 +1,13 @@
 spring:
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/cloud
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/cloud
     username: ${POSTGRES_USER:cloudUserName}
     password: ${POSTGRES_PASSWORD:cloudPassword}
 mybatis-plus:
   global-config:
+    banner: false
     db-config:
       logic-delete-field: deleted # 全局逻辑删除字段名
       logic-delete-value: 1 # 逻辑已删除值
       logic-not-delete-value: 0 # 逻辑未删除值
-    banner: false
-  configuration:
-    log-impl: com.bgasol.plugin.mybatisPlus.config.MybatisSqlLogger
-logging:
-  level:
-    sql: debug
-    com.bgasol.plugin.mybatisPlus: ${logging.level.sql}

@@ -118,6 +118,8 @@ public class ControllerScanner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // 先等nacos注册完成
+        Thread.sleep(3 * 1000);
         // 扫描controller
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(RequestMapping.class));
