@@ -109,7 +109,7 @@ cloud/
    cd docker
    docker-compose -f dev.docker-compose.yml up -d
    ```
-
+   > web-system and web-file need to be started manually
 3. Start frontend development server
    ```bash
    cd client

@@ -2,11 +2,11 @@ package com.bgasol.web.system.runner;
 
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
-import com.bgasol.model.system.menu.api.MenuApi;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.menu.entity.MenuType;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.web.system.department.mapper.DepartmentMapper;
+import com.bgasol.web.system.menu.service.MenuService;
 import com.bgasol.web.system.user.mapper.UserMapper;
 import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class SystemInitData implements ApplicationRunner {
     @Value("${system.title}")
     private String systemTitle;
 
-    private final MenuApi menuApi;
+    private final MenuService menuService;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -112,7 +112,7 @@ public class SystemInitData implements ApplicationRunner {
         }
         systemServiceMenu.setChildren(systemServiceMenuChildren);
 
-        menuApi.init(systemServiceMenu);
+        menuService.init(systemServiceMenu);
     }
 
     private void initDepartment() {

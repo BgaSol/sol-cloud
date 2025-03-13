@@ -109,6 +109,7 @@ cloud/
    cd docker
    docker-compose -f dev.docker-compose.yml up -d
    ```
+   > system和file需要手动启动
 
 3. 启动前端开发服务器
    ```bash

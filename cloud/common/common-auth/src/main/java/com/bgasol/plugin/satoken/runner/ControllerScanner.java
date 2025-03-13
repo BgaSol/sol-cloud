@@ -10,10 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +25,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Order()
-public class ControllerScanner implements ApplicationRunner {
+public class ControllerScanner {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -116,11 +114,9 @@ public class ControllerScanner implements ApplicationRunner {
         permissionApi.init(parentPermissionEntity);
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        // 先等nacos注册完成
-        Thread.sleep(3 * 1000);
-        // 扫描controller
+    @EventListener(ApplicationReadyEvent.class)
+    public void scanAllControllers() throws ClassNotFoundException {
+        log.info("开始扫描所有Controller");
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(RequestMapping.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
