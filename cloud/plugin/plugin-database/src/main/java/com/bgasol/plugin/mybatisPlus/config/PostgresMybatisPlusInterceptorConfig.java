@@ -7,12 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MybatisPlusInterceptorConfig {
-    @Bean
+public class PostgresMybatisPlusInterceptorConfig {
+    @Bean("PostgresMybatisPlusInterceptor")
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         // 分页插件
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
-        paginationInnerInterceptor.setDbType(DbType.POSTGRE_SQL);
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(DbType.POSTGRE_SQL);
         paginationInnerInterceptor.setMaxLimit(1000L);
 
         // 初始化MybatisPlus拦截器

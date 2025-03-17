@@ -113,7 +113,7 @@ services:
       - "8091:8091"
       - "7091:7091"
     environment:
-      SEATA_IP: 192.168.1.7 # todo 请根据实际情况修改 IP 地址，注意不要使用 localhost 或 127.0.0.1
+      SEATA_IP: 192.168.1.201 # todo 请根据实际情况修改 IP 地址，注意不要使用 localhost 或 127.0.0.1
       SEATA_SERVER_PORT: 7091
       SEATA_SERVER_NAME: cloud-app-seata
       SEATA_NACOS_HOST: cloud-app-nacos
