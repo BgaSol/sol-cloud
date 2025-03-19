@@ -3,6 +3,7 @@ spring:
     enabled: true
     locations: classpath:db/${spring.application.name}
     baseline-on-migrate: true
+    table: flyway_${spring.application.name}_schema_version
   datasource:
     dynamic:
       enabled: true #启用动态数据源，默认true
