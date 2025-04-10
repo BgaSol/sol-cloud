@@ -129,7 +129,7 @@ services:
       - cloud-app
   # Nacos
   cloud-app-nacos:
-    image: nacos/nacos-server:v2.5.0
+    image: nacos/nacos-server:v2.5.1
     container_name: cloud-app-nacos
     restart: unless-stopped
     ports:
@@ -139,12 +139,12 @@ services:
     environment:
       MODE: standalone
       NACOS_APPLICATION_PORT: 8848
-      SPRING_DATASOURCE_PLATFORM: mysql
-      MYSQL_SERVICE_HOST: cloud-app-nacos-mysql
-      MYSQL_SERVICE_PORT: 3306
-      MYSQL_SERVICE_DB_NAME: nacos
-      MYSQL_SERVICE_USER: ${NACOS_MYSQL_USER}
-      MYSQL_SERVICE_PASSWORD: ${NACOS_MYSQL_PASSWORD}
+      DB_SERVICE_NAME: postgresql
+      DB_SERVICE_HOST: cloud-app-postgres
+      DB_SERVICE_PORT: 5432
+      DB_SERVICE_DB_NAME: nacos
+      DB_SERVICE_USER: ${POSTGRES_USER}
+      DB_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
       NACOS_AUTH_ENABLE: true
       NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
       NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
@@ -153,27 +153,16 @@ services:
       - cloud-app
     volumes:
       - ./data/nacos/logs:/home/nacos/logs
+      - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
+      - ./config/nacos/plugins/:/home/nacos/plugins/
     depends_on:
       - cloud-app-nacos-mysql
-  # nacos 的 MySQL
-  cloud-app-nacos-mysql:
-    image: mysql:5.7
-    container_name: cloud-app-nacos-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${NACOS_MYSQL_PASSWORD}
-      MYSQL_USER: ${NACOS_MYSQL_USER}
-      MYSQL_PASSWORD: ${NACOS_MYSQL_PASSWORD}
-      MYSQL_DATABASE: nacos
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./data/mysql/data:/var/lib/mysql
-      - ./data/mysql/logs:/var/log/mysql
-      - ./config/mysql/initdb:/docker-entrypoint-initdb.d
-    networks:
-      - cloud-app
-  # Minio
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # Minio 服务
   cloud-app-minio:
     image: minio/minio:RELEASE.2024-11-07T00-52-20Z
     container_name: cloud-app-minio
@@ -194,7 +183,12 @@ services:
       - ./data/minio/root/.minio:/root/.minio
     networks:
       - cloud-app
-  # PostgreSQL
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # PostgreSQL 数据库服务
   cloud-app-postgres:
     image: postgres:17.2
     container_name: cloud-app-postgres
@@ -210,7 +204,12 @@ services:
       - "5432:5432"
     networks:
       - cloud-app
-  # Redis
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # Redis 服务
   cloud-app-redis:
     image: redis:7.4.2
     container_name: cloud-app-redis
@@ -227,7 +226,12 @@ services:
       - "6379:6379"
     networks:
       - cloud-app
-  # Seata
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # Seata 服务
   cloud-app-seata:
     image: seataio/seata-server:1.8.0.2
     container_name: cloud-app-seata
@@ -236,7 +240,7 @@ services:
       - "8091:8091"
       - "7091:7091"
     environment:
-      SEATA_IP:
+      SEATA_IP: #如果是调试模式，请将本机 IP 填写到下面，否则nacos无法给出正确的调用地址.
       SEATA_SERVER_PORT: 7091
       SEATA_SERVER_NAME: cloud-app-seata
       SEATA_NACOS_HOST: cloud-app-nacos
@@ -251,9 +255,6 @@ services:
       SEATA_SECRET_KEY: ${SEATA_SECRET_KEY}
       SEATA_USER: ${SEATA_USER}
       SEATA_PASSWORD: ${SEATA_PASSWORD}
-    command:
-      - /bin/bash
-      - /seata-server-entrypoint.sh
     volumes:
       - ./config/seata/resources/application.yml:/seata-server/resources/application.yml
     networks:
