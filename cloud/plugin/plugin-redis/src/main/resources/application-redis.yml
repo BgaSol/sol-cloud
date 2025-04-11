@@ -4,4 +4,4 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       database: 0
-      password: ${REDIS_PASSWORD:cloudPassword}
+      password: ${REDIS_PASSWORD:redispwd}
