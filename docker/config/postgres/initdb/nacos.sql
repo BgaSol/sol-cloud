@@ -238,6 +238,8 @@ COMMENT ON COLUMN permissions.action IS 'action';
 
 CREATE UNIQUE INDEX IF NOT EXISTS uk_role_permission ON permissions (role, resource, action);
 
-# 创建 nacos默认用户 nacos 密码 nacospwd
-INSERT INTO users (username, password, enabled) VALUES ('nacos', '$2a$10$GNI5OEez.28l5EGie/9TTePkKuykJECTQAMBQmj3Kwk1frWL0471e', 1);
-INSERT INTO roles (username, role) VALUES ('nacos', 'ROLE_ADMIN');
+-- 创建 nacos默认用户 nacos 密码 nacospwd
+INSERT INTO users (username, password, enabled)
+VALUES ('nacos', '$2a$10$isjtanRWoaXwHA0Z0LLl2.PHvRAcHdqpQeGZsAygg/rIyMNGSfhsG', true);
+INSERT INTO roles (username, role)
+VALUES ('nacos', 'ROLE_ADMIN');
