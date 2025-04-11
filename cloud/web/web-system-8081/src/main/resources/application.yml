@@ -21,8 +21,8 @@ spring:
         postgresMaster_1:
           driver-class-name: org.postgresql.Driver
           url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/cloud
-          username: ${POSTGRES_USER:cloudUserName}
-          password: ${POSTGRES_PASSWORD:cloudPassword}
+          username: ${POSTGRES_USER:postgres}
+          password: ${POSTGRES_PASSWORD:postgrespwd}
   profiles:
     active:
       - database
