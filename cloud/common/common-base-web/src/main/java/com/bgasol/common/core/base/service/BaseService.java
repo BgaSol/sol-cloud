@@ -39,8 +39,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             cls = cls.getSuperclass();
         }
         ParameterizedType type = (ParameterizedType) cls.getGenericSuperclass();
-        @SuppressWarnings("unchecked")
-        Class<ENTITY> entityClass = (Class<ENTITY>) type.getActualTypeArguments()[0];
+        @SuppressWarnings("unchecked") Class<ENTITY> entityClass = (Class<ENTITY>) type.getActualTypeArguments()[0];
         return entityClass;
     }
 
@@ -59,9 +58,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 检索所有的joinColumn字段为空字符串的字段，将其设置为null
         for (Field field : fields) {
             // 判断字段是否有注解Transient并且字段尾部是id结尾并且有TableField注解
-            if (field.isAnnotationPresent(Transient.class)
-                    && field.getName().toLowerCase().endsWith("_id")
-                    && field.isAnnotationPresent(TableField.class)) {
+            if (field.isAnnotationPresent(Transient.class) && field.getName().toLowerCase().endsWith("_id") && field.isAnnotationPresent(TableField.class)) {
                 // 将字段设为可访问
                 field.setAccessible(true);
                 Object value;
@@ -137,9 +134,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 处理关联表字段 JoinColumn 字段为空字符串的情况
         for (Field field : fields) {
             // 判断字段是否有注解Transient并且字段尾部是id结尾并且有TableField注解
-            if (field.isAnnotationPresent(Transient.class)
-                    && field.getName().toLowerCase().endsWith("id")
-                    && field.isAnnotationPresent(TableField.class)) {
+            if (field.isAnnotationPresent(Transient.class) && field.getName().toLowerCase().endsWith("id") && field.isAnnotationPresent(TableField.class)) {
                 // 获取TableField注解
                 TableField tableField = field.getAnnotation(TableField.class);
                 // 获取字段名
@@ -320,9 +315,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     @Transactional(readOnly = true)
     public void findOtherTable(List<ENTITY> list) {
-        for (ENTITY entity : list) {
-            this.findOtherTable(entity);
+        if (list == null || list.isEmpty()) {
+            return;
         }
+
+        list.parallelStream().forEach(this::findOtherTable);
     }
 
     /**
