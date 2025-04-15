@@ -1,12 +1,10 @@
 package com.bgasol.plugin.satoken.runner;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.bgasol.model.system.permission.api.PermissionApi;
-import com.bgasol.model.system.permission.entity.PermissionEntity;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -15,12 +13,21 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.context.event.EventListener;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.bgasol.model.system.permission.api.PermissionApi;
+import com.bgasol.model.system.permission.entity.PermissionEntity;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
@@ -122,10 +129,37 @@ public class ControllerScanner {
         scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 
         Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(controllerPackage);
-        for (BeanDefinition candidateComponent : candidateComponents) {
-            String className = candidateComponent.getBeanClassName();
-            Class<?> clazz = Class.forName(className);
-            scanController(clazz);
+        
+        // 重试相关参数
+        int maxRetries = 5;
+        int retryCount = 0;
+        int initialDelay = 3000; // 初始延迟3秒
+        boolean success = false;
+        
+        while (!success && retryCount < maxRetries) {
+            try {
+                for (BeanDefinition candidateComponent : candidateComponents) {
+                    String className = candidateComponent.getBeanClassName();
+                    Class<?> clazz = Class.forName(className);
+                    scanController(clazz);
+                }
+                success = true;
+                log.info("Controller扫描完成，权限信息已更新");
+            } catch (Exception e) {
+                retryCount++;
+                if (retryCount < maxRetries) {
+                    int delay = initialDelay * (1 << (retryCount - 1)); // 指数退避策略
+                    log.warn("权限信息更新失败，上一个节点未正确下线，将在{}ms后进行第{}次重试。错误信息: {}", delay, retryCount + 1, e.getMessage());
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("重试等待被中断", ie);
+                    }
+                } else {
+                    log.error("权限信息更新失败，已达到最大重试次数({}次)。错误信息: {}", maxRetries, e.getMessage(), e);
+                }
+            }
         }
     }
 }
