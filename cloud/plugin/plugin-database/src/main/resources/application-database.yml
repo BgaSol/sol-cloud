@@ -9,8 +9,16 @@ spring:
       enabled: true #启用动态数据源，默认true
 mybatis-plus:
   global-config:
-    banner: false
     db-config:
       logic-delete-field: deleted # 全局逻辑删除字段名
       logic-delete-value: 1 # 逻辑已删除值
       logic-not-delete-value: 0 # 逻辑未删除值
+    banner: false
+  configuration:
+    local-cache-scope: STATEMENT
+    cache-enabled: false
+    log-impl: com.bgasol.plugin.mybatisPlus.config.MybatisSqlLogger
+logging:
+  level:
+    sql: debug
+    com.bgasol.plugin.mybatisPlus: ${logging.level.sql}
