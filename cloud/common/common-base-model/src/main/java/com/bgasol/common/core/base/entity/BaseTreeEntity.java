@@ -28,12 +28,4 @@ public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEn
     @TableField(exist = false)
     @OneToMany(mappedBy = "parent")
     private List<T> children;
-
-    @JsonGetter("parentId")
-    public String parentId() {
-        if (parent != null) {
-            return parent.getId();
-        }
-        return parentId;
-    }
 }
