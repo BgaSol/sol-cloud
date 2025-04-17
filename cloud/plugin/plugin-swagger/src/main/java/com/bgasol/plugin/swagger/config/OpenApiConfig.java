@@ -1,17 +1,20 @@
 package com.bgasol.plugin.swagger.config;
 
-import com.alibaba.nacos.api.exception.NacosException;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.servers.Server;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import com.alibaba.nacos.api.exception.NacosException;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,9 +29,6 @@ public class OpenApiConfig {
     @Value("${sa-token.token-name}")
     private String tokenName;
 
-//    @NacosInjected
-//    private final NamingService namingService;
-
     /**
      * 构建 OpenAPI 配置
      */
@@ -37,6 +37,8 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(createInfo())
                 .servers(createServers())
+                // 添加全局安全要求
+                .addSecurityItem(new SecurityRequirement().addList(tokenName))
                 .components(createComponents());
     }
 
@@ -55,11 +57,6 @@ public class OpenApiConfig {
      */
     private List<Server> createServers() throws NacosException {
         List<Server> servers = new java.util.ArrayList<>();
-//        List<Instance> allInstances = namingService.getAllInstances(GatewayConfigValues.SERVICE_NAME);
-//        for (Instance instance : allInstances) {
-//            Server server = createServer(instance.getIp() + ":" + instance.getPort() + "/" + serviceName, instance.getServiceName() + " -> " + serviceName);
-//            servers.add(server);
-//        }
         servers.add(createServer("http://localhost:" + 9527 + "/" + serviceName, "网关"));
         return servers;
     }
@@ -80,11 +77,13 @@ public class OpenApiConfig {
     private Components createComponents() {
         Components components = new Components();
         components.addSecuritySchemes(
-                "身份验证 Token",
+                tokenName,
                 new SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
                         .in(SecurityScheme.In.HEADER)
                         .name(tokenName)
+                        .description("身份验证 Token")
+                        .bearerFormat("UUID")
         );
         return components;
     }
