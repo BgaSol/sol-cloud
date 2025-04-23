@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -40,18 +41,14 @@ public class LoginService {
     private Integer captchaMaxNumber;
 
     public VerificationVo getVerificationCode() {
-        // 算术类型
-        ArithmeticCaptcha captcha = new ArithmeticCaptcha(100, 35);
+        ArithmeticCaptcha captcha = new ArithmeticCaptcha(100, 35); // 算术类型
         captcha.setLen(captchaLength);  // 几位数运算，默认是两位
         captcha.supportAlgorithmSign(4); // 可设置支持的算法：2 表示只生成带加减法的公式
         captcha.setDifficulty(captchaMaxNumber); // 设置计算难度，参与计算的每一个整数的最大值
+        String text = captcha.text(); // 获取运算结果
 
-        // 获取运算的结果：5
-        String text = captcha.text();
-        // 生成验证码的key
-        String key = UUID.randomUUID().toString();
-        // 保存到redis 5分钟有效
-        redisTemplate.opsForValue().set(UserLoginCodeKey + key, text, 5 * 60, java.util.concurrent.TimeUnit.SECONDS);
+        String key = UserLoginCodeKey + UUID.randomUUID(); // 生成验证码的key
+        redisTemplate.opsForValue().set(key, text, 1, TimeUnit.MINUTES); // 保存到redis
         VerificationVo verificationVo = new VerificationVo();
         verificationVo.setVerificationCode(captcha.toBase64());
         verificationVo.setVerificationId(key);
