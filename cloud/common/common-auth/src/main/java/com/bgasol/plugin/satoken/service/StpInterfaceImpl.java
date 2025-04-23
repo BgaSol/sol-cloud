@@ -69,5 +69,4 @@ public class StpInterfaceImpl implements StpInterface {
         }
         return new ArrayList<>(roles);
     }
-
 }

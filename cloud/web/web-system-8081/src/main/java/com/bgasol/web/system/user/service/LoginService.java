@@ -8,18 +8,17 @@ import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.model.system.user.dto.UserLoginDto;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.model.system.user.vo.VerificationVo;
+import com.bgasol.web.system.user.cache.CaptchaCache;
 import com.bgasol.web.system.user.mapper.UserMapper;
 import com.pig4cloud.captcha.ArithmeticCaptcha;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class LoginService {
     private final UserMapper userMapper;
 
-    private final RedisTemplate<String, String> redisTemplate;
-
-    private final static String UserLoginCodeKey = "system:login:captcha:";
+    private final CaptchaCache captchaCache;
 
     private final UserService userService;
 
@@ -47,11 +44,13 @@ public class LoginService {
         captcha.setDifficulty(captchaMaxNumber); // 设置计算难度，参与计算的每一个整数的最大值
         String text = captcha.text(); // 获取运算结果
 
-        String key = UserLoginCodeKey + UUID.randomUUID(); // 生成验证码的key
-        redisTemplate.opsForValue().set(key, text, 1, TimeUnit.MINUTES); // 保存到redis
+        String key = UUID.randomUUID().toString(); // 生成验证码的key
+        captchaCache.saveCaptcha(key, text); // 保存到缓存
+
         VerificationVo verificationVo = new VerificationVo();
         verificationVo.setVerificationCode(captcha.toBase64());
         verificationVo.setVerificationId(key);
+
         return verificationVo;
     }
 
@@ -61,15 +60,15 @@ public class LoginService {
 
     @Transactional(readOnly = true)
     public SaTokenInfo login(UserLoginDto userLoginDto) {
-        String captchaKey = UserLoginCodeKey + userLoginDto.getVerificationCodeKey();
+        String verificationCodeKey = userLoginDto.getVerificationCodeKey();
         // 获取验证码
-        String verificationCode = redisTemplate.opsForValue().get(captchaKey);
+        String verificationCode = captchaCache.getCaptcha(verificationCodeKey);
         if (verificationCode == null) {
             log.error("验证码已过期");
             throw new BaseException("验证码已过期");
         }
         // 删除验证码
-        redisTemplate.delete(captchaKey);
+        captchaCache.removeCaptcha(verificationCodeKey);
         if (!verificationCode.equals(userLoginDto.getVerificationCode())) {
             log.error("验证码错误");
             throw new BaseException("验证码错误");
