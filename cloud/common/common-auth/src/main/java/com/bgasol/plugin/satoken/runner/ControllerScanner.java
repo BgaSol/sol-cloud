@@ -1,33 +1,26 @@
 package com.bgasol.plugin.satoken.runner;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.model.system.permission.api.PermissionApi;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
-
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -121,7 +114,7 @@ public class ControllerScanner {
         permissionApi.init(parentPermissionEntity);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(InstanceRegisteredEvent.class)
     public void scanAllControllers() throws ClassNotFoundException {
         log.info("开始扫描所有Controller");
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
@@ -129,13 +122,13 @@ public class ControllerScanner {
         scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
 
         Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(controllerPackage);
-        
+
         // 重试相关参数
         int maxRetries = 5;
         int retryCount = 0;
         int initialDelay = 3000; // 初始延迟3秒
         boolean success = false;
-        
+
         while (!success && retryCount < maxRetries) {
             try {
                 for (BeanDefinition candidateComponent : candidateComponents) {
