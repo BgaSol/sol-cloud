@@ -6,24 +6,21 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-/**
- * 验证码缓存服务
- */
 @Service
-@CacheConfig(cacheNames = "system:login:captcha")
+@CacheConfig(cacheNames = "system:login:captcha", cacheManager = "captchaCacheManager")
 public class CaptchaCache {
 
-    @CachePut(key = "#key", cacheManager = "redisCacheManager")
+    @CachePut(key = "#key")
     public String saveCaptcha(String key, String code) {
         return code;
     }
 
-    @Cacheable(key = "#key", cacheManager = "redisCacheManager")
+    @Cacheable(key = "#key")
     public String getCaptcha(String key) {
         return null;
     }
 
-    @CacheEvict(key = "#key", cacheManager = "redisCacheManager")
+    @CacheEvict(key = "#key")
     public void removeCaptcha(String key) {
     }
 }
