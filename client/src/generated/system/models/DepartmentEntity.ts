@@ -31,6 +31,10 @@ export type DepartmentEntity = {
      * 是否删除
      */
     deleted?: number;
+    /**
+     * 父id
+     */
+    parentId?: string;
     parent?: DepartmentEntity;
     /**
      * 子实体
@@ -64,9 +68,5 @@ export type DepartmentEntity = {
      * 部门图标id 关联图片id
      */
     iconId?: string;
-    /**
-     * 父id
-     */
-    parentId?: string;
 };
 

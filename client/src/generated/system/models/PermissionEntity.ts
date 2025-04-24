@@ -31,6 +31,10 @@ export type PermissionEntity = {
      * 是否删除
      */
     deleted?: number;
+    /**
+     * 父id
+     */
+    parentId?: string;
     parent?: PermissionEntity;
     /**
      * 子实体
@@ -52,9 +56,5 @@ export type PermissionEntity = {
      * 微服务名
      */
     microService?: string;
-    /**
-     * 父id
-     */
-    parentId?: string;
 };
 

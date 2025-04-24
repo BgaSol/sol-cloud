@@ -31,6 +31,10 @@ export type MenuEntity = {
      * 是否删除
      */
     deleted?: number;
+    /**
+     * 父id
+     */
+    parentId?: string;
     parent?: MenuEntity;
     /**
      * 子实体
@@ -88,10 +92,6 @@ export type MenuEntity = {
      * 菜单组
      */
     menuGroup?: string;
-    /**
-     * 父id
-     */
-    parentId?: string;
 };
 export namespace MenuEntity {
     /**
