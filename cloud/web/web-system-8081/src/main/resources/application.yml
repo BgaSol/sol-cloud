@@ -32,3 +32,5 @@ spring:
       - swagger
       - micrometer
       - seata
+      - feign
+      - loadbalance

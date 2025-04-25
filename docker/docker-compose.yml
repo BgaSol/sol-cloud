@@ -1,9 +1,6 @@
-version: '3'
-
 networks:
   cloud-app:
     driver: bridge
-
 services:
   cloud-app-nginx:
     image: nginx:alpine

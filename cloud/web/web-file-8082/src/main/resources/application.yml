@@ -27,3 +27,5 @@ spring:
       - minio
       - micrometer
       - seata
+      - feign
+      - loadbalance

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 全局异常处理
@@ -63,7 +62,7 @@ public class BaseExceptionHandler {
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
     public BaseVo<List<VerificationResult>> constraintViolationExceptionHandler(ConstraintViolationException e) {
-        Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
+//        Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
         List<VerificationResult> verificationResults = new ArrayList<>();
         for (ConstraintViolation<?> constraintViolation : e.getConstraintViolations()) {
             VerificationResult verificationResult = new VerificationResult();

@@ -1,4 +1,4 @@
-package com.bgasol.plugin.openfeign.config;
+package com.bgasol.plugin.openfeign.interceptor;
 
 import cn.dev33.satoken.same.SaSameUtil;
 import com.bgasol.common.constant.value.GatewayConfigValues;

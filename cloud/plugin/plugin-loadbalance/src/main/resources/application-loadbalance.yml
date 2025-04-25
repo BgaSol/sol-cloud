@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: false
+logging:
+  level:
+    org.springframework.cloud.loadbalancer: DEBUG
+    org.springframework.cloud.client.loadbalancer: DEBUG
