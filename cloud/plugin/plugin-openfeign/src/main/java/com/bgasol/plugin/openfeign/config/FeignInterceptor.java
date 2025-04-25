@@ -15,11 +15,10 @@ public class FeignInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        // 为 Feign 的 RCP调用 添加请求头Same-Token
+        // 添加Same-Token请求头
         requestTemplate.header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken());
-        // 添加请求头，标识请求不是来自网关
+        // 添加来自网关的标识
         requestTemplate.header(GatewayConfigValues.XFromGateway, "false");
-//        requestTemplate.header(StpUtil.getTokenName(), StpUtil.getTokenValue());
         // 添加Seata的XID
         requestTemplate.header(RootContext.KEY_XID, RootContext.getXID());
     }
