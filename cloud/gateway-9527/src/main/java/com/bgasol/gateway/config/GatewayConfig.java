@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,12 @@ public class GatewayConfig {
 
     private final DiscoveryClient discoveryClient;
 
-    // 不需要注册自己 提前添加进来 GatewayConfigValues.SERVICE_NAME
-    private final List<String> routeIdList = List.of(GatewayConfigValues.SERVICE_NAME);
+    private final List<String> routeIdList = new ArrayList<>();
+
+    {
+        // 不需要注册自己 提前添加进来 GatewayConfigValues.SERVICE_NAME
+        routeIdList.add(GatewayConfigValues.SERVICE_NAME);
+    }
 
     public void addRoute(String id, String uri, String path) {
         RouteDefinition definition = new RouteDefinition();
