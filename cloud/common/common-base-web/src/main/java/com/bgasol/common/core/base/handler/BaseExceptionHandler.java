@@ -1,8 +1,11 @@
 package com.bgasol.common.core.base.handler;
 
 import com.bgasol.common.core.base.exception.BaseException;
+import com.bgasol.common.core.base.exception.VerificationException;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.VerificationResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -35,12 +38,20 @@ public class BaseExceptionHandler {
         return e.getBaseVo();
     }
 
+    @ExceptionHandler(value = VerificationException.class)
+    @ApiResponse(description = "参数校验异常", responseCode = "400")
+    public BaseVo<List<VerificationResult>> verificationExceptionHandler(VerificationException e) throws JsonProcessingException {
+        List<VerificationResult> verificationResults = e.getVerificationResults();
+        log.error(new ObjectMapper().writeValueAsString(verificationResults));
+        return BaseVo.code400(verificationResults);
+    }
+
     /**
      * 处理参数校验异常 方法参数级 MethodArgumentNotValidException
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
-    public BaseVo<List<VerificationResult>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public BaseVo<List<VerificationResult>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JsonProcessingException {
         BindingResult bindingResult = e.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
         List<VerificationResult> verificationResults = new ArrayList<>();
@@ -53,6 +64,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
+        log.error(new ObjectMapper().writeValueAsString(verificationResults));
         return BaseVo.code400(verificationResults);
     }
 
@@ -61,7 +73,7 @@ public class BaseExceptionHandler {
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
-    public BaseVo<List<VerificationResult>> constraintViolationExceptionHandler(ConstraintViolationException e) {
+    public BaseVo<List<VerificationResult>> constraintViolationExceptionHandler(ConstraintViolationException e) throws JsonProcessingException {
 //        Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
         List<VerificationResult> verificationResults = new ArrayList<>();
         for (ConstraintViolation<?> constraintViolation : e.getConstraintViolations()) {
@@ -77,6 +89,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
+        log.error(new ObjectMapper().writeValueAsString(verificationResults));
         return BaseVo.code400(verificationResults);
     }
 }
