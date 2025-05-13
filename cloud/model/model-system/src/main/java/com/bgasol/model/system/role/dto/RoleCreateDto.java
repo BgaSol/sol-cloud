@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.bgasol.model.system.role.mapstruct.RoleMapstruct.ROLE_MAPSTRUCT_IMPL;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "新增角色实体")
@@ -34,9 +36,7 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
 
     @Override
     public RoleEntity toEntity() {
-        RoleEntity roleEntity = new RoleEntity();
-        roleEntity.setName(name);
-        roleEntity.setCode(code);
+        RoleEntity roleEntity = ROLE_MAPSTRUCT_IMPL.toEntity(this);
         if (permissionIds != null) {
             Stream<PermissionEntity> permissionEntityStream = permissionIds.stream().map((id) -> {
                 PermissionEntity permissionEntity = new PermissionEntity();

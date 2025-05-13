@@ -2,9 +2,11 @@ package com.bgasol.model.system.department.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.bgasol.model.system.department.mapstruct.DepartmentMapstruct;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.mapstruct.factory.Mappers;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -36,15 +38,7 @@ public class DepartmentUpdateDto extends BaseUpdateDto<DepartmentEntity> {
 
     @Override
     public DepartmentEntity toEntity() {
-        DepartmentEntity departmentEntity = new DepartmentEntity();
-        departmentEntity.setName(name);
-        departmentEntity.setCode(code);
-        departmentEntity.setDomain(domain);
-        departmentEntity.setAddress(address);
-        departmentEntity.setPhone(phone);
-        departmentEntity.setHtml(html);
-        departmentEntity.setIconId(iconId);
-        departmentEntity.setParentId(parentId);
-        return this.toEntity(departmentEntity);
+        DepartmentMapstruct mapper = Mappers.getMapper(DepartmentMapstruct.class);
+        return super.toEntity(mapper.toEntity(this));
     }
 }

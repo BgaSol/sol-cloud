@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import static com.bgasol.model.system.department.mapstruct.DepartmentMapstruct.DEPARTMENT_MAPSTRUCT_IMPL;
+
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "新增部门Dto")
 @Data
@@ -37,15 +39,6 @@ public class DepartmentCreateDto extends BaseCreateDto<DepartmentEntity> {
 
     @Override
     public DepartmentEntity toEntity() {
-        DepartmentEntity departmentEntity = new DepartmentEntity();
-        departmentEntity.setName(name);
-        departmentEntity.setCode(code);
-        departmentEntity.setDomain(domain);
-        departmentEntity.setAddress(address);
-        departmentEntity.setPhone(phone);
-        departmentEntity.setHtml(html);
-        departmentEntity.setIconId(iconId);
-        departmentEntity.setParentId(parentId);
-        return this.toEntity(departmentEntity);
+        return super.toEntity(DEPARTMENT_MAPSTRUCT_IMPL.toEntity(this));
     }
 }
