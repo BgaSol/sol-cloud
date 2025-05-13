@@ -14,4 +14,3 @@ public interface DepartmentMapstruct {
 
     DepartmentEntity toEntity(DepartmentUpdateDto dto);
 }
-
