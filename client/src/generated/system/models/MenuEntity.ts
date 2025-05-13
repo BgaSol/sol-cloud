@@ -49,7 +49,7 @@ export type MenuEntity = {
      */
     status?: number;
     /**
-     * 菜单类型
+     * 菜单类型：MENU-菜单，PAGE-页面，BUTTON-按钮
      */
     menuType?: MenuEntity.menuType;
     /**
@@ -95,7 +95,7 @@ export type MenuEntity = {
 };
 export namespace MenuEntity {
     /**
-     * 菜单类型
+     * 菜单类型：MENU-菜单，PAGE-页面，BUTTON-按钮
      */
     export enum menuType {
         MENU = 'MENU',
