@@ -14,6 +14,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -232,7 +233,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Transactional(readOnly = true)
     public ENTITY findById(String id) {
         ENTITY entity = commonBaseMapper().selectById(id);
-        this.findOtherTable(entity);
+        if (ObjectUtils.isNotEmpty(entity)) {
+            this.findOtherTable(entity);
+        }
         return entity;
     }
 
