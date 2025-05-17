@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 
 @Schema(description = "菜单实体")
 @TableName("t_menu")
+
 public class MenuEntity extends BaseTreeEntity<MenuEntity> {
 
     @Schema(description = "菜单名")

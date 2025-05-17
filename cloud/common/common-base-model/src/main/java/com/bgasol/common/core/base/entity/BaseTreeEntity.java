@@ -3,14 +3,13 @@ package com.bgasol.common.core.base.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@MappedSuperclass()
+@MappedSuperclass
 public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
     @Schema(description = "父id")
     @TableField("parent_id")

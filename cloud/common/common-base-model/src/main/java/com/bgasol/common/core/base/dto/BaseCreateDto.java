@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
+@Schema(description = "实体创建通用参数")
 public abstract class BaseCreateDto<ENTITY extends BaseEntity> {
 
     @Schema(description = "排序")

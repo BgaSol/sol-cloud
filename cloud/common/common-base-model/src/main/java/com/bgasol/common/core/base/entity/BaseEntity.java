@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@MappedSuperclass()
+@MappedSuperclass
 public abstract class BaseEntity implements Serializable {
     @Id
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

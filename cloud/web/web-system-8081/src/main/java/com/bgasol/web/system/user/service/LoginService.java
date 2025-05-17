@@ -47,11 +47,9 @@ public class LoginService {
         String key = UUID.randomUUID().toString(); // 生成验证码的key
         captchaCache.saveCaptcha(key, text); // 保存到缓存
 
-        VerificationVo verificationVo = new VerificationVo();
-        verificationVo.setVerificationCode(captcha.toBase64());
-        verificationVo.setVerificationId(key);
-
-        return verificationVo;
+        return VerificationVo.builder()
+                .verificationCode(captcha.toBase64())
+                .verificationId(key).build();
     }
 
     public void logout() {

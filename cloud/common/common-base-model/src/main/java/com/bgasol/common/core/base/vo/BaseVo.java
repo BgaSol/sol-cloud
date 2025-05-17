@@ -1,13 +1,19 @@
 package com.bgasol.common.core.base.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Schema(description = "基础响应数据")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseVo<T> {
     @Schema(description = "响应码")
     private Integer code;

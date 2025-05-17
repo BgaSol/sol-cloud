@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
+@Schema(description = "实体更新通用参数")
 public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
 
     @Schema(description = "主键")
@@ -17,7 +18,6 @@ public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
 
     @Schema(description = "描述")
     private String description;
-
 
     /**
      * CreateDto转Entity

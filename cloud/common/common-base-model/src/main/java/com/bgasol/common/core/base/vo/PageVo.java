@@ -1,12 +1,18 @@
 package com.bgasol.common.core.base.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Schema(description = "分页响应数据")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageVo<ENTITY> {
     @Schema(description = "总条数")
     private Long total;
