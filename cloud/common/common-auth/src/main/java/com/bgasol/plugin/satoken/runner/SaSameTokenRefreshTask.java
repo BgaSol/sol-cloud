@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,19 +27,30 @@ public class SaSameTokenRefreshTask {
     @Scheduled(cron = "0 0 * * * ?")
     public void refreshToken() {
         RLock lock = redissonClient.getLock(LOCK_KEY);
+        boolean acquired = false;
         try {
-            // 尝试获取锁，最多等待1秒，锁自动释放时间30秒
-            boolean acquired = lock.tryLock(1, 30, TimeUnit.SECONDS);
+            acquired = lock.tryLock(1, 30, TimeUnit.SECONDS);
             if (acquired) {
                 SaSameUtil.refreshToken();
-                log.info("Same-Token refresh token success");
-                Thread.sleep(Duration.ofSeconds(1).toMillis());
+                Thread.sleep(1000);
+                log.info("令牌刷新令牌成功");
+            } else {
+                log.info("未获取到锁");
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // 保留中断信号
-            log.error("Same-Token refresh token interrupted", e);
+            Thread.currentThread().interrupt();
+            log.error("被中断", e);
+        } catch (Exception e) {
+            log.error("令牌刷新期间出现意外错误", e);
         } finally {
-            lock.unlock();
+            if (acquired) {
+                try {
+                    lock.unlock();
+                    log.info("锁已释放");
+                } catch (IllegalMonitorStateException e) {
+                    log.warn("未获取到令牌锁", e);
+                }
+            }
         }
     }
 }
