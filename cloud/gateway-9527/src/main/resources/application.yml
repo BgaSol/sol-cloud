@@ -3,6 +3,7 @@ server:
 spring:
   profiles:
     active:
+      - logger
       - nacos
-      - sa-token
       - redis
+      - sa-token
