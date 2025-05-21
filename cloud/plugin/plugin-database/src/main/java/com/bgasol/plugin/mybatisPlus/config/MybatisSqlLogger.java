@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.logging.Log;
 import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
 
 @Slf4j
 @RequiredArgsConstructor
 public class MybatisSqlLogger implements Log {
     private final String clazz;
 
-    private static final String DEFAULT = "\u001B[" + AnsiColor.DEFAULT + "m";
-    private static final String BRIGHT_YELLOW = "\u001B[" + AnsiColor.BRIGHT_YELLOW + "m";
+    private String color(String msg, AnsiColor color) {
+        return AnsiOutput.toString(color, msg, AnsiColor.DEFAULT);
+    }
 
     @Override
     public boolean isDebugEnabled() {
@@ -25,27 +27,26 @@ public class MybatisSqlLogger implements Log {
 
     @Override
     public void error(String s, Throwable e) {
-        log.error("[{}]:\t\n{}{}{}", clazz, BRIGHT_YELLOW, s, DEFAULT, e);
+        log.error("[{}]:\n{}", clazz, color(s, AnsiColor.RED), e);
     }
 
     @Override
     public void error(String s) {
-        log.error("[{}]:\t\n{}{}{}", clazz, BRIGHT_YELLOW, s, DEFAULT);
-
+        log.error("[{}]:\n{}", clazz, color(s, AnsiColor.RED));
     }
 
     @Override
     public void debug(String s) {
-        log.debug("[{}]:\t\n{}{}{}", clazz, BRIGHT_YELLOW, s, DEFAULT);
+        log.debug("[{}]:\n{}", clazz, color(s, AnsiColor.BRIGHT_YELLOW));
     }
 
     @Override
     public void trace(String s) {
-        log.trace("[{}]:\t\n{}{}{}", clazz, BRIGHT_YELLOW, s, DEFAULT);
+        log.trace("[{}]:\n{}", clazz, color(s, AnsiColor.CYAN));
     }
 
     @Override
     public void warn(String s) {
-        log.warn("[{}]:\t\n{}{}{}", clazz, BRIGHT_YELLOW, s, DEFAULT);
+        log.warn("[{}]:\n{}", clazz, color(s, AnsiColor.MAGENTA));
     }
 }
