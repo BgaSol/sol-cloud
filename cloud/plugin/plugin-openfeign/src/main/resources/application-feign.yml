@@ -1,3 +1,4 @@
 logging:
   level:
     feign: DEBUG
+    org.springframework.cloud.openfeign: DEBUG

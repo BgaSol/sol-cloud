@@ -20,5 +20,4 @@ mybatis-plus:
     log-impl: com.bgasol.plugin.mybatisPlus.config.MybatisSqlLogger
 logging:
   level:
-    sql: debug
-    com.bgasol.plugin.mybatisPlus: ${logging.level.sql}
+    com.bgasol.plugin.mybatisPlus: DEBUG

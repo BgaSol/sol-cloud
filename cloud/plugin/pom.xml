@@ -23,6 +23,7 @@
         <module>plugin-minio</module>
         <module>plugin-micrometer</module>
         <module>plugin-seata</module>
+        <module>plugin-logger</module>
     </modules>
     <dependencies>
         <dependency>

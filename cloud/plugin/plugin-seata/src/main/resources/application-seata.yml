@@ -16,4 +16,4 @@ seata:
   data-source-proxy-mode: AT
 logging:
   level:
-    io.seata: info
+    io.seata: DEBUG

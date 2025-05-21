@@ -27,6 +27,11 @@
             <artifactId>plugin-database</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.bgasol</groupId>
+            <artifactId>plugin-logger</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
 </project>

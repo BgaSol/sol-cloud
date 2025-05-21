@@ -25,12 +25,14 @@ spring:
           password: ${POSTGRES_PASSWORD:postgrespwd}
   profiles:
     active:
+      - web
       - database
+      - loadbalance
+      - logger
+      - micrometer
       - nacos
+      - feign
       - redis
       - sa-token
-      - swagger
-      - micrometer
       - seata
-      - feign
-      - loadbalance
+      - swagger
