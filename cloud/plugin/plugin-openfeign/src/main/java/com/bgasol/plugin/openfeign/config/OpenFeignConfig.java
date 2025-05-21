@@ -16,7 +16,7 @@ public class OpenFeignConfig {
 
     @Bean
     public Retryer retrier() {
-        return new Retryer.Default();
+        return new Retryer.Default(100L, 300L, 2);
     }
 
     @Bean
