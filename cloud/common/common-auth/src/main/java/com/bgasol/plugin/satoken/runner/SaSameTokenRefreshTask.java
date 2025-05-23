@@ -27,30 +27,17 @@ public class SaSameTokenRefreshTask {
     @Scheduled(cron = "0 0 * * * ?")
     public void refreshToken() {
         RLock lock = redissonClient.getLock(LOCK_KEY);
-        boolean acquired = false;
         try {
-            acquired = lock.tryLock(1, 30, TimeUnit.SECONDS);
-            if (acquired) {
+            if (lock.tryLock(0, 5, TimeUnit.SECONDS)) {
                 SaSameUtil.refreshToken();
-                Thread.sleep(1000);
                 log.info("令牌刷新令牌成功");
             } else {
                 log.info("未获取到锁");
             }
+            // 不需要手动解锁 锁10秒后会自动释放
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("被中断", e);
-        } catch (Exception e) {
-            log.error("令牌刷新期间出现意外错误", e);
-        } finally {
-            if (acquired) {
-                try {
-                    lock.unlock();
-                    log.info("锁已释放");
-                } catch (IllegalMonitorStateException e) {
-                    log.warn("未获取到令牌锁", e);
-                }
-            }
         }
     }
 }
