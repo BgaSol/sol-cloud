@@ -27,7 +27,7 @@ spring:
     active:
       - web
       - database
-      - loadbalance
+      - loadbalancer
       - logger
       - micrometer
       - nacos

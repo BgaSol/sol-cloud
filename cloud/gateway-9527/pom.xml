@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>com.bgasol</groupId>
-            <artifactId>plugin-loadbalance</artifactId>
+            <artifactId>plugin-loadbalancer</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>

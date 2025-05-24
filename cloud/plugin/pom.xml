@@ -16,7 +16,7 @@
         <module>plugin-swagger</module>
         <module>plugin-sa-token</module>
         <module>plugin-redis</module>
-        <module>plugin-loadbalance</module>
+        <module>plugin-loadbalancer</module>
         <module>plugin-nacos</module>
         <module>plugin-openfeign</module>
         <module>plugin-database</module>

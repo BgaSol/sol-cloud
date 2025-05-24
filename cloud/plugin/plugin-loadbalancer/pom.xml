@@ -9,7 +9,7 @@
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>plugin-loadbalance</artifactId>
+    <artifactId>plugin-loadbalancer</artifactId>
 
     <dependencies>
         <dependency>
