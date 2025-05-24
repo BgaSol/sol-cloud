@@ -18,6 +18,14 @@ CREATE TABLE t_file
     bucket      VARCHAR(255)  -- 文件所在桶
 );
 
+-- 为文件表添加索引
+CREATE UNIQUE INDEX idx_file_hash ON t_file(hash);
+CREATE INDEX idx_file_name ON t_file(name);
+CREATE INDEX idx_file_status ON t_file(status);
+CREATE INDEX idx_file_suffix ON t_file(suffix);
+CREATE INDEX idx_file_bucket ON t_file(bucket);
+CREATE INDEX idx_file_source ON t_file(source);
+
 -- 图片表
 CREATE TABLE t_image
 (
@@ -32,4 +40,9 @@ CREATE TABLE t_image
     width       INTEGER,      -- 图片宽度
     height      INTEGER,      -- 图片高度
     file_id     VARCHAR(255)  -- 图片文件id
-); 
+);
+
+-- 为图片表添加索引
+CREATE INDEX idx_image_file_id ON t_image(file_id);
+CREATE INDEX idx_image_name ON t_image(name);
+CREATE INDEX idx_image_dimensions ON t_image(width, height); 

@@ -30,14 +30,14 @@ public class SaSameTokenRefreshTask {
         try {
             if (lock.tryLock(0, 5, TimeUnit.SECONDS)) {
                 SaSameUtil.refreshToken();
-                log.info("令牌刷新令牌成功");
+                log.info("Token refresh token successful");
             } else {
-                log.info("未获取到锁");
+                log.info("Lock not acquired");
             }
             // 不需要手动解锁 锁10秒后会自动释放
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("被中断", e);
+            log.error("interrupt", e);
         }
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@EnableAsync
 public class ControllerScanner {
 
     @Value("${server.servlet.context-path}")
@@ -50,7 +54,7 @@ public class ControllerScanner {
         parentPermissionEntity.setId(controllerName);
         parentPermissionEntity.setName(controllerName);
 
-        log.info("正在扫描Controller: {}", controllerName);
+        log.info("Controller: {}", controllerName);
         // 获取controller的描述
         String controllerDescription = controllerName + "Controller";
         if (controllerClass.isAnnotationPresent(Tag.class)) {
@@ -115,8 +119,10 @@ public class ControllerScanner {
     }
 
     @EventListener(InstanceRegisteredEvent.class)
-    public void scanAllControllers() throws ClassNotFoundException {
-        log.info("开始扫描所有Controller");
+    @Async()
+    public void scanControllers() throws ClassNotFoundException, InterruptedException {
+        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+        log.info("Scanning-controllers");
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(RequestMapping.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));

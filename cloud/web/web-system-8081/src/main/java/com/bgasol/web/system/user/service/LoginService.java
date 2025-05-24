@@ -13,6 +13,7 @@ import com.bgasol.web.system.user.mapper.UserMapper;
 import com.pig4cloud.captcha.ArithmeticCaptcha;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ public class LoginService {
         String text = captcha.text(); // 获取运算结果
 
         String key = UUID.randomUUID().toString(); // 生成验证码的key
-        captchaCache.saveCaptcha(key, text); // 保存到缓存
+        captchaCache.save(key, text); // 保存到缓存
 
         return VerificationVo.builder()
                 .verificationCode(captcha.toBase64())
@@ -59,14 +60,12 @@ public class LoginService {
     @Transactional(readOnly = true)
     public SaTokenInfo login(UserLoginDto userLoginDto) {
         String verificationCodeKey = userLoginDto.getVerificationCodeKey();
-        // 获取验证码
-        String verificationCode = captchaCache.getCaptcha(verificationCodeKey);
-        if (verificationCode == null) {
+        // 获取验证码并且删除
+        String verificationCode = captchaCache.getAndDelete(verificationCodeKey);
+        if (StringUtils.isEmpty(verificationCode)) {
             log.error("验证码已过期");
             throw new BaseException("验证码已过期");
         }
-        // 删除验证码
-        captchaCache.removeCaptcha(verificationCodeKey);
         if (!verificationCode.equals(userLoginDto.getVerificationCode())) {
             log.error("验证码错误");
             throw new BaseException("验证码错误");

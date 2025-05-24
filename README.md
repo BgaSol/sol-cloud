@@ -44,7 +44,6 @@ The project is divided into two main parts: frontend (client) and backend (cloud
 - **Database**: PostgreSQL 17.2
 - **Cache**: Redis 7.4.2
 - **Object Storage**: MinIO RELEASE.2024-11-07T00-52-20Z
-- **Distributed Transaction**: Seata 1.8.0.2
 
 ## Project Structure
 
@@ -104,7 +103,6 @@ cloud/
    ```
 
 2. Start backend services
-   > **Warning**: First modify the SEATA_IP in dev.docker-compose.yml to your local IP
    ```bash
    cd docker
    docker-compose -f dev.docker-compose.yml up -d

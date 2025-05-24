@@ -104,34 +104,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-  # Seata 服务
-  cloud-app-seata:
-    image: seataio/seata-server:1.8.0.2
-    container_name: cloud-app-seata
-    restart: unless-stopped
-    ports:
-      - "8091:8091"
-      - "7091:7091"
-    environment:
-      SEATA_IP: 192.168.1.??? # todo 请根据实际情况修改 IP 地址，注意不要使用 localhost 或 127.0.0.1
-      SEATA_SERVER_PORT: 7091
-      SEATA_SERVER_NAME: cloud-app-seata
-      SEATA_NACOS_HOST: cloud-app-nacos
-      SEATA_NACOS_PORT: 8848
-      SEATA_NACOS_USERNAME: ${NACOS_USER}
-      SEATA_NACOS_PASSWORD: ${NACOS_PASSWORD}
-      SEATA_POSTGRES_HOST: cloud-app-postgres
-      SEATA_POSTGRES_PORT: 5432
-      SEATA_POSTGRES_DB: seata
-      SEATA_POSTGRES_USER: ${POSTGRES_USER}
-      SEATA_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SEATA_SECRET_KEY: ${SEATA_SECRET_KEY}
-      SEATA_USER: ${SEATA_USER}
-      SEATA_PASSWORD: ${SEATA_PASSWORD}
-    volumes:
-      - ./config/seata/resources/application.yml:/seata-server/resources/application.yml
-    networks:
-      - cloud-app
-    depends_on:
-      - cloud-app-postgres
-      - cloud-app-nacos

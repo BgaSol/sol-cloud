@@ -44,7 +44,6 @@ Sol-Cloud是一个基于微服务架构的云服务平台，采用前后端分�
 - **数据库**：PostgreSQL 17.2
 - **缓存**：Redis 7.4.2
 - **对象存储**：MinIO RELEASE.2024-11-07T00-52-20Z
-- **分布式事务**：Seata 1.8.0.2
 
 ## 项目结构
 
@@ -104,7 +103,6 @@ cloud/
    ```
 
 2. 启动后端服务
-   > **警告**：先修改dev.docker-compose.yml中nacos配置的SEATA_IP为本机IP
    ```bash
    cd docker
    docker-compose -f dev.docker-compose.yml up -d

@@ -29,5 +29,4 @@ spring:
       - feign
       - redis
       - sa-token
-      - seata
       - swagger

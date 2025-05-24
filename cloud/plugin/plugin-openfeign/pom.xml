@@ -21,10 +21,5 @@
             <artifactId>sa-token-core</artifactId>
             <version>${sa-token.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-seata</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 </project>
