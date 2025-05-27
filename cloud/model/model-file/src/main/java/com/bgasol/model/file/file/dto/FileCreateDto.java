@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "要上传的文件块")
     @NotNull(message = "上传文件不能为空")
-    MultipartFile uploadFile;
+    private MultipartFile uploadFile;
 
     @Override
     public FileEntity toEntity() {
