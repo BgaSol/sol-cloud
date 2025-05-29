@@ -25,6 +25,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         return new SaServletFilter()
                 // 放行普罗米修斯
                 .addExclude("/actuator/**")
+                .addExclude("/ws/**")
+                .addExclude("/ws")
                 .addInclude("/**")
                 .setAuth(obj -> {
                     SaRequest request = SaHolder.getRequest();
@@ -43,6 +45,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         // 注册 Sa-Token 拦截器，
         registry.addInterceptor(new SaTokenInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/actuator/**");
+                // 放行普罗米修斯
+                .excludePathPatterns("/actuator/**")
+                .excludePathPatterns("/ws/**")
+                .excludePathPatterns("/ws");
     }
 }

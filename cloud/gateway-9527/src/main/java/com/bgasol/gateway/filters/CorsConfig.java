@@ -20,6 +20,13 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
-        return new CorsWebFilter(source);
+        return new CorsWebFilter(exchange -> {
+            String path = exchange.getRequest().getPath().value();
+            if (path.contains("/ws")) {
+                // 不进行 CORS 处理，直接返回 null（即不添加任何 CORS Header）
+                return null;
+            }
+            return source.getCorsConfiguration(exchange);
+        });
     }
 }

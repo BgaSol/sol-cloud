@@ -23,6 +23,7 @@
         <module>plugin-minio</module>
         <module>plugin-micrometer</module>
         <module>plugin-logger</module>
+        <module>plugin-websocket</module>
     </modules>
     <dependencies>
         <dependency>
