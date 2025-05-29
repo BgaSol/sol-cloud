@@ -4,6 +4,7 @@ import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.context.model.SaRequest;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.same.SaSameUtil;
+import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.vo.BaseVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     String sameToken = request.getHeader(SaSameUtil.SAME_TOKEN);
                     SaSameUtil.checkToken(sameToken);
                 })
-                .setError(e -> BaseVo.error("未找到服务"));
+                .setError(e -> {
+                    log.error("鉴权失败", e);
+                    throw new BaseException("鉴权失败");
+                });
     }
 
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
