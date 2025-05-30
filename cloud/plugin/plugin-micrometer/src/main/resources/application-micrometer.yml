@@ -1,3 +1,27 @@
 management:
+  server:
+    port:
   endpoints:
-    enabled-by-default: false
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,env,threaddump,heapdump,scheduledtasks,beans  # 开启常用端点
+  endpoint:
+    health:
+      enabled: true
+      show-details: always  # 展示详细健康信息（dev 环境建议 always，prod 环境建议 when-authorized）
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+    loggers:
+      enabled: true
+    env:
+      enabled: true
+    threaddump:
+      enabled: true
+    heapdump:
+      enabled: true
+    scheduledtasks:
+      enabled: true
+    beans:
+      enabled: true

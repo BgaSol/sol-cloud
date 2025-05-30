@@ -5,7 +5,6 @@ import cn.dev33.satoken.context.model.SaRequest;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.same.SaSameUtil;
 import com.bgasol.common.core.base.exception.BaseException;
-import com.bgasol.common.core.base.vo.BaseVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,10 +43,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，
         registry.addInterceptor(new SaTokenInterceptor())
-                .addPathPatterns("/**")
-                // 放行普罗米修斯
-                .excludePathPatterns("/actuator/**")
-                .excludePathPatterns("/ws/**")
-                .excludePathPatterns("/ws");
+                .addPathPatterns("/**");
     }
 }
