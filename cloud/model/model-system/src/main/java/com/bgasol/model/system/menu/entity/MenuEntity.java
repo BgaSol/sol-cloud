@@ -12,11 +12,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "菜单实体")
 @TableName("t_menu")
 public class MenuEntity extends BaseTreeEntity<MenuEntity> {

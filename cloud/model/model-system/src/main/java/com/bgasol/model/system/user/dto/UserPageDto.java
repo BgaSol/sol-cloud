@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.system.user.entity.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "用户分页查询参数")
 public class UserPageDto extends BasePageDto<UserEntity> {
     @Schema(description = "用户名")

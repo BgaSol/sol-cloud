@@ -4,16 +4,14 @@ import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.department.mapstruct.DepartmentMapstruct;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.mapstruct.factory.Mappers;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "更新部门Dto")
 public class DepartmentUpdateDto extends BaseUpdateDto<DepartmentEntity> {
     @Schema(description = "部门名")

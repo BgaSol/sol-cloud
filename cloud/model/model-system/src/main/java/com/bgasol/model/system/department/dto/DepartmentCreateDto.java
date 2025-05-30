@@ -3,17 +3,15 @@ package com.bgasol.model.system.department.dto;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import static com.bgasol.model.system.department.mapstruct.DepartmentMapstruct.DEPARTMENT_MAPSTRUCT_IMPL;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "新增部门Dto")
 public class DepartmentCreateDto extends BaseCreateDto<DepartmentEntity> {
 

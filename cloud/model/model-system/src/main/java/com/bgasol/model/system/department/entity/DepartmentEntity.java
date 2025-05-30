@@ -7,10 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "部门实体")
 @TableName("t_department")

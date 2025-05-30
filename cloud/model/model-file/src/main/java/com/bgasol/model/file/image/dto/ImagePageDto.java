@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "图片分页查询参数")
 public class ImagePageDto extends BasePageDto<ImageEntity> {
     @Schema(description = "图片名称")

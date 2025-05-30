@@ -6,10 +6,7 @@ import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -18,9 +15,10 @@ import java.util.stream.Stream;
 
 import static com.bgasol.model.system.role.mapstruct.RoleMapstruct.ROLE_MAPSTRUCT_IMPL;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "更新角色实体")
 public class RoleUpdateDto extends BaseUpdateDto<RoleEntity> {
     @NotBlank(message = "角色名不能为空")

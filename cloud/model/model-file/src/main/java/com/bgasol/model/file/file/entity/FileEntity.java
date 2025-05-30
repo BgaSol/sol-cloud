@@ -7,10 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_file")
 @Schema(description = "文件实体类")

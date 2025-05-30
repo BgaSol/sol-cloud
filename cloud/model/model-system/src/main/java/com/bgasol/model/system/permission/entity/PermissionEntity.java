@@ -7,11 +7,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "权限实体")
 @TableName("t_permission")
 public class PermissionEntity extends BaseTreeEntity<PermissionEntity> {

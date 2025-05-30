@@ -14,11 +14,10 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "角色实体")
 @TableName("t_role")
 public class RoleEntity extends BaseEntity {

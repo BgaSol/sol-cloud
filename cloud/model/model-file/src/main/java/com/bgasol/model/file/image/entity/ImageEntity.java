@@ -11,10 +11,9 @@ import jakarta.persistence.Transient;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_image")
 @Schema(description = "图片实体类")

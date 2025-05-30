@@ -3,8 +3,15 @@ package com.bgasol.model.system.user.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Setter
+@Getter
+@SuperBuilder
+@NoArgsConstructor
 @Schema(description = "登录用户数据传输对象")
 public class UserLoginDto {
 

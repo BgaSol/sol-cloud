@@ -4,15 +4,13 @@ import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "创建图片实体类")
 public class ImageCreateDto extends BaseCreateDto<ImageEntity> {
     @Schema(description = "图片名称")

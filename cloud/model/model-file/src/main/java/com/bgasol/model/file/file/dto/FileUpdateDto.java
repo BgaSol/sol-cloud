@@ -3,15 +3,13 @@ package com.bgasol.model.file.file.dto;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "更新文件")
 public class FileUpdateDto extends BaseUpdateDto<FileEntity> {
     @Override

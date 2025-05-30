@@ -16,11 +16,10 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@Getter
 @Setter
+@Getter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "用户实体类")
 @TableName("t_user")
 public class UserEntity extends BaseEntity {
