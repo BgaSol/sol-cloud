@@ -1,7 +1,9 @@
 package com.bgasol.common.core.base.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
@@ -10,7 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "基础响应数据")
 public class BaseVo<T> {

@@ -3,7 +3,6 @@ package com.bgasol.common.core.base.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
 public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
     @Schema(description = "父id")

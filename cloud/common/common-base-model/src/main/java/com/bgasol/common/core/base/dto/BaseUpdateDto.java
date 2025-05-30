@@ -4,12 +4,14 @@ import com.bgasol.common.core.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "实体更新通用参数")
 public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
 

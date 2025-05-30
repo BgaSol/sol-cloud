@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +16,6 @@ import java.util.Date;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
     @Id

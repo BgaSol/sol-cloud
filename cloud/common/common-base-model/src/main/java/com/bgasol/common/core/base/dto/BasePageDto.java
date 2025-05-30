@@ -8,12 +8,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 @Schema(description = "分页查询通用参数")
 public abstract class BasePageDto<T extends BaseEntity> {
     @NotNull(message = "页码不能为空")
