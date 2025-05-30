@@ -6,9 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "更新图片实体类")
 public class ImageUpdateDto extends BaseUpdateDto<ImageEntity> {
     @Schema(description = "图片名称")

@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @TableName("t_image")
 @Schema(description = "图片实体类")
 public class ImageEntity extends BaseEntity {

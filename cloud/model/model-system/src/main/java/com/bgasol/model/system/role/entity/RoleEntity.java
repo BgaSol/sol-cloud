@@ -9,14 +9,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "角色实体")
 @TableName("t_role")
 public class RoleEntity extends BaseEntity {

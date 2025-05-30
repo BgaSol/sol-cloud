@@ -8,14 +8,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "创建用户数据传输对象")
 public class UserCreateDto extends BaseCreateDto<UserEntity> {
     @NotBlank(message = "用户名不能为空")

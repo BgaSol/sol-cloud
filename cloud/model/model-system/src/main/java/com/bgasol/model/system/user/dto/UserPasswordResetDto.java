@@ -6,9 +6,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "重置用户密码数据传输对象")
 public class UserPasswordResetDto extends BaseUpdateDto<UserEntity> {
     @NotBlank(message = "新密码不能为空")

@@ -256,7 +256,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 查询关联的数据
         this.findOtherTable(entityPage.getRecords());
 
-        return new PageVo<>(entityPage.getTotal(), entityPage.getRecords(), entityPage.getCurrent(), entityPage.getSize());
+        return PageVo.<ENTITY>builder()
+                .total(entityPage.getTotal())
+                .page(entityPage.getCurrent())
+                .size(entityPage.getSize())
+                .result(entityPage.getRecords())
+                .build();
     }
 
     /**

@@ -1,19 +1,18 @@
 package com.bgasol.common.core.base.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
-@Schema(description = "基础响应数据")
-@Builder
-@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
+@Schema(description = "基础响应数据")
 public class BaseVo<T> {
     @Schema(description = "响应码")
     private Integer code;
@@ -36,11 +35,11 @@ public class BaseVo<T> {
      * @param data 响应数据
      */
     static public <T> BaseVo<T> success(T data) {
-        BaseVo<T> baseVo = new BaseVo<>();
-        baseVo.setCode(200);
-        baseVo.setData(data);
-        baseVo.setTime(new Date());
-        return baseVo;
+        return BaseVo.<T>builder()
+                .code(200)
+                .data(data)
+                .time(new Date())
+                .build();
     }
 
     /**
@@ -50,13 +49,12 @@ public class BaseVo<T> {
      * @param message 响应消息
      */
     static public <T> BaseVo<T> success(T data, String message) {
-        BaseVo<T> baseVo = new BaseVo<>();
-        baseVo.setCode(200);
-        baseVo.setMessage(message);
-        baseVo.setData(data);
-        baseVo.setTime(new Date());
-        baseVo.setType(ResponseType.SUCCESS);
-        return baseVo;
+        return BaseVo.<T>builder()
+                .code(200)
+                .data(data)
+                .time(new Date())
+                .message(message)
+                .build();
     }
 
     /**
@@ -65,11 +63,12 @@ public class BaseVo<T> {
      * @param message 响应消息
      */
     static public <T> BaseVo<T> error(String message) {
-        BaseVo<T> baseVo = new BaseVo<>();
-        baseVo.setCode(500);
-        baseVo.setMessage(message);
-        baseVo.setTime(new Date());
-        return baseVo;
+        return BaseVo.<T>builder()
+                .code(500)
+                .time(new Date())
+                .message(message)
+                .type(ResponseType.ERROR)
+                .build();
     }
 
     /**
@@ -79,12 +78,13 @@ public class BaseVo<T> {
      * @param message 响应消息
      */
     static public <T> BaseVo<T> error(T data, String message) {
-        BaseVo<T> baseVo = new BaseVo<>();
-        baseVo.setData(data);
-        baseVo.setCode(500);
-        baseVo.setMessage(message);
-        baseVo.setTime(new Date());
-        return baseVo;
+        return BaseVo.<T>builder()
+                .code(500)
+                .data(data)
+                .time(new Date())
+                .message(message)
+                .type(ResponseType.ERROR)
+                .build();
     }
 
     /**
@@ -94,34 +94,36 @@ public class BaseVo<T> {
      * @param type    响应类型
      */
     static public <T> BaseVo<T> error(String message, ResponseType type) {
-        BaseVo<T> baseVo = new BaseVo<>();
-        baseVo.setCode(500);
-        baseVo.setMessage(message);
-        baseVo.setTime(new Date());
-        baseVo.setType(type);
-        return baseVo;
+        return BaseVo.<T>builder()
+                .code(500)
+                .time(new Date())
+                .message(message)
+                .type(type)
+                .build();
     }
 
     /**
      * 未登录
      */
     public static BaseVo<Void> code401() {
-        BaseVo<Void> baseVo = new BaseVo<>();
-        baseVo.setCode(401);
-        baseVo.setMessage("未登录");
-        baseVo.setTime(new Date());
-        return baseVo;
+        return BaseVo.<Void>builder()
+                .code(401)
+                .time(new Date())
+                .message("未登录")
+                .type(ResponseType.WARNING)
+                .build();
     }
 
     /**
      * 无权限
      */
     public static BaseVo<Void> code403() {
-        BaseVo<Void> baseVo = new BaseVo<>();
-        baseVo.setCode(403);
-        baseVo.setMessage("无权限");
-        baseVo.setTime(new Date());
-        return baseVo;
+        return BaseVo.<Void>builder()
+                .code(403)
+                .time(new Date())
+                .message("无权限")
+                .type(ResponseType.WARNING)
+                .build();
     }
 
     /**
@@ -130,10 +132,12 @@ public class BaseVo<T> {
      * @param verificationResults 参数校验结果
      */
     public static BaseVo<List<VerificationResult>> code400(List<VerificationResult> verificationResults) {
-        BaseVo<List<VerificationResult>> baseVo = new BaseVo<>();
-        baseVo.setCode(400);
-        baseVo.setTime(new Date());
-        baseVo.setData(verificationResults);
-        return baseVo;
+        return BaseVo.<List<VerificationResult>>builder()
+                .code(400)
+                .time(new Date())
+                .data(verificationResults)
+                .message("参数错误")
+                .type(ResponseType.WARNING)
+                .build();
     }
 }

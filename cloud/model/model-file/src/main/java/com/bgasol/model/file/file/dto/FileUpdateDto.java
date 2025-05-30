@@ -5,10 +5,14 @@ import com.bgasol.model.file.file.entity.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "更新文件")
-@Data
 public class FileUpdateDto extends BaseUpdateDto<FileEntity> {
     @Override
     public FileEntity toEntity() {

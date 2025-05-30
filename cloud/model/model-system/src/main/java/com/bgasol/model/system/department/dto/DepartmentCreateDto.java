@@ -5,12 +5,16 @@ import com.bgasol.model.system.department.entity.DepartmentEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import static com.bgasol.model.system.department.mapstruct.DepartmentMapstruct.DEPARTMENT_MAPSTRUCT_IMPL;
 
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "新增部门Dto")
-@Data
 public class DepartmentCreateDto extends BaseCreateDto<DepartmentEntity> {
 
     @Schema(description = "部门名")

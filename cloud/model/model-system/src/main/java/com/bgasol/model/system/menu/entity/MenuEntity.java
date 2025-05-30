@@ -6,15 +6,19 @@ import com.bgasol.common.core.base.entity.BaseTreeEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "菜单实体")
 @TableName("t_menu")
-
 public class MenuEntity extends BaseTreeEntity<MenuEntity> {
 
     @Schema(description = "菜单名")

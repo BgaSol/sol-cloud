@@ -7,9 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "分页查询通用参数")
 public abstract class BasePageDto<T extends BaseEntity> {
     @NotNull(message = "页码不能为空")

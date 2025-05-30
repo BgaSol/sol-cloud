@@ -2,9 +2,13 @@ package com.bgasol.common.core.base.dto;
 
 import com.bgasol.common.core.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "实体创建通用参数")
 public abstract class BaseCreateDto<ENTITY extends BaseEntity> {
 

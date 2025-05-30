@@ -7,10 +7,14 @@ import com.bgasol.model.file.file.entity.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @Schema(description = "文件分页查询参数")
 public class FilePageDto extends BasePageDto<FileEntity> {
     @Schema(description = "文件名称")
