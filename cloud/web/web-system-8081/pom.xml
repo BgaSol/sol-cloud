@@ -10,7 +10,7 @@
     </parent>
 
     <properties>
-        <captcha.version>2.2.4</captcha.version>
+        <captcha.version>2.2.5</captcha.version>
     </properties>
     <artifactId>web-system-8081</artifactId>
     <dependencies>
