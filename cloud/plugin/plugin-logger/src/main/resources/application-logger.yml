@@ -5,7 +5,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.bgasol: DEBUG
+    com.bgasol: INFO
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){cyan} %clr(%-5level){yellow} %clr(%logger{36}){magenta} - %msg%n%throwable"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%throwable"

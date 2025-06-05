@@ -5,5 +5,5 @@ spring:
         enabled: false
 logging:
   level:
-    org.springframework.cloud.loadbalancer: DEBUG
-    org.springframework.cloud.client.loadbalancer: DEBUG
+    org.springframework.cloud.loadbalancer: INFO
+    org.springframework.cloud.client.loadbalancer: INFO
