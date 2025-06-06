@@ -29,11 +29,10 @@ public class SaSameTokenRefreshTask {
     @Scheduled(cron = "0 0 * * * ?")
     public void refreshToken() {
         RLock lock = redissonClient.getLock(LOCK_KEY);
-        if (lock.tryLock(0, 5, TimeUnit.SECONDS)) {
-            SaSameUtil.refreshToken();
-            log.info("Token refresh token successful");
-        } else {
-            log.info("Lock not acquired");
+        if (!lock.tryLock(0, 5, TimeUnit.SECONDS)) {
+            return;
         }
+        SaSameUtil.refreshToken();
+        log.info("Token refresh token successful");
     }
 }
