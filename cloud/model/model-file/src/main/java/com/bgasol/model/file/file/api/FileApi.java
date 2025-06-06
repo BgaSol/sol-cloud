@@ -6,6 +6,7 @@ import com.bgasol.model.file.file.dto.FileCreateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
         contextId = FileConfigValues.SERVICE_NAME + "-FileApi"
 )
 public interface FileApi {
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     BaseVo<FileEntity> save(FileCreateDto fileCreateDto);
 
     @DeleteMapping("/{ids}")
