@@ -9,6 +9,7 @@ import com.bgasol.web.system.menu.service.MenuService;
 import com.bgasol.web.system.permission.service.PermissionService;
 import com.bgasol.web.system.role.mapper.RoleMapper;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,13 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
 
     private final MenuService menuService;
     private final PermissionService permissionService;
+
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
 
     @Override
     public RoleMapper commonBaseMapper() {

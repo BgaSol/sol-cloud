@@ -5,11 +5,11 @@ import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.menu.entity.MenuType;
 import com.bgasol.model.system.user.entity.UserEntity;
-import com.bgasol.web.system.department.mapper.DepartmentMapper;
+import com.bgasol.web.system.department.service.DepartmentService;
 import com.bgasol.web.system.menu.service.MenuService;
-import com.bgasol.web.system.user.mapper.UserMapper;
 import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -21,11 +21,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SystemInitData implements ApplicationRunner {
-
-    private final UserMapper userMapper;
     private final UserService userService;
-
-    private final DepartmentMapper departmentMapper;
+    private final DepartmentService departService;
 
     @Value("${system.title}")
     private String systemTitle;
@@ -120,8 +117,8 @@ public class SystemInitData implements ApplicationRunner {
         department.setName(systemTitle);
         department.setDescription("系统必须要有一个部门，用于存放没有部门的用户");
         department.setId(SystemConfigValues.DEFAULT_DEPARTMENT_ID);
-        if (this.departmentMapper.selectById(department.getId()) == null) {
-            this.departmentMapper.insert(department);
+        if (ObjectUtils.isEmpty(this.departService.cacheSearch(department.getId()))) {
+            this.departService.save(department);
         }
     }
 
@@ -134,8 +131,8 @@ public class SystemInitData implements ApplicationRunner {
         admin.setLocked(false);
         admin.setDescription("超级管理员用户,无需配置权限,拥有系统最高权限");
         admin.setDepartmentId(SystemConfigValues.DEFAULT_DEPARTMENT_ID);
-        if (this.userMapper.selectById(admin.getId()) == null) {
-            this.userMapper.insert(admin);
+        if (ObjectUtils.isEmpty(this.userService.cacheSearch(admin.getId()))) {
+            this.userService.save(admin);
         }
     }
 }

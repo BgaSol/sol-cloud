@@ -11,6 +11,7 @@ import com.bgasol.web.file.file.service.OssService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,13 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
 
     private final OssService ossService;
     private final FileApi fileApi;
+
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
 
     @Override
     public ImageMapper commonBaseMapper() {

@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     private final UserMapper userMapper;
     private final DepartmentService departmentService;
     private final RoleService roleService;
+    private final RedissonClient redissonClient;
 
     @Value("${system.password.plaintext}")
     private boolean plaintextPassword;
@@ -39,6 +41,12 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     @Override
     public UserMapper commonBaseMapper() {
         return userMapper;
+    }
+
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
     }
 
     @Override
@@ -74,7 +82,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
     public UserEntity updatePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
         String userid = StpUtil.getLoginIdAsString();
-        UserEntity userEntity = this.userMapper.selectById(userid);
+        UserEntity userEntity = this.cacheSearch(userid);
         String userInputOldPassword = userPasswordUpdateDto.getOldPassword();
         // 对比新旧密码
         if (!userEntity.getPassword().equals(this.encodePassword(userInputOldPassword))) {

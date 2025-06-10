@@ -34,10 +34,5 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-websocket</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 </project>

@@ -5,6 +5,7 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.web.system.permission.mapper.PermissionMapper;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,19 +15,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class PermissionService extends BaseService<PermissionEntity, BasePageDto<PermissionEntity>> {
     private final PermissionMapper permissionMapper;
 
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
+
     @Override
     public PermissionMapper commonBaseMapper() {
         return permissionMapper;
     }
 
     public PermissionEntity init(PermissionEntity parentPermission) {
-        if (permissionMapper.selectById(parentPermission.getId()) == null) {
+        if (this.cacheSearch(parentPermission.getId()) == null) {
             this.save(parentPermission);
         } else {
             this.update(parentPermission);
         }
         for (PermissionEntity permission : parentPermission.getChildren()) {
-            if (permissionMapper.selectById(permission.getId()) == null) {
+            if (this.cacheSearch(parentPermission.getId()) == null) {
                 this.save(permission);
             } else {
                 this.update(permission);

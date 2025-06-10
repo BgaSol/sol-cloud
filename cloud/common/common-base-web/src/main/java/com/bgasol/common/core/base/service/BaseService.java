@@ -11,23 +11,35 @@ import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import com.bgasol.common.core.base.vo.PageVo;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.redisson.api.RMapCache;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Slf4j
+@Service
 public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends BasePageDto<ENTITY>> {
 
     abstract public MyBaseMapper<ENTITY> commonBaseMapper();
+
+    @Value("${spring.application.name}")
+    private String serviceName;
+
+    public RedissonClient commonBaseRedissonClient() {
+        return null;
+    }
 
     /**
      * 获取ENTITY实体类的Class对象
@@ -82,6 +94,13 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
         // 插入实体
         commonBaseMapper().insert(entity);
+        cacheDelete(entity.getId());
+        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+            // 清理缓存
+            String key = serviceName + ":" + entity.getClass().getName();
+            RMapCache<String, String> mapCache = commonBaseRedissonClient().getMapCache(key);
+            mapCache.remove(entity.getId());
+        }
         for (Field field : fields) {
             // 判断字段是否有注解JoinTable
             if (field.isAnnotationPresent(JoinTable.class)) {
@@ -122,7 +141,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @return 实体
      */
     public ENTITY update(ENTITY entity) {
-        ENTITY queryEntity = commonBaseMapper().selectById(entity.getId());
+        ENTITY queryEntity = cacheSearch(entity.getId());
         if (queryEntity == null) {
             throw new BaseException("更新失败，更新数据不存在");
         }
@@ -162,6 +181,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
         // 更新实体
         commonBaseMapper().update(entity, updateWrapper);
+        this.cacheDelete(entity.getId());
         // 反射获取entity的所有字段
         for (Field field : fields) {
             // 判断字段是否有注解
@@ -217,11 +237,13 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     public Integer delete(String id) {
-        ENTITY entity = commonBaseMapper().selectById(id);
+        ENTITY entity = this.cacheSearch(id);
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
-        return commonBaseMapper().deleteById(id);
+        int i = commonBaseMapper().deleteById(id);
+        this.cacheDelete(id);
+        return i;
     }
 
     /**
@@ -232,7 +254,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     @Transactional(readOnly = true)
     public ENTITY findById(String id) {
-        ENTITY entity = commonBaseMapper().selectById(id);
+        ENTITY entity = this.cacheSearch(id);
         if (ObjectUtils.isNotEmpty(entity)) {
             this.findOtherTable(entity);
         }
@@ -331,7 +353,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 每个Service需要做关联查询的，重写它就可以。
+     * Service需要做关联查询的，重写它就可以。
      * 子类如果有关联查询需求，可以继承重写该方法
      * 重写这个方法要注意性能问题
      *
@@ -341,12 +363,39 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 暂时什么也不用做
     }
 
+
+    private RMapCache<String, ENTITY> getRMapCache() {
+        String className = commonBaseEntityClass().getName();
+        String key = serviceName + ":" + className;
+        return commonBaseRedissonClient().getMapCache(key);
+    }
+
     /**
-     * 清空表内所有数据
+     * 缓存查询
      */
-    public void truncateTable() {
-        Class<ENTITY> entityClass = this.commonBaseEntityClass();
-        String tableName = entityClass.getAnnotation(Table.class).name();
-        this.commonBaseMapper().truncateTable(tableName);
+    public ENTITY cacheSearch(String id) {
+        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            return commonBaseMapper().selectById(id);
+        }
+        RMapCache<String, ENTITY> mapCache = getRMapCache();
+        if (mapCache.containsKey(id)) {
+            return mapCache.get(id);
+        } else {
+            ENTITY entity = commonBaseMapper().selectById(id);
+            // 不论是否为null,都要缓存 防止穿透
+            mapCache.put(id, entity, 10, TimeUnit.MINUTES);
+            return entity;
+        }
+    }
+
+    /**
+     * 删除缓存
+     */
+    public void cacheDelete(String id) {
+        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            return;
+        }
+        RMapCache<String, ENTITY> mapCache = getRMapCache();
+        mapCache.remove(id);
     }
 }

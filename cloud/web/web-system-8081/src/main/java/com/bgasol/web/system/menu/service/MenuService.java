@@ -11,6 +11,7 @@ import com.bgasol.web.system.menu.mapper.MenuMapper;
 import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,13 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
 
     @Lazy
     private final UserService userService;
+
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
 
     @Override
     public MenuMapper commonBaseMapper() {
@@ -84,7 +92,7 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
      * @return 初始化后的菜单实体
      */
     public MenuEntity init(MenuEntity menuEntity) {
-        if (menuMapper.selectById(menuEntity.getId()) == null) {
+        if (ObjectUtils.isEmpty(cacheSearch(menuEntity.getId()))) {
             this.save(menuEntity);
         } else {
             this.update(menuEntity);
@@ -102,7 +110,7 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
         List<MenuEntity> children = menuEntity.getChildren();
         if (ObjectUtils.isNotEmpty(children)) {
             for (MenuEntity child : children) {
-                if (menuMapper.selectById(child.getId()) == null) {
+                if (ObjectUtils.isEmpty(cacheSearch(child.getId()))) {
                     this.save(child);
                 } else {
                     this.update(child);

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,13 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
     private final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 
     private final OssService ossService;
+
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
 
     @Override
     public FileMapper commonBaseMapper() {

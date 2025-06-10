@@ -10,6 +10,7 @@ import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,13 @@ public class DepartmentService extends BaseService<DepartmentEntity, BasePageDto
 
     @Lazy
     private final UserService userService;
+
+    private final RedissonClient redissonClient;
+
+    @Override
+    public RedissonClient commonBaseRedissonClient() {
+        return redissonClient;
+    }
 
     @Override
     public DepartmentMapper commonBaseMapper() {
