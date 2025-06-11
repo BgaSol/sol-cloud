@@ -19,7 +19,7 @@ CREATE TABLE t_file
 );
 
 -- 为文件表添加索引
-CREATE UNIQUE INDEX idx_file_hash ON t_file(hash);
+CREATE INDEX idx_file_hash ON t_file(hash);
 CREATE INDEX idx_file_name ON t_file(name);
 CREATE INDEX idx_file_status ON t_file(status);
 CREATE INDEX idx_file_suffix ON t_file(suffix);

@@ -120,8 +120,8 @@ CREATE TABLE t_user
 
 -- 为用户表添加索引
 CREATE UNIQUE INDEX idx_user_username ON t_user(username);
-CREATE UNIQUE INDEX idx_user_email ON t_user(email);
-CREATE UNIQUE INDEX idx_user_phone ON t_user(phone);
+CREATE INDEX idx_user_email ON t_user(email);
+CREATE INDEX idx_user_phone ON t_user(phone);
 CREATE INDEX idx_user_department_id ON t_user(department_id);
 CREATE INDEX idx_user_status ON t_user(status);
 
