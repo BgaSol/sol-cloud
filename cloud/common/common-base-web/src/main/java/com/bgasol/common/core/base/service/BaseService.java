@@ -94,7 +94,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
         // 插入实体
         commonBaseMapper().insert(entity);
-        cacheDelete(entity.getId());
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
             // 清理缓存
             String key = serviceName + ":" + entity.getClass().getName();
@@ -141,6 +140,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @return 实体
      */
     public ENTITY update(ENTITY entity) {
+        this.cacheDelete(entity.getId());
         ENTITY queryEntity = cacheSearch(entity.getId());
         if (queryEntity == null) {
             throw new BaseException("更新失败，更新数据不存在");
