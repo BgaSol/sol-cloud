@@ -17,7 +17,7 @@ import java.util.Date;
 @SuperBuilder
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class BaseEntity implements Serializable {
+public class BaseEntity implements Serializable {
     @Id
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     @OrderBy(asc = true, sort = 33)

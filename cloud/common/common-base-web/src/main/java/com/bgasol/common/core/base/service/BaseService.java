@@ -370,6 +370,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         return commonBaseRedissonClient().getMapCache(key);
     }
 
+    private static final String NULL_PLACEHOLDER = "null";
+
     /**
      * 缓存查询
      */
@@ -379,11 +381,20 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
         RMapCache<String, ENTITY> mapCache = getRMapCache();
         if (mapCache.containsKey(id)) {
-            return mapCache.get(id);
+            ENTITY entity = mapCache.get(id);
+            if (entity.getId().equals(NULL_PLACEHOLDER)) {
+                return null;
+            } else {
+                return entity;
+            }
         } else {
             ENTITY entity = commonBaseMapper().selectById(id);
-            // 不论是否为null,都要缓存 防止穿透
-            mapCache.put(id, entity, 10, TimeUnit.MINUTES);
+            // 如果是null就存储一个id为"null"的字符串做标记 防止穿透
+            if (entity == null) {
+                mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), 10, TimeUnit.MINUTES);
+            } else {
+                mapCache.put(id, entity, 10, TimeUnit.MINUTES);
+            }
             return entity;
         }
     }
