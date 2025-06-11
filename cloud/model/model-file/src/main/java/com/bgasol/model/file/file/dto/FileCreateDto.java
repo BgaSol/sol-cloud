@@ -27,7 +27,8 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
 
     @Override
     public FileEntity toEntity() {
-        throw new UnsupportedOperationException("方法未实现");
+        FileEntity fileEntity = new FileEntity();
+        return super.toEntity(fileEntity);
     }
 
     public FileCreateDto(String fileName, byte[] bytes, String mediaType) {

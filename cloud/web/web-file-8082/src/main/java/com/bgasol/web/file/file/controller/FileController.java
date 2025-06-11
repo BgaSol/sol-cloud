@@ -2,7 +2,6 @@ package com.bgasol.web.file.file.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
-import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.model.file.file.dto.FileCreateDto;
@@ -22,7 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -58,12 +56,16 @@ public class FileController extends BaseController<
     @Operation(summary = "保存|上传文件", operationId = "saveFile")
     @SaCheckPermission("file:save")
     public BaseVo<FileEntity> save(@Valid FileCreateDto fileCreateDto) {
-        FileEntity save = null;
-        try {
-            save = fileService.save(fileCreateDto.getUploadFile());
-        } catch (IOException e) {
-            throw new BaseException("文件上传失败");
-        }
+        FileEntity save = fileService.save(fileCreateDto.getUploadFile(), fileCreateDto.toEntity());
+        return BaseVo.success(save, "文件上传成功");
+    }
+
+    @Override
+    @PostMapping
+    @Operation(summary = "更新|上传文件", operationId = "updateFile")
+    @SaCheckPermission("file:update")
+    public BaseVo<FileEntity> update(FileUpdateDto fileUpdateDto) {
+        FileEntity save = fileService.update(fileUpdateDto.getUploadFile(), fileUpdateDto.toEntity());
         return BaseVo.success(save, "文件上传成功");
     }
 

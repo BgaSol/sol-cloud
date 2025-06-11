@@ -75,13 +75,42 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
 
     /**
      * 通过文件流保存文件
-     *
-     * @param multipartFile 文件对象
-     * @return 文件实体
      */
-    public FileEntity save(MultipartFile multipartFile) throws IOException {
-        // 初始化文件实体
-        FileEntity fileEntity = new FileEntity();
+    public FileEntity save(MultipartFile multipartFile, FileEntity fileEntity) {
+        if (ObjectUtils.isEmpty(multipartFile)) {
+            return this.save(fileEntity);
+        }
+        // 获取文件元数据
+        getFileMateDate(multipartFile, fileEntity);
+        // 保存文件实体
+        fileEntity = this.save(fileEntity);
+        // 上传文件
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), inputStream, fileEntity.getSize(), fileEntity.getType());
+        } catch (IOException e) {
+            throw new BaseException("上传文件失败");
+        }
+        return fileEntity;
+    }
+
+    public FileEntity update(MultipartFile multipartFile, FileEntity fileEntity) {
+        if (ObjectUtils.isEmpty(multipartFile)) {
+            return this.update(fileEntity);
+        }
+        // 获取文件元数据
+        getFileMateDate(multipartFile, fileEntity);
+        // 更新文件实体
+        fileEntity = this.update(fileEntity);
+        // 上传文件
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), inputStream, fileEntity.getSize(), fileEntity.getType());
+        } catch (IOException e) {
+            throw new BaseException("上传文件失败");
+        }
+        return fileEntity;
+    }
+
+    public void getFileMateDate(MultipartFile multipartFile, FileEntity fileEntity) {
         fileEntity.setName(multipartFile.getOriginalFilename());
         fileEntity.setSize(multipartFile.getSize());
         fileEntity.setType(multipartFile.getContentType());
@@ -89,13 +118,11 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         // 获取文件后缀
         fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
         // 获取文件HASH
-        fileEntity.setHash(this.getFileHash(multipartFile.getInputStream()));
-
-        // 保存文件实体
-        fileEntity = this.save(fileEntity);
-        // 上传文件
-        ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), multipartFile.getInputStream(), fileEntity.getSize(), fileEntity.getType());
-        return fileEntity;
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            fileEntity.setHash(this.getFileHash(inputStream));
+        } catch (IOException e) {
+            throw new BaseException("获取文件HASH失败");
+        }
     }
 
     /**
