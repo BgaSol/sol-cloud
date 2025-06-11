@@ -3,9 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * 创建文件
+ * 更新文件
  */
-export type FileCreateDto = {
+export type FileUpdateDto = {
+    /**
+     * 主键
+     */
+    id: string;
     /**
      * 排序
      */

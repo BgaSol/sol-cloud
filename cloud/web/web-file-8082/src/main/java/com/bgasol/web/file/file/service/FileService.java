@@ -11,14 +11,12 @@ import jakarta.activation.MimetypesFileTypeMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -45,32 +43,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
     @Override
     public FileMapper commonBaseMapper() {
         return fileMapper;
-    }
-
-    /**
-     * 从本地路径保存文件
-     *
-     * @param file 文件
-     * @return 文件实体
-     */
-    public FileEntity save(File file) throws IOException {
-
-        // 初始化文件实体
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setName(file.getName());
-        fileEntity.setSize(file.length());
-        fileEntity.setType(fileTypeMap.getContentType(file.getName()));
-        fileEntity.setBucket(minioConfig.getBucket());
-        // 获取文件后缀
-        fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
-        // 获取文件HASH
-        fileEntity.setHash(this.getFileHash(FileUtils.openInputStream(file)));
-
-        // 保存文件实体
-        fileEntity = this.save(fileEntity);
-        // 上传文件
-        ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), FileUtils.openInputStream(file), fileEntity.getSize(), fileEntity.getType());
-        return fileEntity;
     }
 
     /**
@@ -110,19 +82,29 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         return fileEntity;
     }
 
+    /**
+     * 获取文件元数据
+     * 若entity中没有 文件名、文件类型、文件后缀 则从文件流中获取
+     */
     public void getFileMateDate(MultipartFile multipartFile, FileEntity fileEntity) {
-        fileEntity.setName(multipartFile.getOriginalFilename());
+        if (ObjectUtils.isEmpty(fileEntity.getName())) {
+            fileEntity.setName(multipartFile.getOriginalFilename());
+        }
+        if (ObjectUtils.isEmpty(fileEntity.getType())) {
+            fileEntity.setType(multipartFile.getContentType());
+        }
+        if (ObjectUtils.isEmpty(fileEntity.getSuffix())) {
+            fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
+        }
+
         fileEntity.setSize(multipartFile.getSize());
-        fileEntity.setType(multipartFile.getContentType());
-        fileEntity.setBucket(minioConfig.getBucket());
-        // 获取文件后缀
-        fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
         // 获取文件HASH
         try (InputStream inputStream = multipartFile.getInputStream()) {
             fileEntity.setHash(this.getFileHash(inputStream));
         } catch (IOException e) {
             throw new BaseException("获取文件HASH失败");
         }
+        fileEntity.setBucket(minioConfig.getBucket());
     }
 
     /**

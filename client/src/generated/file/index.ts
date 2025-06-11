@@ -17,6 +17,7 @@ export { BaseVoPageVoImageEntity } from './models/BaseVoPageVoImageEntity';
 export type { FileCreateDto } from './models/FileCreateDto';
 export type { FileEntity } from './models/FileEntity';
 export type { FilePageDto } from './models/FilePageDto';
+export type { FileUpdateDto } from './models/FileUpdateDto';
 export type { ImageCreateDto } from './models/ImageCreateDto';
 export type { ImageEntity } from './models/ImageEntity';
 export type { ImagePageDto } from './models/ImagePageDto';

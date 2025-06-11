@@ -9,6 +9,7 @@ import type { BaseVoPageVoFileEntity } from '../models/BaseVoPageVoFileEntity';
 import type { BaseVoPageVoImageEntity } from '../models/BaseVoPageVoImageEntity';
 import type { FileCreateDto } from '../models/FileCreateDto';
 import type { FilePageDto } from '../models/FilePageDto';
+import type { FileUpdateDto } from '../models/FileUpdateDto';
 import type { ImageCreateDto } from '../models/ImageCreateDto';
 import type { ImagePageDto } from '../models/ImagePageDto';
 import type { ImageUpdateDto } from '../models/ImageUpdateDto';
@@ -57,19 +58,20 @@ export class Service {
         });
     }
     /**
-     * 分页查询图片
-     * @param requestBody
-     * @returns BaseVoPageVoImageEntity OK
+     * 更新|上传文件
+     * @param fileUpdateDto
+     * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
-    public static findPageImage(
-        requestBody: ImagePageDto,
-    ): CancelablePromise<BaseVoPageVoImageEntity> {
+    public static updateFile(
+        fileUpdateDto: FileUpdateDto,
+    ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
-            method: 'POST',
-            url: '/image/page',
-            body: requestBody,
-            mediaType: 'application/json',
+            method: 'PUT',
+            url: '/file',
+            query: {
+                'fileUpdateDto': fileUpdateDto,
+            },
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,
@@ -91,6 +93,26 @@ export class Service {
             query: {
                 'fileCreateDto': fileCreateDto,
             },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 分页查询图片
+     * @param requestBody
+     * @returns BaseVoPageVoImageEntity OK
+     * @throws ApiError
+     */
+    public static findPageImage(
+        requestBody: ImagePageDto,
+    ): CancelablePromise<BaseVoPageVoImageEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/image/page',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,

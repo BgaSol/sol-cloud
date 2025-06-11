@@ -61,7 +61,7 @@ public class FileController extends BaseController<
     }
 
     @Override
-    @PostMapping
+    @PutMapping
     @Operation(summary = "更新|上传文件", operationId = "updateFile")
     @SaCheckPermission("file:update")
     public BaseVo<FileEntity> update(FileUpdateDto fileUpdateDto) {
