@@ -34,7 +34,7 @@ public class PermissionService extends BaseService<PermissionEntity, BasePageDto
             this.update(parentPermission);
         }
         for (PermissionEntity permission : parentPermission.getChildren()) {
-            if (this.cacheSearch(parentPermission.getId()) == null) {
+            if (this.cacheSearch(permission.getId()) == null) {
                 this.save(permission);
             } else {
                 this.update(permission);

@@ -140,7 +140,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @return 实体
      */
     public ENTITY update(ENTITY entity) {
-        this.cacheDelete(entity.getId());
         ENTITY queryEntity = cacheSearch(entity.getId());
         if (queryEntity == null) {
             throw new BaseException("更新失败，更新数据不存在");
