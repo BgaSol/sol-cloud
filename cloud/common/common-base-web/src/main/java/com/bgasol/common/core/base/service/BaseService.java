@@ -23,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
@@ -265,6 +264,38 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         return entity;
     }
 
+    @Transactional(readOnly = true)
+    public List<ENTITY> findIds(String... ids) {
+        // 优先从缓存查询结果
+        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            return commonBaseMapper().selectByIds(Arrays.asList(ids));
+        }
+
+        // 先获取缓存中的结果
+        RMapCache<String, ENTITY> mapCache = getRMapCache();
+        Map<String, ENTITY> cacheList = mapCache.getAll(Set.of(ids));
+
+        // 缓存中没有的查询数据库
+        List<String> noneCacheIds = Arrays.stream(ids).filter(id -> !cacheList.containsKey(id)).toList();
+        List<ENTITY> entities = commonBaseMapper().selectByIds(noneCacheIds);
+
+        // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
+        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(id -> id,
+                id -> entities.stream().filter(entity -> entity.getId().equals(id)).findFirst().orElse(
+                        (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build()))
+        );
+        // 将数据库查询的结果，缓存到redis中
+        mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
+
+
+        // 合并缓存和数据库的结果 （将防止缓存穿透的空对象扔掉）
+        List<ENTITY> result = new ArrayList<>(cacheList.values().stream().filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER)).toList());
+        result.addAll(entities);
+
+        this.findOtherTable(result);
+        return result;
+    }
+
     /**
      * 分页查询
      *
@@ -373,7 +404,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     @Transactional(readOnly = true)
     public void findOtherTable(List<ENTITY> list) {
-        if (list == null || list.isEmpty()) {
+        if (ObjectUtils.isEmpty(list)) {
             return;
         }
 
@@ -431,10 +462,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 删除缓存
      */
     public void cacheDelete(String id) {
-        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
-            return;
+        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+            RMapCache<String, ENTITY> mapCache = getRMapCache();
+            mapCache.remove(id);
         }
-        RMapCache<String, ENTITY> mapCache = getRMapCache();
-        mapCache.remove(id);
     }
 }
