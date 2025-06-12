@@ -25,7 +25,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
+import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 
 @Transactional
 @Slf4j
@@ -92,9 +95,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
+        // 删除缓存
+        this.cacheDelete(entity.getId());
         // 插入实体
         commonBaseMapper().insert(entity);
-        this.cacheDelete(entity.getId());
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
             // 清理缓存
             String key = serviceName + ":" + entity.getClass().getName();
@@ -179,9 +183,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
+        // 删除缓存
+        this.cacheDelete(entity.getId());
         // 更新实体
         commonBaseMapper().update(entity, updateWrapper);
-        this.cacheDelete(entity.getId());
         // 反射获取entity的所有字段
         for (Field field : fields) {
             // 判断字段是否有注解
@@ -241,9 +246,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
-        int i = commonBaseMapper().deleteById(id);
         this.cacheDelete(id);
-        return i;
+        return commonBaseMapper().deleteById(id);
     }
 
     /**
@@ -275,6 +279,13 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 执行分页查询
         Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, pageDto.getQueryWrapper());
 
+        // 缓存查询结果
+        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+            RMapCache<String, ENTITY> mapCache = getRMapCache();
+            mapCache.putAll(
+                    entityPage.getRecords().stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
+                    randomizeTtl(), DEFAULT_TIME_UNIT);
+        }
         // 查询关联的数据
         this.findOtherTable(entityPage.getRecords());
 
@@ -309,6 +320,14 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             return this.findTreeAll(null, queryWrapper);
         }
         List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
+
+        // 缓存查询结果
+        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+            RMapCache<String, ENTITY> mapCache = getRMapCache();
+            mapCache.putAll(
+                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
+                    randomizeTtl(), DEFAULT_TIME_UNIT);
+        }
         this.findOtherTable(entities);
         return entities;
     }
@@ -330,6 +349,15 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             queryWrapper.eq("parent_id", parentId);
         }
         List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
+
+        // 缓存查询结果
+        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+            RMapCache<String, ENTITY> mapCache = getRMapCache();
+            mapCache.putAll(
+                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
+                    randomizeTtl(), DEFAULT_TIME_UNIT);
+        }
+
         this.findOtherTable(entities);
         for (ENTITY entity : entities) {
             BaseTreeEntity treeEntity = (BaseTreeEntity) entity;
@@ -391,9 +419,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             ENTITY entity = commonBaseMapper().selectById(id);
             // 如果是null就存储一个id为"null"的字符串做标记 防止穿透
             if (entity == null) {
-                mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), 10, TimeUnit.MINUTES);
+                mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), randomizeTtl(), DEFAULT_TIME_UNIT);
             } else {
-                mapCache.put(id, entity, 10, TimeUnit.MINUTES);
+                mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);
             }
             return entity;
         }
