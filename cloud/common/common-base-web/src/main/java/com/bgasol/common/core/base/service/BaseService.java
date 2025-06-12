@@ -94,6 +94,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
         // 插入实体
         commonBaseMapper().insert(entity);
+        this.cacheDelete(entity.getId());
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
             // 清理缓存
             String key = serviceName + ":" + entity.getClass().getName();
