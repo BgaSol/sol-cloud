@@ -94,16 +94,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
-        // 删除缓存
-        this.cacheDelete(entity.getId());
         // 插入实体
         commonBaseMapper().insert(entity);
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
-            // 清理缓存
-            String key = serviceName + ":" + entity.getClass().getName();
-            RMapCache<String, String> mapCache = commonBaseRedissonClient().getMapCache(key);
-            mapCache.remove(entity.getId());
-        }
+        // 删除缓存
+        this.cacheDelete(entity.getId());
         for (Field field : fields) {
             // 判断字段是否有注解JoinTable
             if (field.isAnnotationPresent(JoinTable.class)) {
@@ -182,10 +176,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
-        // 删除缓存
-        this.cacheDelete(entity.getId());
         // 更新实体
         commonBaseMapper().update(entity, updateWrapper);
+        // 删除缓存
+        this.cacheDelete(entity.getId());
         // 反射获取entity的所有字段
         for (Field field : fields) {
             // 判断字段是否有注解
@@ -245,8 +239,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
+        int i = commonBaseMapper().deleteById(id);
         this.cacheDelete(id);
-        return commonBaseMapper().deleteById(id);
+        return i;
     }
 
     /**
