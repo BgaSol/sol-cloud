@@ -263,6 +263,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public List<ENTITY> findIds(String... ids) {
         // 优先从缓存查询结果
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            if (ObjectUtils.isEmpty(ids)) {
+                return new ArrayList<>();
+            }
             return commonBaseMapper().selectByIds(Arrays.asList(ids));
         }
 
@@ -272,8 +275,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
         // 缓存中没有的查询数据库
         List<String> noneCacheIds = Arrays.stream(ids).filter(id -> !cacheList.containsKey(id)).toList();
-        List<ENTITY> entities = commonBaseMapper().selectByIds(noneCacheIds);
-
+        List<ENTITY> entities;
+        if (ObjectUtils.isEmpty(noneCacheIds)) {
+            entities = new ArrayList<>();
+        } else {
+            entities = commonBaseMapper().selectByIds(noneCacheIds);
+        }
         // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
         Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(id -> id,
                 id -> entities.stream().filter(entity -> entity.getId().equals(id)).findFirst().orElse(
@@ -281,7 +288,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         );
         // 将数据库查询的结果，缓存到redis中
         mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
-
 
         // 合并缓存和数据库的结果 （将防止缓存穿透的空对象扔掉）
         List<ENTITY> result = new ArrayList<>(cacheList.values().stream().filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER)).toList());
