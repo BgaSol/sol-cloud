@@ -18,11 +18,11 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,14 +48,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      *
      * @return ENTITY实体类的Class对象
      */
+    @SuppressWarnings("unchecked")
     public Class<ENTITY> commonBaseEntityClass() {
-        Class<?> cls = getClass();
-        while (!cls.getSuperclass().equals(BaseService.class)) {
-            cls = cls.getSuperclass();
-        }
-        ParameterizedType type = (ParameterizedType) cls.getGenericSuperclass();
-        @SuppressWarnings("unchecked") Class<ENTITY> entityClass = (Class<ENTITY>) type.getActualTypeArguments()[0];
-        return entityClass;
+        return (Class<ENTITY>) ResolvableType.forClass(getClass()).as(BaseService.class).getGeneric(0).resolve();
     }
 
     /**
