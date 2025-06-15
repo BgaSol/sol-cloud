@@ -8,6 +8,7 @@ CREATE TABLE t_file
     update_time TIMESTAMP(6),
     description VARCHAR(255),
     deleted     INTEGER,
+
     name        VARCHAR(255), -- 文件名称
     url         VARCHAR(255), -- 文件地址
     size        BIGINT,       -- 文件大小
@@ -21,10 +22,6 @@ CREATE TABLE t_file
 -- 为文件表添加索引
 CREATE INDEX idx_file_hash ON t_file(hash);
 CREATE INDEX idx_file_name ON t_file(name);
-CREATE INDEX idx_file_status ON t_file(status);
-CREATE INDEX idx_file_suffix ON t_file(suffix);
-CREATE INDEX idx_file_bucket ON t_file(bucket);
-CREATE INDEX idx_file_source ON t_file(source);
 
 -- 图片表
 CREATE TABLE t_image
@@ -36,6 +33,7 @@ CREATE TABLE t_image
     update_time TIMESTAMP(6),
     description VARCHAR(255),
     deleted     INTEGER,
+
     name        VARCHAR(255), -- 图片名称
     width       INTEGER,      -- 图片宽度
     height      INTEGER,      -- 图片高度
@@ -45,4 +43,3 @@ CREATE TABLE t_image
 -- 为图片表添加索引
 CREATE INDEX idx_image_file_id ON t_image(file_id);
 CREATE INDEX idx_image_name ON t_image(name);
-CREATE INDEX idx_image_dimensions ON t_image(width, height); 

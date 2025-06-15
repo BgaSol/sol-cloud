@@ -8,17 +8,14 @@ CREATE TABLE t_permission
     update_time   TIMESTAMP(6),
     description   VARCHAR(255),
     deleted       INTEGER,
+
     parent_id     VARCHAR(255),
     name          VARCHAR(255), -- 权限名
     code          VARCHAR(255), -- 权限编码
     path          VARCHAR(255), -- 权限路径
     micro_service VARCHAR(255)  -- 微服务名
 );
-
--- 为权限表添加索引
-CREATE INDEX idx_permission_code ON t_permission(code);
 CREATE INDEX idx_permission_parent_id ON t_permission(parent_id);
-CREATE INDEX idx_permission_path ON t_permission(path);
 
 -- 菜单表
 CREATE TABLE t_menu
@@ -30,6 +27,7 @@ CREATE TABLE t_menu
     update_time      TIMESTAMP(6),
     description      VARCHAR(255),
     deleted          INTEGER,
+
     parent_id        VARCHAR(255),
     name             VARCHAR(255), -- 菜单名
     status           INTEGER,      -- 菜单状态
@@ -45,11 +43,7 @@ CREATE TABLE t_menu
     is_hidden        BOOLEAN,      -- 是否隐藏（不显示）
     menu_group       VARCHAR(255)  -- 菜单组
 );
-
--- 为菜单表添加索引
 CREATE INDEX idx_menu_parent_id ON t_menu(parent_id);
-CREATE INDEX idx_menu_route_path ON t_menu(route_path);
-CREATE INDEX idx_menu_status ON t_menu(status);
 
 -- 角色表
 CREATE TABLE t_role
@@ -61,16 +55,13 @@ CREATE TABLE t_role
     update_time TIMESTAMP(6),
     description VARCHAR(255),
     deleted     INTEGER,
+
     parent_id   VARCHAR(255),
     name        VARCHAR(255), -- 角色名
     code        VARCHAR(255), -- 角色编码
     status      INTEGER       -- 角色状态
 );
-
--- 为角色表添加索引
-CREATE UNIQUE INDEX idx_role_code ON t_role(code);
 CREATE INDEX idx_role_parent_id ON t_role(parent_id);
-CREATE INDEX idx_role_status ON t_role(status);
 
 -- 部门表
 CREATE TABLE t_department
@@ -82,6 +73,7 @@ CREATE TABLE t_department
     update_time TIMESTAMP(6),
     description VARCHAR(255),
     deleted     INTEGER,
+
     parent_id   VARCHAR(255),
     name        VARCHAR(255), -- 部门名
     code        VARCHAR(255), -- 部门编码
@@ -91,11 +83,7 @@ CREATE TABLE t_department
     html        VARCHAR(255), -- 部门备注HTML
     icon_id     VARCHAR(255)  -- 部门图标id 关联图片id
 );
-
--- 为部门表添加索引
-CREATE UNIQUE INDEX idx_department_code ON t_department(code);
 CREATE INDEX idx_department_parent_id ON t_department(parent_id);
-CREATE INDEX idx_department_domain ON t_department(domain);
 
 -- 用户表
 CREATE TABLE t_user
@@ -107,6 +95,7 @@ CREATE TABLE t_user
     update_time   TIMESTAMP(6),
     description   VARCHAR(255),
     deleted       INTEGER,
+
     username      VARCHAR(255), -- 用户名
     password      VARCHAR(255), -- 密码
     nickname      VARCHAR(255), -- 昵称
@@ -117,11 +106,7 @@ CREATE TABLE t_user
     locked        BOOLEAN,      -- 账户锁定
     department_id VARCHAR(255)  -- 角色
 );
-
--- 为用户表添加索引
 CREATE UNIQUE INDEX idx_user_username ON t_user(username);
-CREATE INDEX idx_user_email ON t_user(email);
-CREATE INDEX idx_user_phone ON t_user(phone);
 CREATE INDEX idx_user_department_id ON t_user(department_id);
 CREATE INDEX idx_user_status ON t_user(status);
 
@@ -131,10 +116,7 @@ CREATE TABLE c_role_menu
     menu_id VARCHAR(255) NOT NULL,
     role_id VARCHAR(255) NOT NULL
 );
-
--- 为关联表添加索引
-CREATE INDEX idx_role_menu_menu_id ON c_role_menu(menu_id);
-CREATE INDEX idx_role_menu_role_id ON c_role_menu(role_id);
+CREATE INDEX idx_role_menu_role_id_menu_id ON c_role_menu(role_id, menu_id);
 
 -- 角色权限关联表
 CREATE TABLE c_role_permission
@@ -142,10 +124,7 @@ CREATE TABLE c_role_permission
     permission_id VARCHAR(255) NOT NULL,
     role_id       VARCHAR(255) NOT NULL
 );
-
--- 为关联表添加索引
-CREATE INDEX idx_role_permission_permission_id ON c_role_permission(permission_id);
-CREATE INDEX idx_role_permission_role_id ON c_role_permission(role_id);
+CREATE UNIQUE INDEX idx_role_permission_role_id_permission_id ON c_role_permission(role_id, permission_id);
 
 -- 用户角色关联表
 CREATE TABLE c_user_role
@@ -153,7 +132,4 @@ CREATE TABLE c_user_role
     role_id VARCHAR(255) NOT NULL,
     user_id VARCHAR(255) NOT NULL
 );
-
--- 为关联表添加索引
-CREATE INDEX idx_user_role_role_id ON c_user_role(role_id);
-CREATE INDEX idx_user_role_user_id ON c_user_role(user_id); 
+CREATE UNIQUE INDEX idx_user_role_user_id_role_id ON c_user_role(user_id, role_id);
