@@ -113,23 +113,25 @@ CREATE INDEX idx_user_status ON t_user(status);
 -- 角色菜单关联表
 CREATE TABLE c_role_menu
 (
-    menu_id VARCHAR(255) NOT NULL,
-    role_id VARCHAR(255) NOT NULL
+    role_id VARCHAR(255) NOT NULL,
+    menu_id VARCHAR(255) NOT NULL
 );
-CREATE INDEX idx_role_menu_role_id_menu_id ON c_role_menu(role_id, menu_id);
+CREATE INDEX idx_role_menu_role_id ON c_role_menu(role_id);
+CREATE INDEX idx_role_menu_menu_id ON c_role_menu(menu_id);
 
 -- 角色权限关联表
 CREATE TABLE c_role_permission
 (
-    permission_id VARCHAR(255) NOT NULL,
-    role_id       VARCHAR(255) NOT NULL
-);
-CREATE UNIQUE INDEX idx_role_permission_role_id_permission_id ON c_role_permission(role_id, permission_id);
+    role_id       VARCHAR(255) NOT NULL,
+    permission_id VARCHAR(255) NOT NULL
+CREATE INDEX idx_role_permission_role_id ON c_role_permission(role_id);
+CREATE INDEX idx_role_permission_permission_id ON c_role_permission(permission_id);
 
 -- 用户角色关联表
 CREATE TABLE c_user_role
 (
-    role_id VARCHAR(255) NOT NULL,
-    user_id VARCHAR(255) NOT NULL
+    user_id VARCHAR(255) NOT NULL,
+    role_id VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX idx_user_role_user_id_role_id ON c_user_role(user_id, role_id);
+CREATE INDEX idx_user_role_user_id ON c_user_role(user_id);
+CREATE INDEX idx_user_role_role_id ON c_user_role(role_id);
