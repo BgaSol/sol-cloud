@@ -124,6 +124,7 @@ CREATE TABLE c_role_permission
 (
     role_id       VARCHAR(255) NOT NULL,
     permission_id VARCHAR(255) NOT NULL
+);
 CREATE INDEX idx_role_permission_role_id ON c_role_permission(role_id);
 CREATE INDEX idx_role_permission_permission_id ON c_role_permission(permission_id);
 
