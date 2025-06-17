@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     build:
       context: ../cloud
-      dockerfile: 9527.gateway.Dockerfile
+      dockerfile: gateway.9527.Dockerfile
     ports:
       - "9527:9527"
     networks:
