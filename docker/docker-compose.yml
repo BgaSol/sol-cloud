@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     build:
       context: ../cloud
-      dockerfile: 8081.web.system.Dockerfile
+      dockerfile: web.system.8081.Dockerfile
     ports:
       - "8081:8081"
     environment:
@@ -73,7 +73,7 @@ services:
     restart: unless-stopped
     build:
       context: ../cloud
-      dockerfile: 8082.web.file.Dockerfile
+      dockerfile: web.file.8082.Dockerfile
     ports:
       - "8082:8082"
     environment:
