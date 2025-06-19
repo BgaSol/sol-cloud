@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -60,10 +61,15 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         JsonNode jsonNode = objectMapper.readTree(payload);
         String type = jsonNode.get("type").asText();
-
+        if ("ping".equals(type)) {
+            // 处理心跳消息
+            session.sendMessage(new TextMessage("{\"type\":\"pong\"}"));
+            return;
+        }
         for (MyMessageHandler handler : myMessageHandlers) {
             if (handler.support(type)) {
                 handler.handle(session, payload);
+                session.sendMessage(new TextMessage("{\"type\":\"pong\"}"));
                 return;
             }
         }
@@ -92,9 +98,18 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                         send = false;
                     }
                 }
+                int chunkSize = 10000;
                 if (send) {
                     try {
-                        session.sendMessage(new TextMessage(msg.getJson()));
+                        UUID uuid = UUID.randomUUID();
+                        int size = msg.getJson().length() / chunkSize + (msg.getJson().length() % chunkSize == 0 ? 0 : 1);
+                        // 分块发送消息
+                        for (int index = 0; index < size; index++) {
+                            int start = index * chunkSize;
+                            int end = Math.min(start + chunkSize, msg.getJson().length());
+                            String chunk = msg.getJson().substring(start, end);
+                            session.sendMessage(new TextMessage("#(" + msg.getType() + ")#(" + uuid + ")#(" + size + ")#(" + index + ")" + chunk));
+                        }
                     } catch (IOException e) {
                         sessions.remove(sessionId);
                         throw new RuntimeException(e);
