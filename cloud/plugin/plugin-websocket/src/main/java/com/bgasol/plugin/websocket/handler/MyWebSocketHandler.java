@@ -2,6 +2,8 @@ package com.bgasol.plugin.websocket.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,6 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MyWebSocketHandler extends TextWebSocketHandler {
     private final RedissonClient redissonClient;
+    private final List<MyMessageHandler> myMessageHandlers;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -49,6 +54,23 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session.getId());
     }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String payload = message.getPayload();
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        String type = jsonNode.get("type").asText();
+
+        for (MyMessageHandler handler : myMessageHandlers) {
+            if (handler.support(type)) {
+                handler.handle(session, payload);
+                return;
+            }
+        }
+
+        log.warn("未找到消息类型 {} 的处理器", type);
+    }
+
 
     @PostConstruct
     public void subscribeToTopic() {
