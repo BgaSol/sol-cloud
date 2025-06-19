@@ -24,7 +24,12 @@
         </dependency>
         <dependency>
             <groupId>com.bgasol</groupId>
-            <artifactId>plugin-redis</artifactId>
+            <artifactId>plugin-sa-token</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bgasol</groupId>
+            <artifactId>plugin-swagger</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>

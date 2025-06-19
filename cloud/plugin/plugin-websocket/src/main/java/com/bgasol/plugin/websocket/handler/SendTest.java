@@ -1,5 +1,6 @@
-//package com.bgasol.plugin.redis.config;
+//package com.bgasol.plugin.websocket.handler;
 //
+//import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.redisson.api.RedissonClient;
@@ -14,9 +15,10 @@
 //public class SendTest {
 //    private final RedissonClient redissonClient;
 //
-//    @Scheduled(cron = "0/5 * * * * ?")
+//    @Scheduled(cron = "0/1 * * * * ?")
 //    public void sendMessageToAllSessions() {
 //        log.info("sendMessageToAllSessions,  {}", "topic");
-//        redissonClient.getTopic("topic").publish("hb");
+//        redissonClient.getTopic("ws").publish(WsSendMessageDto.builder()
+//                .json("hb").build());
 //    }
 //}
