@@ -108,7 +108,13 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                             int start = index * chunkSize;
                             int end = Math.min(start + chunkSize, msg.getJson().length());
                             String chunk = msg.getJson().substring(start, end);
-                            session.sendMessage(new TextMessage("#(" + msg.getType() + ")#(" + uuid + ")#(" + size + ")#(" + index + ")" + chunk));
+                            session.sendMessage(new TextMessage(
+                                    objectMapper.writeValueAsString(Map.of(
+                                            "uuid", uuid.toString(),
+                                            "size", size,
+                                            "index", index,
+                                            "data", chunk))
+                            ));
                         }
                     } catch (IOException e) {
                         sessions.remove(sessionId);
