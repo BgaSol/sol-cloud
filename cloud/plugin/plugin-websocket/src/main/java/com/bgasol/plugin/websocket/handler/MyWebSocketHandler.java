@@ -1,6 +1,7 @@
 package com.bgasol.plugin.websocket.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.bgasol.plugin.websocket.dto.SendMessageChunkDto;
 import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,19 +102,21 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
                 int chunkSize = 10000;
                 if (send) {
                     try {
-                        UUID uuid = UUID.randomUUID();
-                        int size = msg.getJson().length() / chunkSize + (msg.getJson().length() % chunkSize == 0 ? 0 : 1);
+                        String uuid = UUID.randomUUID().toString();
+                        String sendData = objectMapper.writeValueAsString(msg);
+                        int size = sendData.length() / chunkSize + (sendData.length() % chunkSize == 0 ? 0 : 1);
                         // 分块发送消息
                         for (int index = 0; index < size; index++) {
                             int start = index * chunkSize;
-                            int end = Math.min(start + chunkSize, msg.getJson().length());
-                            String chunk = msg.getJson().substring(start, end);
+                            int end = Math.min(start + chunkSize, sendData.length());
+                            String chunk = sendData.substring(start, end);
                             session.sendMessage(new TextMessage(
-                                    objectMapper.writeValueAsString(Map.of(
-                                            "uuid", uuid.toString(),
-                                            "size", size,
-                                            "index", index,
-                                            "data", chunk))
+                                    objectMapper.writeValueAsString(SendMessageChunkDto.builder()
+                                            .uuid(uuid)
+                                            .size(size)
+                                            .index(index)
+                                            .data(chunk)
+                                            .build())
                             ));
                         }
                     } catch (IOException e) {
