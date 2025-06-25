@@ -261,7 +261,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             if (ObjectUtils.isEmpty(ids)) {
                 return new ArrayList<>();
             }
-            return commonBaseMapper().selectByIds(Arrays.asList(ids));
+            List<ENTITY> entities = commonBaseMapper().selectByIds(Arrays.asList(ids));
+            this.findOtherTable(entities);
+            return entities;
         }
 
         // 先获取缓存中的结果
