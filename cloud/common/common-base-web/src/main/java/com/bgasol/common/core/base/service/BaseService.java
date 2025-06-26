@@ -436,24 +436,24 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
             return commonBaseMapper().selectById(id);
         }
+
         RMapCache<String, ENTITY> mapCache = getRMapCache();
-        if (mapCache.containsKey(id)) {
-            ENTITY entity = mapCache.get(id);
-            if (entity.getId().equals(NULL_PLACEHOLDER)) {
+        ENTITY entity = mapCache.get(id);
+
+        if (entity != null) {
+            if (NULL_PLACEHOLDER.equals(entity.getId())) {
                 return null;
-            } else {
-                return entity;
-            }
-        } else {
-            ENTITY entity = commonBaseMapper().selectById(id);
-            // 如果是null就存储一个id为"null"的字符串做标记 防止穿透
-            if (entity == null) {
-                mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), randomizeTtl(), DEFAULT_TIME_UNIT);
-            } else {
-                mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);
             }
             return entity;
         }
+
+        entity = commonBaseMapper().selectById(id);
+        if (entity == null) {
+            mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), randomizeTtl(), DEFAULT_TIME_UNIT);
+        } else {
+            mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);
+        }
+        return entity;
     }
 
     /**
