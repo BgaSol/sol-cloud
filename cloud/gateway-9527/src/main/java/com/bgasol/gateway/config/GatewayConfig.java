@@ -41,6 +41,32 @@ public class GatewayConfig {
         routeIdList.add(GatewayConfigValues.SERVICE_NAME);
     }
 
+    public Flux<RouteDefinition> getAllRoutes() {
+        return routeDefinitionLocator.getRouteDefinitions();
+    }
+
+    private boolean isRegistered = false;
+
+    @EventListener(InstanceRegisteredEvent.class)
+    public void onInstanceRegistered() {
+        isRegistered = true;
+    }
+
+    @Scheduled(cron = "0/5 * * * * ?")
+    public void customRouteLocator() {
+        if (!isRegistered) {
+            log.info("Gateway 尚未注册，跳过路由添加");
+            return;
+        }
+        for (String service : discoveryClient.getServices()) {
+            if (!routeIdList.contains(service)) {
+                routeIdList.add(service);
+                addRoute(service, "lb://" + service, "/" + service + "/**");
+                log.info("添加路由：{}", service);
+            }
+        }
+    }
+
     public void addRoute(String id, String uri, String path) {
         RouteDefinition definition = new RouteDefinition();
         definition.setId(id);
@@ -53,22 +79,11 @@ public class GatewayConfig {
         predicateDefinition.setName("Path");
         predicateDefinition.setArgs(Map.of("pattern", path));
         definition.getPredicates().add(predicateDefinition);
-        routeDefinitionWriter.save(Mono.just(definition)).subscribe();
+
+        routeDefinitionWriter.save(Mono.just(definition))
+                .doOnSuccess(unused -> log.info("路由 [{}] 添加成功，path: [{}]", id, path))
+                .doOnError(error -> log.error("路由 [{}] 添加失败：{}", id, error.getMessage()))
+                .block();
     }
 
-    public Flux<RouteDefinition> getAllRoutes() {
-        return routeDefinitionLocator.getRouteDefinitions();
-    }
-
-    @EventListener(InstanceRegisteredEvent.class)
-    @Scheduled(cron = "0/5 * * * * ?")
-    public void customRouteLocator() {
-        for (String service : discoveryClient.getServices()) {
-            if (!routeIdList.contains(service)) {
-                routeIdList.add(service);
-                addRoute(service, "lb://" + service, "/" + service + "/**");
-                log.info("添加路由：{}", service);
-            }
-        }
-    }
 }
