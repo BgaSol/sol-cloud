@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -18,9 +20,9 @@ public class WsSendMessageDto {
     @Schema(description = "WebSocket消息类型")
     private String type;
 
-    @Schema(description = "userId")
-    private String userId;
+    @Schema(description = "userIds")
+    private List<String> userIds;
 
-    @Schema(description = "sessionId")
-    private String sessionId;
+    @Schema(description = "sessionIds")
+    private List<String> sessionIds;
 }
