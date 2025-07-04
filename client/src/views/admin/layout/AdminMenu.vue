@@ -9,7 +9,7 @@ menu.getMenuList();
 </script>
 
 <template>
-  <el-menu :collapse='menu.collapse' :default-active='String(menu.activeMenu)' class="h-full" mode='vertical'>
+  <el-menu :collapse='menu.collapse' :default-active='String(menu.activeMenu)' class="min-h-full" mode='vertical'>
     <template v-for='menuItem in menu.menus' :key='menu.id'>
       <admin-menu-node v-if='!menuItem.isHidden' :menu='menuItem'></admin-menu-node>
     </template>
