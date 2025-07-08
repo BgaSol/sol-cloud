@@ -2,7 +2,6 @@ package com.bgasol.web.file.image.service;
 
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
-import com.bgasol.model.file.file.api.FileApi;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
@@ -11,6 +10,7 @@ import com.bgasol.web.file.file.service.OssService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,6 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     private final FileService fileService;
 
     private final OssService ossService;
-    private final FileApi fileApi;
 
     private final RedissonClient redissonClient;
 
@@ -105,8 +104,8 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     @Override
     @Transactional(readOnly = true)
     public void findOtherTable(ImageEntity entity) {
-        FileEntity file = fileApi.findById(entity.getFileId()).getData();
-        entity.setFile(file);
-        super.findOtherTable(entity);
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+            entity.setFile(fileService.findById(entity.getFileId()));
+        }
     }
 }
