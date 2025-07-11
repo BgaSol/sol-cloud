@@ -12,6 +12,7 @@ services:
       - "9848:9848"
       - "9849:9849"
     environment:
+      TZ: ${TZ}
       MODE: standalone
       NACOS_APPLICATION_PORT: 8848
       DB_SERVICE_NAME: postgresql
@@ -28,8 +29,8 @@ services:
       - cloud-app
     volumes:
       - ./data/nacos/logs:/home/nacos/logs
-      - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
-      - ./config/nacos/plugins/:/home/nacos/plugins/
+      - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties:ro
+      - ./config/nacos/plugins/:/home/nacos/plugins/:ro
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
       interval: 10s
@@ -49,6 +50,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
+      TZ: ${TZ}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
@@ -67,12 +69,13 @@ services:
     container_name: cloud-app-postgres
     restart: unless-stopped
     environment:
+      TZ: ${TZ}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./data/postgres/data:/var/lib/postgresql/data
       - ./data/postgres/log:/var/log/postgresql
-      - ./config/postgres/initdb:/docker-entrypoint-initdb.d
+      - ./config/postgres/initdb:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     networks:
@@ -88,6 +91,7 @@ services:
     container_name: cloud-app-redis
     restart: unless-stopped
     environment:
+      TZ: ${TZ}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     command:
       - /bin/sh
