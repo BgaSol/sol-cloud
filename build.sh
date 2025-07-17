@@ -84,8 +84,8 @@ print_divider
 print_step "开始前端构建 🌐"
 
 cd client
-print_info "📦 安装依赖 (npm ci)..."
-npm ci
+print_info "📦 安装依赖 (npm install)..."
+npm install
 
 print_info "🧱 执行构建 (npm run build)..."
 npm run build
