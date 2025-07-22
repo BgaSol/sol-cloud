@@ -1,13 +1,5 @@
 package com.bgasol.plugin.swagger.config;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import com.alibaba.nacos.api.exception.NacosException;
-
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -15,6 +7,12 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class OpenApiConfig {
      * 构建 OpenAPI 配置
      */
     @Bean
-    public OpenAPI openAPI() throws NacosException {
+    public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(createInfo())
                 .servers(createServers())
@@ -55,8 +53,8 @@ public class OpenApiConfig {
     /**
      * 创建服务列表
      */
-    private List<Server> createServers() throws NacosException {
-        List<Server> servers = new java.util.ArrayList<>();
+    private List<Server> createServers() {
+        List<Server> servers = new ArrayList<>();
         servers.add(createServer("http://localhost:" + 9527 + "/" + serviceName, "网关"));
         return servers;
     }
