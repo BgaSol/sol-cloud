@@ -18,8 +18,8 @@ import lombok.experimental.SuperBuilder;
 @TableName("t_image")
 @Schema(description = "图片实体类")
 public class ImageEntity extends BaseEntity {
-    @TableField("name")
     @Schema(description = "图片名称")
+    @TableField("name")
     private String name;
 
     @Schema(description = "图片宽度")
