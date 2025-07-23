@@ -33,7 +33,7 @@ public class VideoCreateDto extends BaseCreateDto<VideoEntity> {
     private Integer bitrate;
 
     @Schema(description = "视频帧率")
-    private Integer frameRate;
+    private Integer fps;
 
     @Schema(description = "视频编码")
     private String codec;
@@ -50,7 +50,7 @@ public class VideoCreateDto extends BaseCreateDto<VideoEntity> {
                 .duration(duration)
                 .format(format)
                 .bitrate(bitrate)
-                .frameRate(frameRate)
+                .fps(fps)
                 .codec(codec)
                 .fileId(fileId)
                 .build());

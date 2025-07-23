@@ -45,8 +45,8 @@ public class VideoEntity extends BaseEntity {
     private Integer bitrate;
 
     @Schema(description = "视频帧率")
-    @TableField("frame_rate")
-    private Integer frameRate;
+    @TableField("fps")
+    private Integer fps;
 
     @Schema(description = "视频编码")
     @TableField("codec")

@@ -43,3 +43,28 @@ CREATE TABLE t_image
 -- 为图片表添加索引
 CREATE INDEX idx_image_file_id ON t_image(file_id);
 CREATE INDEX idx_image_name ON t_image(name);
+
+CREATE TABLE t_video
+(
+    id          VARCHAR(255) NOT NULL PRIMARY KEY,
+    type        VARCHAR(255),
+    sort        INTEGER,
+    create_time TIMESTAMP(6),
+    update_time TIMESTAMP(6),
+    description VARCHAR(255),
+    deleted     INTEGER,
+
+    name        VARCHAR(255), -- 视频名称
+    width       INTEGER,      -- 视频宽度
+    height      INTEGER,      -- 视频高度
+    duration    INTEGER,      -- 视频时长（秒）
+    format      VARCHAR(255), -- 视频格式
+    bitrate     INTEGER,      -- 视频码率
+    fps         INTEGER,      -- 视频帧率
+    codec       VARCHAR(255), -- 视频编码格式
+    file_id     VARCHAR(255)  -- 视频文件id
+);
+
+-- 为视频表添加索引
+CREATE INDEX idx_video_file_id ON t_video(file_id);
+CREATE INDEX idx_video_name ON t_video(name);
