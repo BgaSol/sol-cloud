@@ -20,7 +20,7 @@ CREATE TABLE file_t_file
 );
 
 -- 分页主序
-CREATE INDEX idx_file_deleted_create_time_desc ON file_t_file (deleted, create_time DESC);
+CREATE INDEX idx_file_create_time_desc_deleted ON file_t_file (create_time DESC, deleted);
 
 
 -- 图片表
@@ -41,7 +41,7 @@ CREATE TABLE file_t_image
 );
 
 -- 分页主序
-CREATE INDEX idx_image_deleted_create_time_desc ON file_t_image (deleted, create_time DESC);
+CREATE INDEX idx_image_create_time_desc_deleted ON file_t_image (create_time DESC, deleted);
 
 -- 视频表
 CREATE TABLE file_t_video
@@ -66,4 +66,4 @@ CREATE TABLE file_t_video
 );
 
 -- 分页主序
-CREATE INDEX idx_video_deleted_create_time_desc ON file_t_video (deleted, create_time DESC);
+CREATE INDEX idx_video_create_time_desc_deleted ON file_t_video (create_time DESC, deleted);

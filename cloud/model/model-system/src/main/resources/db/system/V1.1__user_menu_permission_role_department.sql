@@ -16,7 +16,7 @@ CREATE TABLE system_t_permission
     micro_service VARCHAR(255)  -- 微服务名
 );
 -- 分页主序
-CREATE INDEX idx_permission_deleted_create_time_desc ON system_t_permission (deleted, create_time DESC);
+CREATE INDEX idx_permission_create_time_desc_deleted ON system_t_permission (create_time DESC, deleted);
 
 -- 菜单表
 CREATE TABLE system_t_menu
@@ -45,7 +45,7 @@ CREATE TABLE system_t_menu
     menu_group       VARCHAR(255)  -- 菜单组
 );
 -- 分页主序
-CREATE INDEX idx_menu_deleted_create_time_desc ON system_t_menu (deleted, create_time DESC);
+CREATE INDEX idx_menu_create_time_desc_deleted ON system_t_menu (create_time DESC, deleted);
 
 -- 角色表
 CREATE TABLE system_t_role
@@ -64,7 +64,7 @@ CREATE TABLE system_t_role
     status      INTEGER       -- 角色状态
 );
 -- 分页主序
-CREATE INDEX idx_role_deleted_create_time_desc ON system_t_role (deleted, create_time DESC);
+CREATE INDEX idx_role_create_time_desc_deleted ON system_t_role (create_time DESC, deleted);
 
 -- 部门表
 CREATE TABLE system_t_department
@@ -87,7 +87,7 @@ CREATE TABLE system_t_department
     icon_id     VARCHAR(255)  -- 部门图标id 关联图片id
 );
 -- 分页主序
-CREATE INDEX idx_department_deleted_create_time_desc ON system_t_department (deleted, create_time DESC);
+CREATE INDEX idx_department_create_time_desc_deleted ON system_t_department (create_time DESC, deleted);
 
 -- 用户表
 CREATE TABLE system_t_user
@@ -111,7 +111,7 @@ CREATE TABLE system_t_user
     department_id VARCHAR(255)  -- 角色
 );
 -- 分页主序
-CREATE INDEX idx_user_deleted_create_time_desc ON system_t_user (deleted, create_time DESC);
+CREATE INDEX idx_user_create_time_desc_deleted ON system_t_user (create_time DESC, deleted);
 
 -- 角色菜单关联表
 CREATE TABLE system_c_role_menu
