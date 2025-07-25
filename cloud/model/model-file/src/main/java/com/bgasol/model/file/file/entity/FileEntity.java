@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@TableName("t_file")
+@TableName("file_t_file")
 @Schema(description = "文件实体类")
 public class FileEntity extends BaseEntity {
     @TableField("name")

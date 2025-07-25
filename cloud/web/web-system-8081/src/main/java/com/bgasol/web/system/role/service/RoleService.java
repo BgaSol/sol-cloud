@@ -42,7 +42,7 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
     public void findOtherTable(RoleEntity roleEntity) {
         // 查询关联的角色
         List<String> permissionIds = this.roleMapper.findFromTable(
-                "c_role_permission",
+                "system_c_role_permission",
                 "role_id",
                 roleEntity.getId(),
                 "permission_id");
@@ -54,7 +54,7 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
 
         // 查询关联的菜单
         List<String> roleIds = this.roleMapper.findFromTable(
-                "c_role_menu",
+                "system_c_role_menu",
                 "role_id",
                 roleEntity.getId(),
                 "menu_id");

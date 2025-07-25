@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@TableName("t_video")
+@TableName("file_t_video")
 @Schema(description = "视频实体类")
 public class VideoEntity extends BaseEntity {
     @Schema(description = "视频名称")

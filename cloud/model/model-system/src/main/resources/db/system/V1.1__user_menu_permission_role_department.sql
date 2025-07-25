@@ -1,5 +1,5 @@
 -- 权限表
-CREATE TABLE t_permission
+CREATE TABLE system_t_permission
 (
     id            VARCHAR(255) NOT NULL PRIMARY KEY,
     type          VARCHAR(255),
@@ -15,10 +15,11 @@ CREATE TABLE t_permission
     path          VARCHAR(255), -- 权限路径
     micro_service VARCHAR(255)  -- 微服务名
 );
-CREATE INDEX idx_permission_parent_id ON t_permission(parent_id);
+-- 分页主序
+CREATE INDEX idx_permission_deleted_create_time_desc ON system_t_permission (deleted, create_time DESC);
 
 -- 菜单表
-CREATE TABLE t_menu
+CREATE TABLE system_t_menu
 (
     id               VARCHAR(255) NOT NULL PRIMARY KEY,
     type             VARCHAR(255),
@@ -43,10 +44,11 @@ CREATE TABLE t_menu
     is_hidden        BOOLEAN,      -- 是否隐藏（不显示）
     menu_group       VARCHAR(255)  -- 菜单组
 );
-CREATE INDEX idx_menu_parent_id ON t_menu(parent_id);
+-- 分页主序
+CREATE INDEX idx_menu_deleted_create_time_desc ON system_t_menu (deleted, create_time DESC);
 
 -- 角色表
-CREATE TABLE t_role
+CREATE TABLE system_t_role
 (
     id          VARCHAR(255) NOT NULL PRIMARY KEY,
     type        VARCHAR(255),
@@ -61,10 +63,11 @@ CREATE TABLE t_role
     code        VARCHAR(255), -- 角色编码
     status      INTEGER       -- 角色状态
 );
-CREATE INDEX idx_role_parent_id ON t_role(parent_id);
+-- 分页主序
+CREATE INDEX idx_role_deleted_create_time_desc ON system_t_role (deleted, create_time DESC);
 
 -- 部门表
-CREATE TABLE t_department
+CREATE TABLE system_t_department
 (
     id          VARCHAR(255) NOT NULL PRIMARY KEY,
     type        VARCHAR(255),
@@ -83,10 +86,11 @@ CREATE TABLE t_department
     html        VARCHAR(255), -- 部门备注HTML
     icon_id     VARCHAR(255)  -- 部门图标id 关联图片id
 );
-CREATE INDEX idx_department_parent_id ON t_department(parent_id);
+-- 分页主序
+CREATE INDEX idx_department_deleted_create_time_desc ON system_t_department (deleted, create_time DESC);
 
 -- 用户表
-CREATE TABLE t_user
+CREATE TABLE system_t_user
 (
     id            VARCHAR(255) NOT NULL PRIMARY KEY,
     type          VARCHAR(255),
@@ -106,33 +110,32 @@ CREATE TABLE t_user
     locked        BOOLEAN,      -- 账户锁定
     department_id VARCHAR(255)  -- 角色
 );
-CREATE UNIQUE INDEX idx_user_username ON t_user(username);
-CREATE INDEX idx_user_department_id ON t_user(department_id);
-CREATE INDEX idx_user_status ON t_user(status);
+-- 分页主序
+CREATE INDEX idx_user_deleted_create_time_desc ON system_t_user (deleted, create_time DESC);
 
 -- 角色菜单关联表
-CREATE TABLE c_role_menu
+CREATE TABLE system_c_role_menu
 (
     role_id VARCHAR(255) NOT NULL,
     menu_id VARCHAR(255) NOT NULL
 );
-CREATE INDEX idx_role_menu_role_id ON c_role_menu(role_id);
-CREATE INDEX idx_role_menu_menu_id ON c_role_menu(menu_id);
+CREATE INDEX idx_role_menu_role_id ON system_c_role_menu(role_id);
+CREATE INDEX idx_role_menu_menu_id ON system_c_role_menu(menu_id);
 
 -- 角色权限关联表
-CREATE TABLE c_role_permission
+CREATE TABLE system_c_role_permission
 (
     role_id       VARCHAR(255) NOT NULL,
     permission_id VARCHAR(255) NOT NULL
 );
-CREATE INDEX idx_role_permission_role_id ON c_role_permission(role_id);
-CREATE INDEX idx_role_permission_permission_id ON c_role_permission(permission_id);
+CREATE INDEX idx_role_permission_role_id ON system_c_role_permission(role_id);
+CREATE INDEX idx_role_permission_permission_id ON system_c_role_permission(permission_id);
 
 -- 用户角色关联表
-CREATE TABLE c_user_role
+CREATE TABLE system_c_user_role
 (
     user_id VARCHAR(255) NOT NULL,
     role_id VARCHAR(255) NOT NULL
 );
-CREATE INDEX idx_user_role_user_id ON c_user_role(user_id);
-CREATE INDEX idx_user_role_role_id ON c_user_role(role_id);
+CREATE INDEX idx_user_role_user_id ON system_c_user_role(user_id);
+CREATE INDEX idx_user_role_role_id ON system_c_user_role(role_id);

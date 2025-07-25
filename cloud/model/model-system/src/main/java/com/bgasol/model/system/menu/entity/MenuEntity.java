@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "菜单实体")
-@TableName("t_menu")
+@TableName("system_t_menu")
 public class MenuEntity extends BaseTreeEntity<MenuEntity> {
 
     @Schema(description = "菜单名")

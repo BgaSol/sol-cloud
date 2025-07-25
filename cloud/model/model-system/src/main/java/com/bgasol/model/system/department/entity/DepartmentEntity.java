@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "部门实体")
-@TableName("t_department")
+@TableName("system_t_department")
 public class DepartmentEntity extends BaseTreeEntity<DepartmentEntity> {
 
     @Schema(description = "部门名")

@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@TableName("t_image")
+@TableName("file_t_image")
 @Schema(description = "图片实体类")
 public class ImageEntity extends BaseEntity {
     @Schema(description = "图片名称")

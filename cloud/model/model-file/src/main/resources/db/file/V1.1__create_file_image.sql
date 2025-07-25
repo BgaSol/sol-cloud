@@ -1,5 +1,5 @@
 -- 文件表
-CREATE TABLE t_file
+CREATE TABLE file_t_file
 (
     id          VARCHAR(255) NOT NULL PRIMARY KEY,
     type        VARCHAR(255),
@@ -19,12 +19,12 @@ CREATE TABLE t_file
     bucket      VARCHAR(255)  -- 文件所在桶
 );
 
--- 为文件表添加索引
-CREATE INDEX idx_file_hash ON t_file(hash);
-CREATE INDEX idx_file_name ON t_file(name);
+-- 分页主序
+CREATE INDEX idx_file_deleted_create_time_desc ON file_t_file (deleted, create_time DESC);
+
 
 -- 图片表
-CREATE TABLE t_image
+CREATE TABLE file_t_image
 (
     id          VARCHAR(255) NOT NULL PRIMARY KEY,
     type        VARCHAR(255),
@@ -36,15 +36,15 @@ CREATE TABLE t_image
 
     name        VARCHAR(255), -- 图片名称
     width       INTEGER,      -- 图片宽度
-    height      INTEGER,      -- 图片高度
+    height      INTEGER,      -- 图高度
     file_id     VARCHAR(255)  -- 图片文件id
 );
 
--- 为图片表添加索引
-CREATE INDEX idx_image_file_id ON t_image(file_id);
-CREATE INDEX idx_image_name ON t_image(name);
+-- 分页主序
+CREATE INDEX idx_image_deleted_create_time_desc ON file_t_image (deleted, create_time DESC);
 
-CREATE TABLE t_video
+-- 视频表
+CREATE TABLE file_t_video
 (
     id          VARCHAR(255) NOT NULL PRIMARY KEY,
     type        VARCHAR(255),
@@ -65,6 +65,5 @@ CREATE TABLE t_video
     file_id     VARCHAR(255)  -- 视频文件id
 );
 
--- 为视频表添加索引
-CREATE INDEX idx_video_file_id ON t_video(file_id);
-CREATE INDEX idx_video_name ON t_video(name);
+-- 分页主序
+CREATE INDEX idx_video_deleted_create_time_desc ON file_t_video (deleted, create_time DESC);

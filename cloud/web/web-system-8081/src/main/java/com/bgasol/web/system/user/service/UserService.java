@@ -126,7 +126,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     @Transactional(readOnly = true)
     public void findOtherTable(UserEntity userEntity) {
         // 获取关联角色
-        List<String> roleIds = this.userMapper.findFromTable("c_user_role",
+        List<String> roleIds = this.userMapper.findFromTable("system_c_user_role",
                 "user_id",
                 userEntity.getId(),
                 "role_id");

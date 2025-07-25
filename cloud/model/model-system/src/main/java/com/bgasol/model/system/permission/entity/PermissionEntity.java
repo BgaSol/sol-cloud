@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "权限实体")
-@TableName("t_permission")
+@TableName("system_t_permission")
 public class PermissionEntity extends BaseTreeEntity<PermissionEntity> {
 
     @Schema(description = "权限名")

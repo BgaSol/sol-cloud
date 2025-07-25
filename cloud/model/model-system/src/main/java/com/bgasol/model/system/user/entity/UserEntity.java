@@ -21,7 +21,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "用户实体类")
-@TableName("t_user")
+@TableName("system_t_user")
 public class UserEntity extends BaseEntity {
 
     @Schema(description = "用户名")
@@ -61,7 +61,7 @@ public class UserEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = RoleEntity.class)
     @JoinTable(
-            name = "c_user_role",
+            name = "system_c_user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )

@@ -19,7 +19,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "角色实体")
-@TableName("t_role")
+@TableName("system_t_role")
 public class RoleEntity extends BaseEntity {
     @Schema(description = "角色名")
     @TableField("name")
@@ -37,7 +37,7 @@ public class RoleEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = PermissionEntity.class)
     @JoinTable(
-            name = "c_role_permission",
+            name = "system_c_role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
@@ -47,7 +47,7 @@ public class RoleEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = MenuEntity.class)
     @JoinTable(
-            name = "c_role_menu",
+            name = "system_c_role_menu",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "menu_id")
     )
