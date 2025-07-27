@@ -202,7 +202,7 @@ services:
     volumes:
       - ./data/postgres/data:/var/lib/postgresql/data
       - ./data/postgres/log:/var/log/postgresql
-      - ./config/postgres/initdb:/docker-entrypoint-initdb.d
+      - ./config/postgres/initdb:/docker-entrypoint-initdb.d:ro
       - ./config/postgres/conf/postgresql.conf:/etc/postgresql/postgresql.conf:ro
     ports:
       - "5432:5432"
