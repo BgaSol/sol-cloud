@@ -55,7 +55,7 @@ public class OpenApiConfig {
      */
     private List<Server> createServers() {
         List<Server> servers = new ArrayList<>();
-        servers.add(createServer("http://localhost:" + 9527 + "/" + serviceName, "网关"));
+        servers.add(createServer("/" + serviceName, serverDescribe));
         return servers;
     }
 
