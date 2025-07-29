@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Transactional
@@ -59,6 +61,6 @@ public class DepartmentService extends BaseService<DepartmentEntity, BasePageDto
                 return departmentEntity;
             }
         }
-        return this.findById("default");
+        return this.findById(DEFAULT_DEPARTMENT_ID);
     }
 }

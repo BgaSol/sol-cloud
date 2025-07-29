@@ -1,6 +1,7 @@
 package com.bgasol.common.core.base.dto;
 
 import com.bgasol.common.core.base.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public abstract class BaseCreateDto<ENTITY extends BaseEntity> {
      *
      * @return ENTITY
      */
+    @JsonIgnore
     @Schema(hidden = true)
     public abstract ENTITY toEntity();
 
@@ -34,6 +36,7 @@ public abstract class BaseCreateDto<ENTITY extends BaseEntity> {
      * @param entity 实体
      * @return ENTITY
      */
+    @JsonIgnore
     @Schema(hidden = true)
     public ENTITY toEntity(ENTITY entity) {
         entity.setSort(this.getSort());

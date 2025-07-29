@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "部门管理")
@@ -78,7 +80,7 @@ public class DepartmentController extends BaseController<
     @GetMapping("/find-by-id-is-default")
     @Operation(summary = "查询默认部门", operationId = "findDefaultDepartment")
     public BaseVo<DepartmentEntity> findById() {
-        return super.findById("default");
+        return super.findById(DEFAULT_DEPARTMENT_ID);
     }
 
     @GetMapping("/get-my-department")

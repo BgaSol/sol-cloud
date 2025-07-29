@@ -3,6 +3,7 @@ package com.bgasol.model.system.department.dto;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.department.mapstruct.DepartmentMapstruct;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -39,6 +40,8 @@ public class DepartmentUpdateDto extends BaseUpdateDto<DepartmentEntity> {
     private String parentId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public DepartmentEntity toEntity() {
         DepartmentMapstruct mapper = Mappers.getMapper(DepartmentMapstruct.class);
         return super.toEntity(mapper.toEntity(this));

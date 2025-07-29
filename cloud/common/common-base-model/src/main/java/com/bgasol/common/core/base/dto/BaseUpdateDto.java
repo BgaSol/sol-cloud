@@ -1,6 +1,7 @@
 package com.bgasol.common.core.base.dto;
 
 import com.bgasol.common.core.base.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -30,9 +31,11 @@ public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
      *
      * @return ENTITY
      */
+    @JsonIgnore
     @Schema(hidden = true)
     public abstract ENTITY toEntity();
 
+    @JsonIgnore
     @Schema(hidden = true)
     public ENTITY toEntity(ENTITY entity) {
         entity.setSort(this.getSort());

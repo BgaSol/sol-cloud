@@ -4,6 +4,7 @@ import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -37,6 +38,8 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
     private List<String> menuIds;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public RoleEntity toEntity() {
         RoleEntity roleEntity = ROLE_MAPSTRUCT_IMPL.toEntity(this);
         if (permissionIds != null) {

@@ -2,6 +2,7 @@ package com.bgasol.model.file.image.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -21,6 +22,8 @@ public class ImageUpdateDto extends BaseUpdateDto<ImageEntity> {
     private String fileId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public ImageEntity toEntity() {
         ImageEntity imageEntity = new ImageEntity();
         imageEntity.setName(name);

@@ -2,6 +2,7 @@ package com.bgasol.model.file.video.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,8 +43,10 @@ public class VideoUpdateDto extends BaseUpdateDto<VideoEntity> {
     private String fileId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public VideoEntity toEntity() {
-        return this.toEntity(VideoEntity.builder()
+        VideoEntity videoEntity = VideoEntity.builder()
                 .name(name)
                 .width(width)
                 .height(height)
@@ -52,7 +55,7 @@ public class VideoUpdateDto extends BaseUpdateDto<VideoEntity> {
                 .bitrate(bitrate)
                 .fps(fps)
                 .codec(codec)
-                .fileId(fileId)
-                .build());
+                .fileId(fileId).build();
+        return this.toEntity(videoEntity);
     }
 }

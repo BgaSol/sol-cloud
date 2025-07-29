@@ -2,6 +2,7 @@ package com.bgasol.model.system.department.dto;
 
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -40,6 +41,8 @@ public class DepartmentCreateDto extends BaseCreateDto<DepartmentEntity> {
     private String parentId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public DepartmentEntity toEntity() {
         return super.toEntity(DEPARTMENT_MAPSTRUCT_IMPL.toEntity(this));
     }

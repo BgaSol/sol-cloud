@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
+
 /**
  * 自定义权限验证接口扩展
  */
@@ -39,7 +41,7 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);
         Set<String> permissions = new HashSet<>();
-        if (user.getId().equals("admin")) {
+        if (user.getId().equals(ADMIN_USER_ID)) {
             permissions.add("*");
         } else {
             for (RoleEntity role : user.getRoles()) {
@@ -60,7 +62,7 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);
         Set<String> roles = new HashSet<>();
-        if (user.getId().equals("admin")) {
+        if (user.getId().equals(ADMIN_USER_ID)) {
             roles.add("*");
         } else {
             for (RoleEntity role : user.getRoles()) {

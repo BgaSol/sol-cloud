@@ -3,16 +3,21 @@ package com.bgasol.model.system.user.dto;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
 
 @Setter
 @Getter
@@ -44,6 +49,8 @@ public class UserUpdateDto extends BaseUpdateDto<UserEntity> {
     private String departmentId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public UserEntity toEntity() {
         UserEntity user = new UserEntity();
         user.setUsername(username);
@@ -55,7 +62,7 @@ public class UserUpdateDto extends BaseUpdateDto<UserEntity> {
         if (ObjectUtils.isNotEmpty(departmentId)) {
             user.setDepartmentId(departmentId);
         } else {
-            user.setDepartmentId("default");
+            user.setDepartmentId(DEFAULT_DEPARTMENT_ID);
         }
         if (roleIds != null) {
             Stream<RoleEntity> roleEntityStream = roleIds.stream().map((id) -> {

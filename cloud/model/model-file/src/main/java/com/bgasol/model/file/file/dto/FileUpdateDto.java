@@ -3,6 +3,7 @@ package com.bgasol.model.file.file.dto;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,8 @@ public class FileUpdateDto extends BaseUpdateDto<FileEntity> {
     private String source;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public FileEntity toEntity() {
         return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
     }
