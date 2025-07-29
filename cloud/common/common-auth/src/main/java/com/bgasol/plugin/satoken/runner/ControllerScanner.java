@@ -3,6 +3,7 @@ package com.bgasol.plugin.satoken.runner;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.model.system.permission.api.PermissionApi;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
+import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -115,7 +116,11 @@ public class ControllerScanner {
             }
         }
         parentPermissionEntity.setChildren(children);
-        permissionApi.init(parentPermissionEntity);
+        try {
+            permissionApi.init(parentPermissionEntity);
+        } catch (FeignException e) {
+            System.exit(1);
+        }
     }
 
     @EventListener(InstanceRegisteredEvent.class)
