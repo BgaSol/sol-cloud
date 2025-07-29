@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -43,6 +44,8 @@ public class FilePageDto extends BasePageDto<FileEntity> {
     private String bucket;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public AbstractLambdaWrapper<FileEntity, LambdaQueryWrapper<FileEntity>> getQueryWrapper() {
         LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(name), FileEntity::getName, name);

@@ -3,6 +3,7 @@ package com.bgasol.common.core.base.dto;
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -29,6 +30,7 @@ public abstract class BasePageDto<T extends BaseEntity> {
     @Schema(description = "每页条数")
     private Integer size;
 
+    @JsonIgnore
     @Schema(hidden = true)
     public AbstractLambdaWrapper<T, LambdaQueryWrapper<T>> getQueryWrapper() {
         throw new UnsupportedOperationException("not implemented yet");

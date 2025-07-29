@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.system.user.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -37,6 +38,8 @@ public class UserPageDto extends BasePageDto<UserEntity> {
     String departmentId;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public AbstractLambdaWrapper<UserEntity, LambdaQueryWrapper<UserEntity>> getQueryWrapper() {
         LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(username), UserEntity::getUsername, username);
