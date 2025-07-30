@@ -2,6 +2,7 @@ package com.bgasol.web.file.file.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
+import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.model.file.file.dto.FileCreateDto;
@@ -33,7 +34,7 @@ public class FileController extends BaseController<
         FileEntity,
         FilePageDto,
         FileCreateDto,
-        FileUpdateDto> {
+        BaseUpdateDto<FileEntity>> {
     private final FileService fileService;
 
     private final OssService ossService;
@@ -52,21 +53,20 @@ public class FileController extends BaseController<
     }
 
     @Override
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "保存|上传文件", operationId = "saveFile")
     @SaCheckPermission("file:save")
-    public BaseVo<FileEntity> save(@Valid FileCreateDto fileCreateDto) {
+    public BaseVo<FileEntity> save(FileCreateDto fileCreateDto) {
         FileEntity save = fileService.save(fileCreateDto.getUploadFile(), fileCreateDto.toEntity());
         return BaseVo.success(save, "文件上传成功");
     }
 
-    @Override
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "更新|上传文件", operationId = "updateFile")
     @SaCheckPermission("file:update")
     public BaseVo<FileEntity> update(FileUpdateDto fileUpdateDto) {
-        FileEntity save = fileService.update(fileUpdateDto.getUploadFile(), fileUpdateDto.toEntity());
-        return BaseVo.success(save, "文件上传成功");
+        FileEntity update = fileService.update(fileUpdateDto.getUploadFile(), fileUpdateDto.toEntity());
+        return BaseVo.success(update, "文件更新成功");
     }
 
     @Override

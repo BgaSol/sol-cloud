@@ -1,6 +1,5 @@
 package com.bgasol.model.file.file.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,7 +21,7 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "要上传的文件块")
     private MultipartFile uploadFile;
 
-    @TableField("name")
+    @Schema(description = "文件名称")
     private String name;
 
     @Schema(description = "文件状态")
