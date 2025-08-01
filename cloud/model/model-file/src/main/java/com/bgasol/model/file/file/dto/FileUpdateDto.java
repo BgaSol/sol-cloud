@@ -1,11 +1,8 @@
 package com.bgasol.model.file.file.dto;
 
-import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +16,7 @@ import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "更新文件")
-public class FileUpdateDto extends BaseCreateDto<FileEntity> {
+public class FileUpdateDto {
     @Schema(description = "主键")
     private String id;
 
@@ -38,11 +35,16 @@ public class FileUpdateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "文件来源")
     private String source;
 
-    @Override
+    @Schema(description = "排序")
+    private Integer sort;
+
+    @Schema(description = "描述")
+    private String description;
+
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
-        return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
+        return FILE_MAPSTRUCT_IMPL.toEntity(this);
     }
 
 }
