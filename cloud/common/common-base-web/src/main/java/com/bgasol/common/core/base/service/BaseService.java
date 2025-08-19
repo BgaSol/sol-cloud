@@ -420,7 +420,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 暂时什么也不用做
     }
 
-
     private RMapCache<String, ENTITY> getRMapCache() {
         String className = commonBaseEntityClass().getName();
         String key = serviceName + ":" + className;
@@ -434,6 +433,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     public ENTITY cacheSearch(String id) {
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            // 如果没有开启缓存 则直接查询数据库
             return commonBaseMapper().selectById(id);
         }
 
@@ -444,13 +444,16 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             if (NULL_PLACEHOLDER.equals(entity.getId())) {
                 return null;
             }
+            // 缓存命中
             return entity;
         }
 
         entity = commonBaseMapper().selectById(id);
         if (entity == null) {
+            // 查询结果为空 将空值插入缓存
             mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), randomizeTtl(), DEFAULT_TIME_UNIT);
         } else {
+            // 将查询结果插入缓存
             mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);
         }
         return entity;
