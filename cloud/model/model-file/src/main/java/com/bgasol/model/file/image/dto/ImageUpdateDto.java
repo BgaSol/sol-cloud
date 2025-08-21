@@ -2,10 +2,13 @@ package com.bgasol.model.file.image.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
+import com.bgasol.model.file.image.mapstruct.ImageMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Setter
@@ -25,9 +28,7 @@ public class ImageUpdateDto extends BaseUpdateDto<ImageEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public ImageEntity toEntity() {
-        ImageEntity imageEntity = new ImageEntity();
-        imageEntity.setName(name);
-        imageEntity.setFileId(fileId);
+        ImageEntity imageEntity = ImageMapstruct.IMAGE_MAPSTRUCT.toEntity(this);
         return this.toEntity(imageEntity);
     }
 }

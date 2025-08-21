@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import static com.bgasol.model.file.video.mapstruct.VideoMapstruct.VIDEO_MAPSTRUCT;
+
 @Setter
 @Getter
 @SuperBuilder
@@ -46,16 +48,7 @@ public class VideoCreateDto extends BaseCreateDto<VideoEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public VideoEntity toEntity() {
-        VideoEntity videoEntity = VideoEntity.builder()
-                .name(name)
-                .width(width)
-                .height(height)
-                .duration(duration)
-                .format(format)
-                .bitrate(bitrate)
-                .fps(fps)
-                .codec(codec)
-                .fileId(fileId).build();
+        VideoEntity videoEntity = VIDEO_MAPSTRUCT.toEntity(this);
         return this.toEntity(videoEntity);
     }
 }
