@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.bgasol.common.util.WSUtils.GetWSTopic;
 import static com.bgasol.plugin.websocket.interceptor.PlusWebSocketInterceptor.USER_ID;
 
 @Slf4j
@@ -27,11 +29,15 @@ import static com.bgasol.plugin.websocket.interceptor.PlusWebSocketInterceptor.U
 @RequiredArgsConstructor
 public class WebSocketHandlerImpl implements WebSocketHandler {
     private final RedissonClient redissonClient;
+
     private final List<MyMessageHandler> myMessageHandlers;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+    @Value("${spring.application.name}")
+    private String serviceName;
 
     // 在 WebSocket 协商成功且 WebSocket 连接打开并可供使用后调用。
     @Override
@@ -82,56 +88,62 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @PostConstruct
     public void subscribeToTopic() {
-        RTopic topic = redissonClient.getTopic("ws");
+        RTopic topic = redissonClient.getTopic(GetWSTopic(serviceName));
 
-        topic.addListener(WsSendMessageDto.class, (channel, msg) -> {
-            for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-                String sessionId = entry.getKey();
-                WebSocketSession session = entry.getValue();
-                boolean send = true;
-                if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
-                    String userId = (String) session.getAttributes().get(USER_ID);
-                    if (!msg.getUserIds().contains(userId)) {
-                        send = false;
-                    }
-                } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
-                    if (!msg.getSessionIds().contains(sessionId)) {
-                        send = false;
-                    }
+        topic.addListener(WsSendMessageDto.class, this::onMessage);
+    }
+
+    private void onMessage(CharSequence channel, WsSendMessageDto msg) {
+        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
+            String sessionId = entry.getKey();
+            WebSocketSession session = entry.getValue();
+            boolean send = true;
+            if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
+                String userId = (String) session.getAttributes().get(USER_ID);
+                // 筛选用户
+                if (!msg.getUserIds().contains(userId)) {
+                    send = false;
                 }
-                int chunkSize = 10000;
-                if (send) {
-                    String uuid = UUID.randomUUID().toString();
-                    String sendData;
-                    try {
-                        sendData = objectMapper.writeValueAsString(msg);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                    int size = sendData.length() / chunkSize + (sendData.length() % chunkSize == 0 ? 0 : 1);
-                    // 分块发送消息
-                    for (int index = 0; index < size; index++) {
-                        int start = index * chunkSize;
-                        int end = Math.min(start + chunkSize, sendData.length());
-                        String chunk = sendData.substring(start, end);
-                        TextMessage textMessage;
-                        try {
-                            textMessage = new TextMessage(objectMapper.writeValueAsString(SendMessageChunkDto.builder()
-                                    .uuid(uuid)
-                                    .size(size)
-                                    .index(index)
-                                    .data(chunk).build()));
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
-                            session.sendMessage(textMessage);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+            } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
+                // 筛选会话
+                if (!msg.getSessionIds().contains(sessionId)) {
+                    send = false;
                 }
             }
-        });
+            if (!send) {
+                continue;
+            }
+            String uuid = UUID.randomUUID().toString();
+            String sendData;
+            try {
+                sendData = objectMapper.writeValueAsString(msg);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            // 计算分块数
+            int chunkSize = 10000;
+            int size = sendData.length() / chunkSize + (sendData.length() % chunkSize == 0 ? 0 : 1);
+            // 分块发送消息
+            for (int index = 0; index < size; index++) {
+                int start = index * chunkSize;
+                int end = Math.min(start + chunkSize, sendData.length());
+                String chunk = sendData.substring(start, end);
+                TextMessage textMessage;
+                try {
+                    textMessage = new TextMessage(objectMapper.writeValueAsString(SendMessageChunkDto.builder()
+                            .uuid(uuid)
+                            .size(size)
+                            .index(index)
+                            .data(chunk).build()));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    session.sendMessage(textMessage);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }
