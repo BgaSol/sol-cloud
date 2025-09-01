@@ -7,8 +7,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamSource;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -66,9 +65,14 @@ public class MailService {
         for (String fileId : fileIds) {
             Response download = fileApi.download(fileId);
             try (InputStream inputStream = download.body().asInputStream()) {
-                InputStreamSource resource = new InputStreamResource(inputStream);
-                // 建议用 fileId + 扩展名，避免 HTML 内引用混淆
-                helper.addInline("cid-" + fileId, resource, download.headers().get("Content-Type").toString());
+                // 把输入流读入内存
+                byte[] bytes = inputStream.readAllBytes();
+                ByteArrayResource resource = new ByteArrayResource(bytes);
+
+                // Content-Type 可能是 List<String>，取第一个即可
+                String contentType = download.headers().get("Content-Type").iterator().next();
+
+                helper.addInline("cid-" + fileId, resource, contentType);
             } catch (Exception e) {
                 log.error("加载文件失败, fileId: {}", fileId, e);
             }
