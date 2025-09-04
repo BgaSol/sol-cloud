@@ -65,4 +65,12 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
         roleEntity.setMenus(menuEntities);
         super.findOtherTable(roleEntity);
     }
+
+    @Override
+    public Integer delete(String id) {
+        this.roleMapper.deleteFromTable("system_c_role_permission", "role_id", id);
+        this.roleMapper.deleteFromTable("system_c_role_menu", "role_id", id);
+        this.roleMapper.deleteFromTable("system_c_user_role", "role_id", id);
+        return super.delete(id);
+    }
 }

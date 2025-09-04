@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseService;
+import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.web.system.menu.mapper.MenuMapper;
@@ -148,5 +149,38 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
             this.findChildMenu(menuEntityList, menuIds);
         }
         return menuEntityList;
+    }
+
+    @Override
+    public Integer delete(String id) {
+        MenuEntity menuEntity = this.findById(id);
+        if (ObjectUtils.isEmpty(menuEntity)) {
+            return 1;
+        }
+        HashSet<String> menuIds = new HashSet<>();
+        menuIds.add(id);
+        List<MenuEntity> menus = findTreeAll(id, null);
+        collectDeleteIds(menus, menuIds);
+        menuIds.forEach(menuId -> {
+            this.menuMapper.deleteFromTable("system_c_role_menu", "menu_id", menuId);
+            super.delete(menuId);
+        });
+        return 1;
+    }
+
+    private void collectDeleteIds(List<MenuEntity> menus, Set<String> ids) {
+        List<MenuEntity> menuEntityList = menus.stream()
+                .filter(e -> !e.getChildren().isEmpty())
+                .flatMap(e -> e.getChildren().stream())
+                .toList();
+
+        // 将当前层级子部门的ID添加到删除集合中
+        menuEntityList.forEach(e -> ids.add(e.getId()));
+        menus.forEach(e -> ids.add(e.getId()));
+
+        if (!menuEntityList.isEmpty()) {
+            // 递归处理下一层级的子部门
+            this.collectDeleteIds(menuEntityList, ids);
+        }
     }
 }

@@ -53,6 +53,8 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     public Integer delete(String id) {
         // 退出用户
         StpUtil.logout(id);
+        // 删除用户关联角色-中间表
+        this.userMapper.deleteFromTable("system_c_user_role", "user_id", id);
         return super.delete(id);
     }
 
