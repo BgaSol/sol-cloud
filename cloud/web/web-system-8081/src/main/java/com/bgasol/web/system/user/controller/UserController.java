@@ -51,7 +51,7 @@ public class UserController extends BaseController<
 
     @PostMapping("/logout")
     @Operation(summary = "用户登出", operationId = "logout")
-    @SaCheckPermission({"user:logout"})
+//    @SaCheckPermission({"user:logout"})
     public BaseVo<?> logout() {
         this.loginService.logout();
         return BaseVo.success("登出成功");

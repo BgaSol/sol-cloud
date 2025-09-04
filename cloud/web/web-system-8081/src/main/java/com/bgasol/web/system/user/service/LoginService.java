@@ -13,6 +13,7 @@ import com.bgasol.web.system.user.mapper.UserMapper;
 import com.pig4cloud.captcha.ArithmeticCaptcha;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -81,9 +84,19 @@ public class LoginService {
             log.error("密码错误");
             throw new BaseException("用户名或密码错误");
         }
-        if (userEntity.getLocked()) {
-            log.error("用户已锁定");
-            throw new BaseException("用户已锁定");
+
+        if (!ADMIN_USER_ID.equals(userEntity.getId())) {
+            userEntity = this.userService.findById(userEntity.getId());
+            if (userEntity.getLocked()) {
+                log.error("用户已锁定");
+                throw new BaseException("用户已锁定");
+            }
+            if (ObjectUtils.isEmpty(userEntity.getRoles())) {
+                throw new BaseException("用户未绑定角色，无法登录");
+            }
+            if (ObjectUtils.isEmpty(userEntity.getDepartment())) {
+                throw new BaseException("用户未绑定部门，无法登录");
+            }
         }
         StpUtil.login(userEntity.getId());
         return StpUtil.getTokenInfo();
