@@ -6,6 +6,7 @@ import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.same.SaSameUtil;
 import com.bgasol.common.core.base.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,6 +18,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @Slf4j
 public class SaTokenConfigure implements WebMvcConfigurer {
+
+    @Value("${system.auth.enabled}")
+    private Boolean systemAuthEnabled;
 
     // 注册 Sa-Token 全局过滤器
     @Bean
@@ -30,7 +34,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 .setAuth(obj -> {
                     SaRequest request = SaHolder.getRequest();
                     String sameToken = request.getHeader(SaSameUtil.SAME_TOKEN);
-                    SaSameUtil.checkToken(sameToken);
+                    if (systemAuthEnabled) {
+                        SaSameUtil.checkToken(sameToken);
+                    }
                 })
                 .setError(e -> {
                     log.error("鉴权失败", e);
@@ -42,6 +48,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，
+        if (!systemAuthEnabled) {
+            log.warn("未启用权限认证");
+            return;
+        }
         registry.addInterceptor(new SaTokenInterceptor())
                 .addPathPatterns("/**");
     }

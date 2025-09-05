@@ -16,3 +16,6 @@ sa-token:
   is-log: true
   # 关闭banner
   is-print: false
+system:
+  auth:
+    enabled: ${SYSTEM_AUTH_ENABLED:false}

@@ -149,4 +149,11 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
         }
         return menuEntityList;
     }
+
+    @Override
+    public Integer delete(String id) {
+        List<MenuEntity> treeAll = this.findTreeAll(id, null);
+        // 递归删除所有子菜单
+        return super.delete(id);
+    }
 }
