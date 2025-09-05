@@ -43,6 +43,8 @@ services:
       REDIS_HOST: cloud-app-redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
     depends_on:
       - cloud-app-nacos
       - cloud-app-redis
@@ -81,6 +83,8 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
+
+      SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
     networks:
       - cloud-app
     depends_on:
@@ -123,6 +127,8 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_HOST: cloud-app-minio
       MINIO_PORT: 9000
+
+      SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
     networks:
       - cloud-app
     depends_on:
