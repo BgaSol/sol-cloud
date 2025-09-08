@@ -1,6 +1,8 @@
 package com.bgasol.model.system.role.dto;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
+import com.bgasol.common.core.base.converter.StringToStringListConverter;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
@@ -31,9 +33,11 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
     @Schema(description = "角色编码")
     private String code;
 
+    @ExcelProperty(converter = StringToStringListConverter.class)
     @Schema(description = "角色权限ID列表")
     private List<String> permissionIds;
 
+    @ExcelProperty(converter = StringToStringListConverter.class)
     @Schema(description = "角色菜单ID列表")
     private List<String> menuIds;
 

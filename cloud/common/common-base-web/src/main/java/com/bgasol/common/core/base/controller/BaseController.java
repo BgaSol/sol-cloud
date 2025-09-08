@@ -6,11 +6,16 @@ import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.common.core.base.vo.PageVo;
+import com.bgasol.model.system.role.entity.RoleEntity;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Validated
@@ -52,5 +57,13 @@ public abstract class BaseController<
         List<ENTITY> all = commonBaseService().findAll();
         return BaseVo.success(all);
     }
+
+    public ResponseEntity<byte[]> downloadImportTemplate() {
+      return commonBaseService().generateImportTemplateResponse();
+    }
+
+    public BaseVo<ImportResult> importFromExcel( MultipartFile file) throws IOException {
+        ImportResult importResult = commonBaseService().importFromExcel(file);
+        return BaseVo.success(importResult, "导入成功");    }
 
 }

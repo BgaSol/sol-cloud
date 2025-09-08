@@ -8,6 +8,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export { BaseVoDepartmentEntity } from './models/BaseVoDepartmentEntity';
+export { BaseVoImportResult } from './models/BaseVoImportResult';
 export { BaseVoInteger } from './models/BaseVoInteger';
 export { BaseVoListDepartmentEntity } from './models/BaseVoListDepartmentEntity';
 export { BaseVoListMenuEntity } from './models/BaseVoListMenuEntity';
@@ -26,6 +27,7 @@ export { BaseVoVerificationVo } from './models/BaseVoVerificationVo';
 export type { DepartmentCreateDto } from './models/DepartmentCreateDto';
 export type { DepartmentEntity } from './models/DepartmentEntity';
 export type { DepartmentUpdateDto } from './models/DepartmentUpdateDto';
+export type { ImportResult } from './models/ImportResult';
 export { MenuEntity } from './models/MenuEntity';
 export type { PageVoUserEntity } from './models/PageVoUserEntity';
 export type { PermissionEntity } from './models/PermissionEntity';

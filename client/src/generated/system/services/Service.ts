@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BaseVoDepartmentEntity } from '../models/BaseVoDepartmentEntity';
+import type { BaseVoImportResult } from '../models/BaseVoImportResult';
 import type { BaseVoInteger } from '../models/BaseVoInteger';
 import type { BaseVoListDepartmentEntity } from '../models/BaseVoListDepartmentEntity';
 import type { BaseVoListMenuEntity } from '../models/BaseVoListMenuEntity';
@@ -279,6 +280,28 @@ export class Service {
         });
     }
     /**
+     * 导入角色
+     * @param formData
+     * @returns BaseVoImportResult OK
+     * @throws ApiError
+     */
+    public static importRole(
+        formData?: {
+            file: Blob;
+        },
+    ): CancelablePromise<BaseVoImportResult> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/role/import',
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 批量初始化系统的权限信息
      * @param requestBody
      * @returns BaseVoPermissionEntity OK
@@ -399,6 +422,21 @@ export class Service {
             path: {
                 'id': id,
             },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 下载角色导入模板
+     * @returns string OK
+     * @throws ApiError
+     */
+    public static downloadRoleImportTemplate(): CancelablePromise<string> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/role/template-download',
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,

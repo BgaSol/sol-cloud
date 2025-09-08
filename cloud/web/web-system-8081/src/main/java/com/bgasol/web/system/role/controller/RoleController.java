@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
@@ -12,9 +13,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -72,5 +76,19 @@ public class RoleController extends BaseController<
     @SaCheckPermission("role:findAll")
     public BaseVo<List<RoleEntity>> findAll() {
         return super.findAll();
+    }
+
+    @GetMapping("/template-download")
+    @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
+//    @SaCheckPermission("role:downloadTemplate")
+    public ResponseEntity<byte[]> downloadImportTemplate() {
+        return super.downloadImportTemplate();
+    }
+
+    @PostMapping(value = "/import", consumes = {"multipart/form-data"})
+    @Operation(summary = "导入角色", operationId = "importRole")
+//    @SaCheckPermission("role:import")
+    public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) throws IOException {
+        return super.importFromExcel(file);
     }
 }
