@@ -1,6 +1,11 @@
 networks:
   cloud-app:
     driver: bridge
+volumes:
+  pg-data:
+    external: true
+  redis-data:
+    external: true
 services:
   cloud-app-nginx:
     image: nginx:alpine
@@ -201,12 +206,13 @@ services:
     image: postgres:17.2
     container_name: cloud-app-postgres
     restart: unless-stopped
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     environment:
       TZ: ${TZ}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./data/postgres/data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
       - ./data/postgres/log:/var/log/postgresql
       - ./config/postgres/initdb:/docker-entrypoint-initdb.d:ro
       - ./config/postgres/conf/postgresql.conf:/etc/postgresql/postgresql.conf:ro
@@ -232,7 +238,7 @@ services:
       - -c
       - redis-server --maxmemory 8gb --maxmemory-policy allkeys-lru --appendonly yes --requirepass $$REDIS_PASSWORD
     volumes:
-      - ./data/redis/data:/data
+      - redis-data:/data
     ports:
       - "6379:6379"
     networks:
