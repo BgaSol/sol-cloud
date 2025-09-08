@@ -1,7 +1,7 @@
 package com.bgasol.common.core.base.listener;
 
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.read.listener.ReadListener;
+import cn.idev.excel.context.AnalysisContext;
+import cn.idev.excel.read.listener.ReadListener;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import lombok.Getter;
@@ -123,8 +123,7 @@ public class BaseExcelImportListener<ROW, ENTITY extends BaseEntity> implements 
      */
     @Override
     public void onException(Exception exception, AnalysisContext context) {
-        throw new RuntimeException(exception);
-//        onError(exception, currentRowIndex);
+        onError(exception, currentRowIndex);
     }
 
     /**
@@ -136,7 +135,6 @@ public class BaseExcelImportListener<ROW, ENTITY extends BaseEntity> implements 
         }
         try {
             saver.saveBatch(buffer);
-            // 认为整个批次均成功
             savedEntities.addAll(buffer);
             successRows += buffer.size();
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 package com.bgasol.common.core.base.service;
 
-import com.alibaba.excel.EasyExcel;
+import cn.idev.excel.EasyExcel;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.common.core.base.listener.BaseExcelImportListener;
@@ -625,6 +625,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         Class<? extends BaseCreateDto<ENTITY>> dtoClass = commonCreateDtoClass();
         BaseExcelImportListener<BaseCreateDto<ENTITY>, ENTITY> listener = BaseExcelImportListener.ofDto(
                 importBatchSize(),
+                // 目前还是单次插入
                 batch -> batch.forEach(this::save),
                 this::validateImportedEntity,
                 (e, rowIndex) -> log.warn("导入行异常 row={}, ex={}", rowIndex, e.toString())

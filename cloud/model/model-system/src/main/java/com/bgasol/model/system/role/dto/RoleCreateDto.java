@@ -1,6 +1,6 @@
 package com.bgasol.model.system.role.dto;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.ExcelProperty;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.common.core.base.converter.StringToStringListConverter;
 import com.bgasol.model.system.menu.entity.MenuEntity;

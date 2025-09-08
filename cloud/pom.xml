@@ -42,7 +42,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <rng.simple.version>1.6</rng.simple.version>
-        <easyexcel.version>4.0.3</easyexcel.version>
+        <fastexcel.version>1.2.0</fastexcel.version>
     </properties>
 
     <dependencyManagement>
@@ -111,9 +111,9 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>${easyexcel.version}</version>
+            <groupId>cn.idev.excel</groupId>
+            <artifactId>fastexcel</artifactId>
+            <version>${fastexcel.version}</version> <!-- Or the latest version -->
         </dependency>
     </dependencies>
 
