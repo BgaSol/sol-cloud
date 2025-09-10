@@ -99,4 +99,17 @@ public class FileController extends BaseController<
                 .contentType(MediaType.valueOf(file.getType()))
                 .body(new InputStreamResource(ossService.readFileStream(file.getBucket(), file.getId(), file.getName())));
     }
+
+    @GetMapping("/stream/{id}")
+    @Operation(summary = "在线播放文件", operationId = "streamFile")
+    @SaCheckPermission("file:stream")
+    public ResponseEntity<InputStreamResource> stream(@PathVariable("id") String id) {
+        FileEntity file = fileService.findById(id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(file.getType())) // video/mp4
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
+                .body(new InputStreamResource(
+                        ossService.readFileStream(file.getBucket(), file.getId(), file.getName())
+                ));
+    }
 }
