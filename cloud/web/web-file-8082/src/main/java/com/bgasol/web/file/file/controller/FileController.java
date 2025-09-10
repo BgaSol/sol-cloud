@@ -17,11 +17,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -103,13 +107,43 @@ public class FileController extends BaseController<
     @GetMapping("/stream/{id}")
     @Operation(summary = "在线播放文件", operationId = "streamFile")
     @SaCheckPermission("file:stream")
-    public ResponseEntity<InputStreamResource> stream(@PathVariable("id") String id) {
+    public ResponseEntity<Resource> playVideo(
+            @PathVariable("id") String id,
+            @RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException {
+
         FileEntity file = fileService.findById(id);
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(file.getType())) // video/mp4
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
-                .body(new InputStreamResource(
-                        ossService.readFileStream(file.getBucket(), file.getId(), file.getName())
-                ));
+        if (file == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 视频总大小
+        long fileSize = file.getSize();
+        String contentType = file.getType(); // e.g. "video/mp4"
+
+        // 默认从头到尾
+        long rangeStart = 0;
+        long rangeEnd = fileSize - 1;
+
+        if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
+            String[] ranges = rangeHeader.substring(6).split("-");
+            rangeStart = Long.parseLong(ranges[0]);
+            if (ranges.length > 1 && !ranges[1].isEmpty()) {
+                rangeEnd = Long.parseLong(ranges[1]);
+            }
+        }
+
+        long contentLength = rangeEnd - rangeStart + 1;
+
+        InputStream inputStream = ossService.readFileStream(file.getBucket(), file.getId(), file.getName());
+        inputStream.skip(rangeStart); // 跳到起始位置
+
+        InputStreamResource resource = new InputStreamResource(inputStream);
+
+        return ResponseEntity.status(rangeHeader == null ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT)
+                .header(HttpHeaders.CONTENT_TYPE, contentType)
+                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
+                .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize)
+                .body(resource);
     }
 }
