@@ -56,7 +56,6 @@ const login = () => {
     }
   }).catch(() => {
     getCaptcha();
-  }).finally(() => {
     loading.value = false;
   });
 };
