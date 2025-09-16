@@ -18,4 +18,4 @@ sa-token:
   is-print: false
 system:
   auth:
-    enabled: ${SYSTEM_AUTH_ENABLED:false}
+    enabled: ${SYSTEM_AUTH_ENABLED:true}
