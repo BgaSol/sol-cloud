@@ -1,15 +1,19 @@
 package com.bgasol.web.system.role.service;
 
-import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.service.BaseService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bgasol.common.core.base.dto.BasePageDto;
+import com.bgasol.common.core.base.entity.BaseEntity;
+import com.bgasol.common.core.base.service.BasePoiService;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
+import com.bgasol.model.system.role.dto.RoleCreateDto;
+import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.web.system.menu.service.MenuService;
 import com.bgasol.web.system.permission.service.PermissionService;
 import com.bgasol.web.system.role.mapper.RoleMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
-import com.bgasol.common.core.base.entity.BaseEntity;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>> {
+public class RoleService extends BasePoiService<RoleEntity,
+        BasePageDto<RoleEntity>,
+        RoleCreateDto,
+        RoleUpdateDto> {
     private final RoleMapper roleMapper;
 
     private final MenuService menuService;

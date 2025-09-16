@@ -2,6 +2,7 @@ package com.bgasol.web.system.role.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
+import com.bgasol.common.core.base.controller.BasePoiController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.ImportResult;
@@ -26,7 +27,7 @@ import java.util.List;
 @Tag(name = "角色管理")
 @RequestMapping("/role")
 @Validated
-public class RoleController extends BaseController<
+public class RoleController extends BasePoiController<
         RoleEntity,
         BasePageDto<RoleEntity>,
         RoleCreateDto,
@@ -80,14 +81,14 @@ public class RoleController extends BaseController<
 
     @GetMapping("/template-download")
     @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
-//    @SaCheckPermission("role:downloadTemplate")
+    @SaCheckPermission("role:downloadImportTemplate")
     public ResponseEntity<byte[]> downloadImportTemplate() {
         return super.downloadImportTemplate();
     }
 
     @PostMapping(value = "/import", consumes = {"multipart/form-data"})
     @Operation(summary = "导入角色", operationId = "importRole")
-//    @SaCheckPermission("role:import")
+    @SaCheckPermission("role:importExcel")
     public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) throws IOException {
         return super.importFromExcel(file);
     }
