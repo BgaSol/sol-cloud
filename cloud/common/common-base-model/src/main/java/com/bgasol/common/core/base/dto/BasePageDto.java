@@ -1,7 +1,6 @@
 package com.bgasol.common.core.base.dto;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +31,7 @@ public abstract class BasePageDto<T extends BaseEntity> {
 
     @JsonIgnore
     @Schema(hidden = true)
-    public AbstractLambdaWrapper<T, LambdaQueryWrapper<T>> getQueryWrapper() {
+    public Wrapper<T> getQueryWrapper() {
         throw new UnsupportedOperationException("not implemented yet");
     }
 }

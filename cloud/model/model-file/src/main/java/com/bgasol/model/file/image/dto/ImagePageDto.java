@@ -1,6 +1,7 @@
 package com.bgasol.model.file.image.dto;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
@@ -22,7 +23,7 @@ public class ImagePageDto extends BasePageDto<ImageEntity> {
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    public AbstractLambdaWrapper<ImageEntity, LambdaQueryWrapper<ImageEntity>> getQueryWrapper() {
+    public Wrapper<ImageEntity> getQueryWrapper() {
         LambdaQueryWrapper<ImageEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(name), ImageEntity::getName, name);
         return queryWrapper;

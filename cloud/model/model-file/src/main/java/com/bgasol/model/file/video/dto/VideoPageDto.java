@@ -1,6 +1,6 @@
 package com.bgasol.model.file.video.dto;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
@@ -33,7 +33,7 @@ public class VideoPageDto extends BasePageDto<VideoEntity> {
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    public AbstractLambdaWrapper<VideoEntity, LambdaQueryWrapper<VideoEntity>> getQueryWrapper() {
+    public Wrapper<VideoEntity> getQueryWrapper() {
         LambdaQueryWrapper<VideoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(name), VideoEntity::getName, name);
         queryWrapper.gt(ObjectUtils.isNotEmpty(duration), VideoEntity::getDuration, duration);

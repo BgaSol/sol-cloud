@@ -1,12 +1,14 @@
 package com.bgasol.model.file.file.dto;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -46,7 +48,7 @@ public class FilePageDto extends BasePageDto<FileEntity> {
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    public AbstractLambdaWrapper<FileEntity, LambdaQueryWrapper<FileEntity>> getQueryWrapper() {
+    public Wrapper<FileEntity> getQueryWrapper() {
         LambdaQueryWrapper<FileEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(name), FileEntity::getName, name);
         queryWrapper.like(ObjectUtils.isNotEmpty(url), FileEntity::getUrl, url);

@@ -1,6 +1,7 @@
 package com.bgasol.model.system.user.dto;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractLambdaWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.system.user.entity.UserEntity;
@@ -40,7 +41,7 @@ public class UserPageDto extends BasePageDto<UserEntity> {
     @Override
     @JsonIgnore
     @Schema(hidden = true)
-    public AbstractLambdaWrapper<UserEntity, LambdaQueryWrapper<UserEntity>> getQueryWrapper() {
+    public Wrapper<UserEntity> getQueryWrapper() {
         LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(ObjectUtils.isNotEmpty(username), UserEntity::getUsername, username);
         queryWrapper.like(ObjectUtils.isNotEmpty(nickname), UserEntity::getNickname, nickname);

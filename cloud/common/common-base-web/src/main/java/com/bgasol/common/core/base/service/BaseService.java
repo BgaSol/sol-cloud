@@ -1,6 +1,7 @@
 package com.bgasol.common.core.base.service;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -301,18 +302,24 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
+     * PAGE_DTO
      * 分页查询
-     *
-     * @param pageDto 分页查询条件
-     * @return 分页数据
      */
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(PAGE_DTO pageDto) {
         // 获取分页条件
         Page<ENTITY> page = new Page<>(pageDto.getPage(), pageDto.getSize());
+        return this.findByPage(page, pageDto.getQueryWrapper());
+    }
 
+    /**
+     * 分页查询
+     */
+    @Transactional(readOnly = true)
+    public PageVo<ENTITY> findByPage(Page<ENTITY> page,
+                                     Wrapper<ENTITY> queryWrapper) {
         // 执行分页查询
-        Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, pageDto.getQueryWrapper());
+        Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, queryWrapper);
 
         // 缓存查询结果
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
