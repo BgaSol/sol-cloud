@@ -10,7 +10,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -25,43 +24,33 @@ public class FileInitData implements ApplicationRunner {
     }
 
     public void initMenus() {
-        MenuEntity fileServiceMenu = new MenuEntity();
-        fileServiceMenu.setId("file-service");
-
-        fileServiceMenu.setName("文件服务");
-        fileServiceMenu.setMenuType(MenuType.MENU);
-        fileServiceMenu.setIcon("IconParkData");
-
-        fileServiceMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-        List<MenuEntity> fileServiceMenuChildren = new ArrayList<>();
-        {
-            MenuEntity fileMenu = new MenuEntity();
-            fileMenu.setId("file");
-            fileMenu.setParentId(fileServiceMenu.getId());
-            fileMenu.setName("文件管理");
-            fileMenu.setMenuType(MenuType.PAGE);
-            fileMenu.setIcon("IconParkFileCabinet");
-            fileMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/file");
-            fileMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_file");
-
-            fileMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            fileServiceMenuChildren.add(fileMenu);
-        }
-        {
-            MenuEntity imageMenu = new MenuEntity();
-            imageMenu.setId("image");
-            imageMenu.setParentId(fileServiceMenu.getId());
-            imageMenu.setName("图片管理");
-            imageMenu.setMenuType(MenuType.PAGE);
-            imageMenu.setIcon("IconParkPic");
-            imageMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/image");
-            imageMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_image");
-
-            imageMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            fileServiceMenuChildren.add(imageMenu);
-        }
-        fileServiceMenu.setChildren(fileServiceMenuChildren);
-
+        String fileServiceMenuId = "file-service";
+        MenuEntity fileServiceMenu = MenuEntity.builder()
+                .id(fileServiceMenuId)
+                .name("文件服务")
+                .menuType(MenuType.MENU)
+                .icon("IconParkData")
+                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                .children(List.of(
+                        MenuEntity.builder()
+                                .id("file")
+                                .parentId(fileServiceMenuId)
+                                .name("文件管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkFileCabinet")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/file")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_file")
+                                .build(),
+                        MenuEntity.builder()
+                                .id("image")
+                                .parentId(fileServiceMenuId)
+                                .name("图片管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkPic")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/image")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_image")
+                                .build()
+                )).build();
         menuApi.init(fileServiceMenu);
     }
 }

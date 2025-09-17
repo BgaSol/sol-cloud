@@ -31,7 +31,7 @@ public class FeignInterceptor implements RequestInterceptor {
     }
 
     /**
-     * 判断当前请求是否在web山下文中
+     * 判断当前请求是否在web请求的下文中
      */
     public boolean inWebRequest() {
         return RequestContextHolder.getRequestAttributes() != null;
