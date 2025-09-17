@@ -40,97 +40,93 @@ public class SystemInitData implements ApplicationRunner {
     }
 
     public void initMenus() {
-
-        MenuEntity systemServiceMenu = new MenuEntity();
-        systemServiceMenu.setId("system-service");
-
-        systemServiceMenu.setName("系统服务");
-        systemServiceMenu.setMenuType(MenuType.MENU);
-        systemServiceMenu.setIcon("IconParkServer");
-
-        systemServiceMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-
         List<MenuEntity> systemServiceMenuChildren = new ArrayList<>();
-        {
-            MenuEntity roleMenu = new MenuEntity();
-            roleMenu.setId("role");
-            roleMenu.setParentId(systemServiceMenu.getId());
-            roleMenu.setName("角色管理");
-            roleMenu.setMenuType(MenuType.PAGE);
-            roleMenu.setIcon("IconParkEveryUser");
-            roleMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/role");
-            roleMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_role");
-            roleMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            systemServiceMenuChildren.add(roleMenu);
-
-            MenuEntity permissionMenu = new MenuEntity();
-            permissionMenu.setId("permission");
-            permissionMenu.setParentId(systemServiceMenu.getId());
-            permissionMenu.setName("权限管理");
-            permissionMenu.setMenuType(MenuType.PAGE);
-            permissionMenu.setIcon("IconParkPermissions");
-            permissionMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/permission");
-            permissionMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_permission");
-            permissionMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            systemServiceMenuChildren.add(permissionMenu);
-
-            MenuEntity userMenu = new MenuEntity();
-            userMenu.setId("user");
-            userMenu.setParentId(systemServiceMenu.getId());
-            userMenu.setName("用户管理");
-            userMenu.setMenuType(MenuType.PAGE);
-            userMenu.setIcon("IconParkPeople");
-            userMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/user");
-            userMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_user");
-            userMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            systemServiceMenuChildren.add(userMenu);
-
-            MenuEntity departmentMenu = new MenuEntity();
-            departmentMenu.setId("department");
-            departmentMenu.setParentId(systemServiceMenu.getId());
-            departmentMenu.setName("部门管理");
-            departmentMenu.setMenuType(MenuType.PAGE);
-            departmentMenu.setIcon("IconParkCategoryManagement");
-            departmentMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/department");
-            departmentMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_department");
-            departmentMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            systemServiceMenuChildren.add(departmentMenu);
-
-            MenuEntity menuMenu = new MenuEntity();
-            menuMenu.setId("menu");
-            menuMenu.setParentId(systemServiceMenu.getId());
-            menuMenu.setName("菜单管理");
-            menuMenu.setMenuType(MenuType.PAGE);
-            menuMenu.setIcon("IconParkListView");
-            menuMenu.setPath("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/menu");
-            menuMenu.setRouteName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_menu");
-            menuMenu.setMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-            systemServiceMenuChildren.add(menuMenu);
-        }
-        systemServiceMenu.setChildren(systemServiceMenuChildren);
-
+        String systemServiceId = "system-service";
+        MenuEntity systemServiceMenu = MenuEntity.builder()
+                .id(systemServiceId)
+                .name("系统服务")
+                .menuType(MenuType.MENU)
+                .icon("IconParkServer")
+                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                .children(List.of(
+                        MenuEntity.builder()
+                                .id("role")
+                                .parentId(systemServiceId)
+                                .name("角色管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkEveryUser")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/role")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_role")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("permission")
+                                .parentId(systemServiceId)
+                                .name("权限管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkPermissions")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/permission")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_permission")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("user")
+                                .parentId(systemServiceId)
+                                .name("用户管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkPeople")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/user")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_user")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("department")
+                                .parentId(systemServiceId)
+                                .name("部门管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkCategoryManagement")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/department")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_department")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("menu")
+                                .parentId(systemServiceId)
+                                .name("菜单管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkListView")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/menu")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_menu")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build()
+                ))
+                .build();
         menuService.init(systemServiceMenu);
     }
 
     private void initDepartment() {
-        DepartmentEntity department = new DepartmentEntity();
-        department.setName(systemTitle);
-        department.setDescription("系统必须要有一个部门，用于存放没有部门的用户");
-        department.setId(SystemConfigValues.DEFAULT_DEPARTMENT_ID);
+        DepartmentEntity department = DepartmentEntity.builder()
+                .name(systemTitle)
+                .description("系统必须要有一个部门，用于存放没有部门的用户")
+                .id(SystemConfigValues.DEFAULT_DEPARTMENT_ID)
+                .build();
+
         if (ObjectUtils.isEmpty(this.departService.cacheSearch(department.getId()))) {
             this.departService.save(department);
         }
     }
 
     public void initUsers() {
-        UserEntity admin = new UserEntity();
-        admin.setId(SystemConfigValues.ADMIN_USER_ID);
-        admin.setUsername(SystemConfigValues.ADMIN_USER_ID);
-        admin.setPassword(userService.encodePassword(SystemConfigValues.ADMIN_USER_ID));
-        admin.setNickname(SystemConfigValues.ADMIN_USER_ID);
-        admin.setLocked(false);
-        admin.setDescription("超级管理员用户,无需配置权限,拥有系统最高权限");
-        admin.setDepartmentId(SystemConfigValues.DEFAULT_DEPARTMENT_ID);
+        UserEntity admin = UserEntity.builder()
+                .id(SystemConfigValues.ADMIN_USER_ID)
+                .username(SystemConfigValues.ADMIN_USER_ID)
+                .password(userService.encodePassword(SystemConfigValues.ADMIN_USER_ID))
+                .nickname(SystemConfigValues.ADMIN_USER_ID)
+                .locked(false)
+                .description("超级管理员用户,无需配置权限,拥有系统最高权限")
+                .departmentId(SystemConfigValues.DEFAULT_DEPARTMENT_ID)
+                .build();
+
         if (ObjectUtils.isEmpty(this.userService.cacheSearch(admin.getId()))) {
             this.userService.save(admin);
         }
