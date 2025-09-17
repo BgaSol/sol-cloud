@@ -1,6 +1,5 @@
 package com.bgasol.plugin.openfeign.interceptor;
 
-import cn.dev33.satoken.exception.NotWebContextException;
 import cn.dev33.satoken.same.SaSameUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import com.bgasol.common.constant.value.GatewayConfigValues;
@@ -8,12 +7,15 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Component
 public class FeignInterceptor implements RequestInterceptor {
 
-    // feign拦截器, 在feign请求发出之前，加入一些操作
+    /**
+     * feign拦截器, 在feign请求发出之前，加入一些操作
+     */
     @Override
     public void apply(RequestTemplate requestTemplate) {
         // 添加来自网关的标识
@@ -21,12 +23,17 @@ public class FeignInterceptor implements RequestInterceptor {
         // 添加Same-Token请求头
         requestTemplate.header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken());
         // 添加用户身份令牌
-        try {
+        if (inWebRequest()) {
             if (StpUtil.isLogin()) {
                 requestTemplate.header(StpUtil.getTokenName(), StpUtil.getTokenValue());
             }
-        } catch (NotWebContextException e) {
-            log.debug(e.getMessage());
         }
+    }
+
+    /**
+     * 判断当前请求是否在web山下文中
+     */
+    public boolean inWebRequest() {
+        return RequestContextHolder.getRequestAttributes() != null;
     }
 }
