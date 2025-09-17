@@ -29,8 +29,8 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
      * @return 实体列表
      */
     @Transactional(readOnly = true)
-    public List<ENTITY> findAll(QueryWrapper<ENTITY> queryWrapper) {
-        return this.findTreeAll(null, queryWrapper);
+    public List<ENTITY> findAll() {
+        return this.findTreeAll(null, null);
     }
 
     /**
@@ -45,7 +45,7 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
             queryWrapper = new QueryWrapper<>();
         }
         if (parentId == null) {
-            queryWrapper.isNull(PARENT_ID);
+            queryWrapper.isNull(PARENT_ID).or().eq(PARENT_ID, "");
         } else {
             queryWrapper.eq(PARENT_ID, parentId);
         }

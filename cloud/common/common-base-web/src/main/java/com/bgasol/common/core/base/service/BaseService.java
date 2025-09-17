@@ -356,8 +356,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @return 实体列表
      */
     @Transactional(readOnly = true)
-    public List<ENTITY> findAll(QueryWrapper<ENTITY> queryWrapper) {
-        List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
+    public List<ENTITY> findAll(Wrapper<ENTITY> wrapper) {
+        List<ENTITY> entities = commonBaseMapper().selectList(wrapper);
 
         // 缓存查询结果
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
