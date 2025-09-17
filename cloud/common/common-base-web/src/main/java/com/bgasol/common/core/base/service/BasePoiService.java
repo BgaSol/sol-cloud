@@ -12,9 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +20,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Excel导入导出基础服务类
+ * 提供通用的Excel模板生成和数据导入功能
+ *
+ * @param <ENTITY>     实体类型
+ * @param <PAGE_DTO>   分页查询DTO类型
+ * @param <CREATE_DTO> 创建DTO类型
+ */
 @Transactional
 @Slf4j
 @Service
@@ -37,108 +41,25 @@ public abstract class BasePoiService<
         PAGE_DTO extends BasePageDto<ENTITY>,
         CREATE_DTO extends BaseCreateDto<ENTITY>,
         UPDATE_DTO extends BaseUpdateDto<ENTITY>> extends BaseService<ENTITY, PAGE_DTO> {
-    // DTO类缓存，避免重复反射和类加载
-    private volatile Class<? extends BaseCreateDto<ENTITY>> cachedCreateDtoClass;
-
-    // 常量定义
-    private static final String ENTITY_PACKAGE_SUFFIX = ".entity.";
-    private static final String DTO_PACKAGE_SUFFIX = ".dto.";
-    private static final String ENTITY_CLASS_SUFFIX = "Entity";
-    private static final String CREATE_DTO_CLASS_SUFFIX = "CreateDto";
-
     /**
-     * 创建模板对应的 DTO 类型（自动推断）。
-     * 规则：将 ENTITY 的包路径由 ".entity." 替换为 ".dto."，类名后缀由 "Entity" 改为 "CreateDto"。
-     * 例如：com.bgasol.model.system.role.entity.RoleEntity -> com.bgasol.model.system.role.dto.RoleCreateDto。
-     * 若推断失败或类不存在，则抛出异常。
+     * 获取创建DTO的Class对象
      *
-     * @return 对应的CreateDto类
-     * @throws BaseException 当无法获取实体类类型或推断DTO类失败时
+     * @return CreateDto类的Class对象
      */
     @SuppressWarnings("unchecked")
-    protected Class<? extends BaseCreateDto<ENTITY>> commonCreateDtoClass() {
-        if (cachedCreateDtoClass == null) {
-            synchronized (this) {
-                if (cachedCreateDtoClass == null) {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends BaseCreateDto<ENTITY>> resolved = (Class<? extends BaseCreateDto<ENTITY>>) (Class<?>) resolveDtoClass(BaseCreateDto.class, CREATE_DTO_CLASS_SUFFIX);
-                    cachedCreateDtoClass = resolved;
-                }
-            }
-        }
-        return cachedCreateDtoClass;
+    public Class<CREATE_DTO> getCreateDtoClass() {
+        return (Class<CREATE_DTO>) ResolvableType.forClass(getClass()).as(BasePoiService.class).getGeneric(2).resolve();
     }
 
     /**
-     * 通用DTO解析：基于实体类全名，将 .entity. 替换为 .dto.，并用指定后缀替换/追加类名。
-     * 例如：RoleEntity -> RoleCreateDto / RoleUpdateDto 等。
+     * 生成Excel导入模板数据
      *
-     * @param dtoSuperType 目标DTO的父类型（用于类型校验）
-     * @param targetSuffix 目标DTO类名后缀，例如 "CreateDto"
-     * @return 解析并加载后的 DTO Class
+     * @return Excel模板的字节数组
      */
-    @SuppressWarnings("unchecked")
-    protected <T> Class<? extends T> resolveDtoClass(Class<T> dtoSuperType, String targetSuffix) {
-        Class<ENTITY> entityClass = commonBaseEntityClass();
-        if (entityClass == null) {
-            throw new BaseException("无法获取实体类类型，请检查泛型参数配置");
-        }
-
-        String entityClassName = entityClass.getName();
-        String dtoClassName = inferDtoClassName(entityClassName, targetSuffix);
-
+    public byte[] generateImportTemplateBytes() {
         try {
-            ClassLoader classLoader = entityClass.getClassLoader();
-            Class<?> dtoClass = Class.forName(dtoClassName, false, classLoader);
-            if (!dtoSuperType.isAssignableFrom(dtoClass)) {
-                throw new BaseException(String.format("推断的类 %s 不是 %s 的子类", dtoClassName, dtoSuperType.getSimpleName()));
-            }
-            return (Class<? extends T>) dtoClass;
-        } catch (ClassNotFoundException e) {
-            throw new BaseException(String.format("无法找到DTO类: %s（由实体类 %s 推断）", dtoClassName, entityClassName));
-        } catch (Exception e) {
-            throw new BaseException(String.format("解析DTO类失败: %s（实体类: %s），原因: %s", dtoClassName, entityClassName, e.getMessage()));
-        }
-    }
-
-    private String inferDtoClassName(String entityClassName, String targetSuffix) {
-        String dtoClassName = entityClassName.replace(ENTITY_PACKAGE_SUFFIX, DTO_PACKAGE_SUFFIX);
-        if (dtoClassName.endsWith(ENTITY_CLASS_SUFFIX)) {
-            int suffixIndex = dtoClassName.length() - ENTITY_CLASS_SUFFIX.length();
-            dtoClassName = dtoClassName.substring(0, suffixIndex) + targetSuffix;
-        } else {
-            dtoClassName += targetSuffix;
-        }
-        return dtoClassName;
-    }
-
-    /**
-     * 直接以下载响应的形式返回导入模板
-     */
-    public ResponseEntity<byte[]> generateImportTemplateResponse() {
-        try {
-            Schema classSchema = commonBaseEntityClass().getAnnotation(Schema.class);
-            String templateName = (classSchema != null && StringUtils.isNotBlank(classSchema.description()))
-                    ? classSchema.description().replace("实体", "")
-                    : commonBaseEntityClass().getSimpleName().replace("Entity", "");
-
-            List<List<String>> head = buildExcelHeadFromEntity();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            EasyExcel.write(outputStream)
-                    .head(head)
-                    .sheet("导入模板")
-                    .doWrite(new ArrayList<>());
-
-            byte[] bytes = outputStream.toByteArray();
-            String fileName = templateName + "_导入模板.xlsx";
-            String encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded);
-            headers.setContentLength(bytes.length);
-
-            return ResponseEntity.ok().headers(headers).body(bytes);
+            List<List<String>> headers = buildExcelHeaders();
+            return generateExcelBytes(headers);
         } catch (Exception e) {
             log.error("生成导入模板失败", e);
             throw new BaseException("生成导入模板失败: " + e.getMessage());
@@ -146,70 +67,149 @@ public abstract class BasePoiService<
     }
 
     /**
-     * 基于实体类 @Schema(description) 注解构建 Excel 单层表头
-     * 规则：
-     * - 从字段的 @Schema(description) 读取列名
-     * - 保持字段声明顺序；忽略无效或空标题字段（不允许重复列名）
+     * 获取导入模板文件名
+     *
+     * @return 模板文件名
      */
-    protected List<List<String>> buildExcelHeadFromEntity() {
-        Class<?> createDtoClass = commonCreateDtoClass();
+    public String getImportTemplateFileName() {
+        return getTemplateName() + "_导入模板.xlsx";
+    }
+
+    /**
+     * 获取模板名称
+     * 子类可以重写此方法自定义模板名称
+     *
+     * @return 模板名称
+     */
+    protected String getTemplateName() {
+        Schema classSchema = commonBaseEntityClass().getAnnotation(Schema.class);
+        if (classSchema != null && StringUtils.isNotBlank(classSchema.description())) {
+            return classSchema.description().replace("实体", "");
+        }
+        return commonBaseEntityClass().getSimpleName().replace("Entity", "");
+    }
+
+    /**
+     * 生成Excel字节数组
+     *
+     * @param headers Excel表头
+     * @return Excel文件字节数组
+     * @throws IOException IO异常
+     */
+    private byte[] generateExcelBytes(List<List<String>> headers) throws IOException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            EasyExcel.write(outputStream)
+                    .head(headers)
+                    .sheet("导入模板")
+                    .doWrite(new ArrayList<>());
+            return outputStream.toByteArray();
+        }
+    }
+
+
+    /**
+     * 构建Excel表头
+     * 基于CreateDTO类的@Schema(description)注解生成表头
+     *
+     * @return Excel表头列表
+     */
+    protected List<List<String>> buildExcelHeaders() {
+        Class<CREATE_DTO> createDtoClass = getCreateDtoClass();
         List<Field> fields = FieldUtils.getAllFieldsList(createDtoClass);
 
-        List<String> titles = fields.stream()
+        List<String> columnTitles = fields.stream()
                 .map(field -> field.getAnnotation(Schema.class))
                 .filter(Objects::nonNull)
                 .map(Schema::description)
                 .filter(StringUtils::isNotBlank)
                 .toList();
 
-        if (titles.isEmpty()) {
-            throw new BaseException("未能从实体类生成任何列，请检查实体字段与 @Schema(description) 注解配置");
+        if (columnTitles.isEmpty()) {
+            throw new BaseException("未能从DTO类生成任何列，请检查DTO字段的@Schema(description)注解配置");
         }
 
-        return titles.stream()
+        // 转换为EasyExcel需要的格式（每个标题包装在List中）
+        return columnTitles.stream()
                 .map(Collections::singletonList)
                 .toList();
     }
 
     /**
-     * 通用导入：根据表头与字段或 @Schema(description) 名称匹配，逐行转换并保存实体
+     * 从Excel文件导入数据
+     *
+     * @param file Excel文件
+     * @return 导入结果
      */
-    public ImportResult importFromExcel(MultipartFile file) throws IOException {
-        Class<? extends BaseCreateDto<ENTITY>> dtoClass = commonCreateDtoClass();
-        BaseExcelImportListener<BaseCreateDto<ENTITY>, ENTITY> listener = BaseExcelImportListener.ofDto(
-                importBatchSize(),
-                // 目前还是单次插入
-                batch -> batch.forEach(this::save),
-                this::validateImportedEntity,
-                (e, rowIndex) -> log.warn("导入行异常 row={}, ex={}", rowIndex, e.toString())
-        );
+    public ImportResult importFromExcel(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BaseException("导入文件不能为空");
+        }
 
-        EasyExcel.read(file.getInputStream(), dtoClass, listener)
-                .headRowNumber(1)
-                .sheet()
-                .doRead();
+        Class<CREATE_DTO> dtoClass = getCreateDtoClass();
+        BaseExcelImportListener<CREATE_DTO, ENTITY> listener = createImportListener();
 
-        return ImportResult.builder()
-                .totalRows(listener.getCurrentRowIndex())
-                .successRows(listener.getSuccessRows())
-                .errorRows(listener.getErrors().size())
-                .errors(listener.getErrors())
-                .build();
+        try {
+            EasyExcel.read(file.getInputStream(), dtoClass, listener)
+                    .headRowNumber(1)
+                    .sheet()
+                    .doRead();
+
+            return ImportResult.builder()
+                    .totalRows(listener.getCurrentRowIndex())
+                    .successRows(listener.getSuccessRows())
+                    .errorRows(listener.getErrors().size())
+                    .errors(listener.getErrors())
+                    .build();
+        } catch (Exception e) {
+            log.error("Excel导入失败", e);
+            throw new BaseException("Excel导入失败: " + e.getMessage());
+        }
     }
 
+    /**
+     * 创建导入监听器
+     *
+     * @return 导入监听器
+     */
+    private BaseExcelImportListener<CREATE_DTO, ENTITY> createImportListener() {
+        return BaseExcelImportListener.ofDto(
+                getImportBatchSize(),
+                this::saveBatch,
+                this::validateImportedEntity,
+                (e, rowIndex) -> log.warn("导入第{}行异常: {}", rowIndex, e.getMessage())
+        );
+    }
 
     /**
-     * 实体级导入校验，返回是否通过。默认通过。
-     * 可将错误记录到 errors 列表中（如果需要外部收集，可在子类维护）。
+     * 批量保存实体
+     * 子类可以重写此方法实现批量保存优化
+     *
+     * @param entities 实体列表
+     */
+    protected void saveBatch(List<ENTITY> entities) {
+        entities.forEach(this::save);
+    }
+
+    /**
+     * 校验导入的实体
+     * 子类可以重写此方法实现自定义校验逻辑
+     *
+     * @param entity   实体
+     * @param rowIndex 行号
+     * @param errors   错误列表
+     * @return 是否通过校验
      */
     protected boolean validateImportedEntity(ENTITY entity, int rowIndex, List<String> errors) {
         return true;
     }
 
     /**
-     * 批大小，默认 200
+     * 获取导入批次大小
+     * 子类可以重写此方法自定义批次大小
+     *
+     * @return 批次大小
      */
-    protected int importBatchSize() {
+    protected int getImportBatchSize() {
         return 200;
     }
 

@@ -1,7 +1,6 @@
 package com.bgasol.web.system.role.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.controller.BasePoiController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -82,7 +82,7 @@ public class RoleController extends BasePoiController<
     @GetMapping("/template-download")
     @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
     @SaCheckPermission("role:downloadImportTemplate")
-    public ResponseEntity<byte[]> downloadImportTemplate() {
+    public ResponseEntity<InputStreamResource> downloadImportTemplate() {
         return super.downloadImportTemplate();
     }
 
