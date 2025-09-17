@@ -73,7 +73,7 @@ public class MenuController extends BaseController<
     @GetMapping("/find-by-menu-group/{group}")
     @Operation(summary = "查询指定菜单组下的菜单", operationId = "findByMenuGroup")
     @SaCheckPermission("menu:findByMenuGroup")
-    public BaseVo<List<MenuEntity>> findByMenuGroup(@PathVariable("groupName") String group) {
+    public BaseVo<List<MenuEntity>> findByMenuGroup(@PathVariable("group") String group) {
         return BaseVo.success(this.menuService.findByMenuGroup(group));
     }
 
