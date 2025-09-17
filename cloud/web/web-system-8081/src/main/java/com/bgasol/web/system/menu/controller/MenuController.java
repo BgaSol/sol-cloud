@@ -70,6 +70,13 @@ public class MenuController extends BaseController<
         return BaseVo.success(this.menuService.findAdminMenuGroup());
     }
 
+    @GetMapping("/find-by-menu-group/{group}")
+    @Operation(summary = "查询指定菜单组下的菜单", operationId = "findByMenuGroup")
+    @SaCheckPermission("menu:findByMenuGroup")
+    public BaseVo<List<MenuEntity>> findByMenuGroup(@PathVariable("groupName") String group) {
+        return BaseVo.success(this.menuService.findByMenuGroup(group));
+    }
+
     @PostMapping("/init")
     @Operation(summary = "批量初始化系统的菜单信息", operationId = "initPermission")
     @SaCheckPermission("permission:init")

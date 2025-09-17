@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseService;
-import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.web.system.menu.mapper.MenuMapper;
@@ -50,9 +49,13 @@ public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>
      */
     @Transactional(readOnly = true)
     public List<MenuEntity> findAdminMenuGroup() {
+        return this.findByMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
+    }
+
+    public List<MenuEntity> findByMenuGroup(String group) {
         // 查询左侧菜单的树
         LambdaQueryWrapper<MenuEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MenuEntity::getMenuGroup, SystemConfigValues.ADMIN_MENU_GROUP_ID);
+        queryWrapper.eq(MenuEntity::getMenuGroup, group);
         queryWrapper.isNull(MenuEntity::getParentId);
         List<MenuEntity> menuEntityList = menuMapper.selectList(queryWrapper);
         for (MenuEntity menuEntity : menuEntityList) {
