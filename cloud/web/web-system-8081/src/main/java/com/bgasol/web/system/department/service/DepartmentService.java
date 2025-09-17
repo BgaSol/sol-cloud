@@ -3,8 +3,7 @@ package com.bgasol.web.system.department.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.entity.BaseTreeEntity;
-import com.bgasol.common.core.base.service.BaseService;
+import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.web.system.department.mapper.DepartmentMapper;
 import com.bgasol.web.system.user.service.UserService;
@@ -16,11 +15,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
 
@@ -28,7 +24,7 @@ import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPART
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Transactional
 @Slf4j
-public class DepartmentService extends BaseService<DepartmentEntity, BasePageDto<DepartmentEntity>> {
+public class DepartmentService extends BaseTreeService<DepartmentEntity, BasePageDto<DepartmentEntity>> {
     private final DepartmentMapper departmentMapper;
 
     @Lazy
@@ -74,7 +70,7 @@ public class DepartmentService extends BaseService<DepartmentEntity, BasePageDto
     @Override
     public Integer delete(String id) {
         DepartmentEntity department = this.findById(id);
-        if (ObjectUtils.isEmpty(department)){
+        if (ObjectUtils.isEmpty(department)) {
             return 1;
         }
         HashSet<String> deptIds = new HashSet<>();

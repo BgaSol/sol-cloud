@@ -16,8 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
+    public static final String PARENT_ID = "parent_id";
     @Schema(description = "父id")
-    @TableField("parent_id")
+    @TableField(PARENT_ID)
     @Transient
     private String parentId;
 

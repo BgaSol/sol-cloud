@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.entity.BaseEntity;
-import com.bgasol.common.core.base.entity.BaseTreeEntity;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import com.bgasol.common.core.base.vo.PageVo;
@@ -279,15 +278,22 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             entities = commonBaseMapper().selectByIds(noneCacheIds);
         }
         // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
-        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(id -> id,
-                id -> entities.stream().filter(entity -> entity.getId().equals(id)).findFirst().orElse(
-                        (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build()))
+        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(
+                Collectors.toMap(
+                        id -> id,
+                        id -> entities.stream()
+                                .filter(entity -> entity.getId().equals(id))
+                                .findFirst()
+                                .orElse(NULL_PLACEHOLDER_OBJECT)
+                )
         );
         // 将数据库查询的结果，缓存到redis中
         mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
 
         // 合并缓存和数据库的结果 （将防止缓存穿透的空对象扔掉）
-        List<ENTITY> result = new ArrayList<>(cacheList.values().stream().filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER)).toList());
+        List<ENTITY> result = new ArrayList<>(cacheList.values().stream()
+                .filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER))
+                .toList());
         result.addAll(entities);
 
         this.findOtherTable(result);
@@ -344,10 +350,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll(QueryWrapper<ENTITY> queryWrapper) {
-        // 判断ENTITY是否是树形结构
-        if (BaseTreeEntity.class.isAssignableFrom(commonBaseEntityClass())) {
-            return this.findTreeAll(null, queryWrapper);
-        }
         List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
 
         // 缓存查询结果
@@ -358,40 +360,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                     randomizeTtl(), DEFAULT_TIME_UNIT);
         }
         this.findOtherTable(entities);
-        return entities;
-    }
-
-    /**
-     * 查询所有树形结构
-     *
-     * @param parentId 父id
-     * @return 树形结构列表
-     */
-    @Transactional(readOnly = true)
-    public List<ENTITY> findTreeAll(String parentId, QueryWrapper<ENTITY> queryWrapper) {
-        if (queryWrapper == null) {
-            queryWrapper = new QueryWrapper<>();
-        }
-        if (parentId == null) {
-            queryWrapper.isNull("parent_id");
-        } else {
-            queryWrapper.eq("parent_id", parentId);
-        }
-        List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
-
-        // 缓存查询结果
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
-            RMapCache<String, ENTITY> mapCache = getRMapCache();
-            mapCache.putAll(
-                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
-                    randomizeTtl(), DEFAULT_TIME_UNIT);
-        }
-
-        this.findOtherTable(entities);
-        for (ENTITY entity : entities) {
-            BaseTreeEntity treeEntity = (BaseTreeEntity) entity;
-            treeEntity.setChildren(this.findTreeAll(treeEntity.getId(), null));
-        }
         return entities;
     }
 
@@ -420,13 +388,15 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 暂时什么也不用做
     }
 
-    private RMapCache<String, ENTITY> getRMapCache() {
+    public RMapCache<String, ENTITY> getRMapCache() {
         String className = commonBaseEntityClass().getName();
         String key = serviceName + ":" + className;
         return commonBaseRedissonClient().getMapCache(key);
     }
 
-    private static final String NULL_PLACEHOLDER = "null";
+    public static final String NULL_PLACEHOLDER = "null";
+    @SuppressWarnings("unchecked")
+    public final ENTITY NULL_PLACEHOLDER_OBJECT = (ENTITY) ENTITY.builder().id(NULL_PLACEHOLDER).build();
 
     /**
      * 缓存查询
@@ -451,7 +421,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         entity = commonBaseMapper().selectById(id);
         if (entity == null) {
             // 查询结果为空 将空值插入缓存
-            mapCache.put(id, (ENTITY) BaseEntity.builder().id(NULL_PLACEHOLDER).build(), randomizeTtl(), DEFAULT_TIME_UNIT);
+            mapCache.put(id, NULL_PLACEHOLDER_OBJECT, randomizeTtl(), DEFAULT_TIME_UNIT);
         } else {
             // 将查询结果插入缓存
             mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);

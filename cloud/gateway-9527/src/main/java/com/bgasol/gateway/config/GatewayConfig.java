@@ -8,14 +8,12 @@ import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinition;
-import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import org.springframework.cloud.gateway.route.RouteDefinitionWriter;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -31,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GatewayConfig {
 
     private final RouteDefinitionWriter routeDefinitionWriter;
-    private final RouteDefinitionLocator routeDefinitionLocator;
     private final DiscoveryClient discoveryClient;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -81,17 +78,10 @@ public class GatewayConfig {
     }
 
     /**
-     * 获取所有路由定义
-     */
-    public Flux<RouteDefinition> getAllRoutes() {
-        return routeDefinitionLocator.getRouteDefinitions();
-    }
-
-    /**
      * 服务注册事件监听器
      */
     @EventListener(InstanceRegisteredEvent.class)
-    public void onInstanceRegistered(InstanceRegisteredEvent event) {
+    public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
         log.debug("接收到服务注册事件：{}", event.getConfig());
         syncRoutes();
     }
@@ -171,12 +161,5 @@ public class GatewayConfig {
                 })
                 .doOnError(error -> log.error("移除路由失败：routeId={}, error={}", routeId, error.getMessage()))
                 .subscribe();
-    }
-
-    /**
-     * 获取已注册的服务列表（用于监控）
-     */
-    public Set<String> getRegisteredServices() {
-        return Set.copyOf(registeredServices);
     }
 }

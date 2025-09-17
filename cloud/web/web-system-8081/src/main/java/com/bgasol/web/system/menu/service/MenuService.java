@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseService;
+import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.web.system.menu.mapper.MenuMapper;
@@ -24,7 +25,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
 @Transactional
-public class MenuService extends BaseService<MenuEntity, BasePageDto<MenuEntity>> {
+public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEntity>> {
     private final MenuMapper menuMapper;
 
     @Lazy

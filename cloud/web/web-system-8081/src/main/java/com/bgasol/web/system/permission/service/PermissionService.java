@@ -2,7 +2,7 @@ package com.bgasol.web.system.permission.service;
 
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseService;
-import com.bgasol.model.system.menu.entity.MenuEntity;
+import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.web.system.permission.mapper.PermissionMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class PermissionService extends BaseService<PermissionEntity, BasePageDto<PermissionEntity>> {
+public class PermissionService extends BaseTreeService<PermissionEntity, BasePageDto<PermissionEntity>> {
     private final PermissionMapper permissionMapper;
 
     private final RedissonClient redissonClient;
