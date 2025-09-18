@@ -6,7 +6,7 @@ CREATE TABLE file_t_file
     sort        INTEGER,
     create_time TIMESTAMP(6),
     update_time TIMESTAMP(6),
-    description VARCHAR(255),
+    description TEXT,
     deleted     INTEGER,
 
     name        VARCHAR(255), -- 文件名称
@@ -31,7 +31,7 @@ CREATE TABLE file_t_image
     sort        INTEGER,
     create_time TIMESTAMP(6),
     update_time TIMESTAMP(6),
-    description VARCHAR(255),
+    description TEXT,
     deleted     INTEGER,
 
     name        VARCHAR(255), -- 图片名称
@@ -51,7 +51,7 @@ CREATE TABLE file_t_video
     sort        INTEGER,
     create_time TIMESTAMP(6),
     update_time TIMESTAMP(6),
-    description VARCHAR(255),
+    description TEXT,
     deleted     INTEGER,
 
     name        VARCHAR(255), -- 视频名称

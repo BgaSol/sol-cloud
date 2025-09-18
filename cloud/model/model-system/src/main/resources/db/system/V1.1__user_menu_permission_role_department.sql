@@ -6,7 +6,7 @@ CREATE TABLE system_t_permission
     sort          INTEGER,
     create_time   TIMESTAMP(6),
     update_time   TIMESTAMP(6),
-    description   VARCHAR(255),
+    description   TEXT,
     deleted       INTEGER,
 
     parent_id     VARCHAR(255),
@@ -26,7 +26,7 @@ CREATE TABLE system_t_menu
     sort             INTEGER,
     create_time      TIMESTAMP(6),
     update_time      TIMESTAMP(6),
-    description      VARCHAR(255),
+    description      TEXT,
     deleted          INTEGER,
 
     parent_id        VARCHAR(255),
@@ -55,7 +55,7 @@ CREATE TABLE system_t_role
     sort        INTEGER,
     create_time TIMESTAMP(6),
     update_time TIMESTAMP(6),
-    description VARCHAR(255),
+    description TEXT,
     deleted     INTEGER,
 
     parent_id   VARCHAR(255),
@@ -74,7 +74,7 @@ CREATE TABLE system_t_department
     sort        INTEGER,
     create_time TIMESTAMP(6),
     update_time TIMESTAMP(6),
-    description VARCHAR(255),
+    description TEXT,
     deleted     INTEGER,
 
     parent_id   VARCHAR(255),
@@ -97,7 +97,7 @@ CREATE TABLE system_t_user
     sort          INTEGER,
     create_time   TIMESTAMP(6),
     update_time   TIMESTAMP(6),
-    description   VARCHAR(255),
+    description   TEXT,
     deleted       INTEGER,
 
     username      VARCHAR(255), -- 用户名
