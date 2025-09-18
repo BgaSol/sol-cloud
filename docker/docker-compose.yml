@@ -27,9 +27,11 @@ services:
     working_dir: /app
     command:
       - java
-      - -Dfile.encoding=UTF-8
-      - -jar
-      - app.jar
+      - -cp
+      - spring-boot-loader
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dloader.main=com.bgasol.gateway.GatewayApplication
+      - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
     volumes:
       - ./output/server/gateway-9527/:/app/:ro
@@ -58,9 +60,11 @@ services:
     working_dir: /app
     command:
       - java
-      - -Dfile.encoding=UTF-8
-      - -jar
-      - app.jar
+      - -cp
+      - spring-boot-loader
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dloader.main=com.bgasol.web.system.SystemApplication
+      - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
     ports:
       - "8081:8081"
@@ -101,9 +105,11 @@ services:
     working_dir: /app
     command:
       - java
-      - -Dfile.encoding=UTF-8
-      - -jar
-      - app.jar
+      - -cp
+      - spring-boot-loader
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dloader.main=com.bgasol.web.file.FileApplication
+      - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
     volumes:
       - ./output/server/web-file-8082/:/app/:ro
