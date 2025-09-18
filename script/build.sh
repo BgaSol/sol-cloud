@@ -71,9 +71,8 @@ print_step "开始后端构建 🏗️"
 cd cloud
 export MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED"
 print_info "🔨 执行 Maven 构建..."
-mvn package \
+mvn clean package \
     -DskipTests \
-    -Dmaven.build.cache.enabled=true \
     -T 6 \
     -Dspring-boot.repackage.layers.enabled=true
 cd ..
