@@ -20,7 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +27,6 @@ import java.util.Date;
 @Slf4j
 public class OssService {
     private final MinioClient minioClient;
-
-    private static final String FILE_SEPARATOR = ":";
 
     /**
      * 写入文件流到对象存储
@@ -46,7 +43,7 @@ public class OssService {
             PutObjectArgs objectArgs = PutObjectArgs
                     .builder()
                     .bucket(file.getBucket())
-                    .object(dateStr + source + file.getId() + FILE_SEPARATOR + file.getName())
+                    .object(buildObjectPath(file))
                     .stream(inputStream, file.getSize(), -1)
                     .contentType(file.getType())
                     .build();
@@ -108,13 +105,15 @@ public class OssService {
      * 构建对象存储路径
      */
     private String buildObjectPath(FileEntity file) {
-        Date createTime = file.getCreateTime();
-        LocalDate localDate = createTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        String dateStr = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "/";
-
-        String source = file.getSource();
-        source = ObjectUtils.isEmpty(source) ? "" : source + "/";
-
-        return dateStr + source + file.getId() + FILE_SEPARATOR + file.getName();
+        return "%s/%s/%s_%s".formatted(
+                file.getSource(),
+                file.getCreateTime()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE),
+                file.getId(),
+                file.getName()
+        );
     }
 }
