@@ -128,7 +128,7 @@ public class RoleService extends BasePoiService<RoleEntity,
         // 关联ID有效性校验（可选，存在即通过）
         if (permissionIds != null) {
             for (String pid : permissionIds) {
-                PermissionEntity p = permissionService.cacheSearch(pid);
+                PermissionEntity p = permissionService.findById(pid);
                 if (p == null) {
                     return addErrorAndFail(errors, rowIndex, "权限ID不存在: " + pid);
                 }
@@ -136,7 +136,7 @@ public class RoleService extends BasePoiService<RoleEntity,
         }
         if (menuIds != null) {
             for (String mid : menuIds) {
-                MenuEntity m = menuService.cacheSearch(mid);
+                MenuEntity m = menuService.findById(mid);
                 if (m == null) {
                     return addErrorAndFail(errors, rowIndex, "菜单ID不存在: " + mid);
                 }
