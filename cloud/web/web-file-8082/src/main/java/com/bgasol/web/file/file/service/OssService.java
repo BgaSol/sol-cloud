@@ -33,12 +33,6 @@ public class OssService {
      */
     public void writeFileStream(InputStream inputStream, FileEntity file) {
         try {
-            LocalDate localDate = file.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            String dateStr = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "/";
-
-            String source = file.getSource();
-            source = ObjectUtils.isEmpty(source) ? "" : source + "/";
-
             // 创建上传文件参数
             PutObjectArgs objectArgs = PutObjectArgs
                     .builder()
