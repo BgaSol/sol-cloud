@@ -1,16 +1,12 @@
 package com.bgasol.plugin.mybatisPlus.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.logging.Log;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 
 @Slf4j
-@RequiredArgsConstructor
-public class MybatisSqlLogger implements Log {
-    private final String clazz;
-
+public record MybatisSqlLogger(String clazz) implements Log {
     private String color(String msg, AnsiColor color) {
         return AnsiOutput.toString(color, msg, AnsiColor.DEFAULT);
     }

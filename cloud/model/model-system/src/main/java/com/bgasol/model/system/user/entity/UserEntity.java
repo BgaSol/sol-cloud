@@ -76,4 +76,5 @@ public class UserEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "department_id")
     private DepartmentEntity department;
+
 }

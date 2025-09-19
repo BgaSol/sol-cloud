@@ -104,7 +104,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
             throw new BaseException("获取文件HASH失败");
         }
         fileEntity.setBucket(minioConfig.getBucket());
-        fileEntity.setCreateTime(new Date());
     }
 
     /**

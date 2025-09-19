@@ -103,47 +103,4 @@ public class FileController extends BaseController<
                 .contentType(MediaType.valueOf(file.getType()))
                 .body(new InputStreamResource(ossService.readFileStream(file)));
     }
-
-    @GetMapping("/stream/{id}")
-    @Operation(summary = "在线播放文件", operationId = "streamFile")
-    @SaCheckPermission("file:stream")
-    public ResponseEntity<Resource> playVideo(
-            @PathVariable("id") String id,
-            @RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException {
-
-        FileEntity file = fileService.findById(id);
-        if (file == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // 视频总大小
-        long fileSize = file.getSize();
-        String contentType = file.getType(); // e.g. "video/mp4"
-
-        // 默认从头到尾
-        long rangeStart = 0;
-        long rangeEnd = fileSize - 1;
-
-        if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
-            String[] ranges = rangeHeader.substring(6).split("-");
-            rangeStart = Long.parseLong(ranges[0]);
-            if (ranges.length > 1 && !ranges[1].isEmpty()) {
-                rangeEnd = Long.parseLong(ranges[1]);
-            }
-        }
-
-        long contentLength = rangeEnd - rangeStart + 1;
-
-        InputStream inputStream = ossService.readFileStream(file);
-        inputStream.skip(rangeStart); // 跳到起始位置
-
-        InputStreamResource resource = new InputStreamResource(inputStream);
-
-        return ResponseEntity.status(rangeHeader == null ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT)
-                .header(HttpHeaders.CONTENT_TYPE, contentType)
-                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
-                .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize)
-                .body(resource);
-    }
 }

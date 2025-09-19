@@ -1,12 +1,13 @@
 package com.bgasol.common.core.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bgasol.common.core.base.entity.BaseEntity;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
-public interface MyBaseMapper<T> extends BaseMapper<T> {
+public interface MyBaseMapper<T extends BaseEntity> extends BaseMapper<T> {
     /**
      * 查询中间表数据
      *

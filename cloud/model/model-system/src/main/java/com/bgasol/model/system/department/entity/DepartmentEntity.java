@@ -3,9 +3,12 @@ package com.bgasol.model.system.department.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -42,4 +45,21 @@ public class DepartmentEntity extends BaseTreeEntity<DepartmentEntity> {
     @Schema(description = "部门图标id 关联图片id")
     @TableField("icon_id")
     private String iconId;
+
+    /**
+     * 递归获取当前部门下的所有子部门
+     */
+    @JsonIgnore
+    @Schema(hidden = true)
+    public List<DepartmentEntity> getAllChildren() {
+        List<DepartmentEntity> allChildren = new java.util.ArrayList<>();
+        allChildren.add(this);
+        if (this.getChildren() != null && !this.getChildren().isEmpty()) {
+            for (DepartmentEntity child : this.getChildren()) {
+                allChildren.addAll(child.getAllChildren());
+            }
+        }
+        return allChildren;
+    }
+
 }

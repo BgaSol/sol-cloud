@@ -23,7 +23,7 @@ public class FeignInterceptor implements RequestInterceptor {
         // 添加Same-Token请求头
         requestTemplate.header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken());
         // 添加用户身份令牌
-        if (inWebRequest()) {
+        if (InWebRequest()) {
             if (StpUtil.isLogin()) {
                 requestTemplate.header(StpUtil.getTokenName(), StpUtil.getTokenValue());
             }
@@ -33,7 +33,7 @@ public class FeignInterceptor implements RequestInterceptor {
     /**
      * 判断当前请求是否在web请求的下文中
      */
-    public boolean inWebRequest() {
+    public static boolean InWebRequest() {
         return RequestContextHolder.getRequestAttributes() != null;
     }
 }

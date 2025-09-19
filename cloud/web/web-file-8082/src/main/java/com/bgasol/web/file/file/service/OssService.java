@@ -69,7 +69,6 @@ public class OssService {
     @Transactional(readOnly = true)
     public InputStream readFileStream(FileEntity file) {
         try {
-
             GetObjectArgs build = GetObjectArgs
                     .builder()
                     .bucket(file.getBucket())
@@ -91,7 +90,6 @@ public class OssService {
      */
     public void removeFile(FileEntity file) {
         try {
-
             RemoveObjectArgs build = RemoveObjectArgs
                     .builder()
                     .bucket(file.getBucket())

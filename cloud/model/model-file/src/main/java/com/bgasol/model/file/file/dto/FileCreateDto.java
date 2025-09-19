@@ -11,6 +11,8 @@ import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
+
 import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_IMPL;
 
 @Setter
@@ -38,9 +40,11 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
-        if (ObjectUtils.isEmpty(this.source)) {
+        FileEntity entity = super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
+        if (ObjectUtils.isEmpty(entity.getSource())) {
             this.source = "default";
         }
-        return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
+        entity.setCreateTime(new Date());
+        return entity;
     }
 }
