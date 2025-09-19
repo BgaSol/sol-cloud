@@ -53,6 +53,6 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     public InputStream videoStreamFindById(String id) {
         VideoEntity imageEntity = this.findById(id);
         FileEntity file = imageEntity.getFile();
-        return ossService.readFileStream(file.getBucket(), file.getId(), file.getName());
+        return ossService.readFileStream(file);
     }
 }

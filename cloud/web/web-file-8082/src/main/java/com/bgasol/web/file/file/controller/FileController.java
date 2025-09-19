@@ -101,7 +101,7 @@ public class FileController extends BaseController<
                         StandardCharsets.UTF_8
                 ))
                 .contentType(MediaType.valueOf(file.getType()))
-                .body(new InputStreamResource(ossService.readFileStream(file.getBucket(), file.getId(), file.getName())));
+                .body(new InputStreamResource(ossService.readFileStream(file)));
     }
 
     @GetMapping("/stream/{id}")
@@ -134,7 +134,7 @@ public class FileController extends BaseController<
 
         long contentLength = rangeEnd - rangeStart + 1;
 
-        InputStream inputStream = ossService.readFileStream(file.getBucket(), file.getId(), file.getName());
+        InputStream inputStream = ossService.readFileStream(file);
         inputStream.skip(rangeStart); // 跳到起始位置
 
         InputStreamResource resource = new InputStreamResource(inputStream);

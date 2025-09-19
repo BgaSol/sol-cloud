@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +29,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
     private final FileMapper fileMapper;
 
     private final MinioConfig minioConfig;
-
-    private final MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
 
     private final OssService ossService;
 
@@ -58,7 +57,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         fileEntity = this.save(fileEntity);
         // 上传文件
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), inputStream, fileEntity.getSize(), fileEntity.getType());
+            ossService.writeFileStream(inputStream, fileEntity);
         } catch (IOException e) {
             throw new BaseException("上传文件失败");
         }
@@ -75,7 +74,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         fileEntity = this.update(fileEntity);
         // 上传文件
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            ossService.writeFileStream(fileEntity.getBucket(), fileEntity.getId(), fileEntity.getName(), inputStream, fileEntity.getSize(), fileEntity.getType());
+            ossService.writeFileStream(inputStream, fileEntity);
         } catch (IOException e) {
             throw new BaseException("上传文件失败");
         }
@@ -105,6 +104,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
             throw new BaseException("获取文件HASH失败");
         }
         fileEntity.setBucket(minioConfig.getBucket());
+        fileEntity.setCreateTime(new Date());
     }
 
     /**
@@ -147,7 +147,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         if (fileEntity == null) {
             throw new BaseException("文件不存在");
         }
-        ossService.removeFile(fileEntity.getBucket(), fileEntity.getId());
+        ossService.removeFile(fileEntity);
         return super.delete(id);
     }
 
@@ -170,6 +170,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
      */
     public InputStream fileStreamFindById(String id) {
         FileEntity file = this.findById(id);
-        return ossService.readFileStream(file.getBucket(), file.getId(), file.getName());
+        return ossService.readFileStream(file);
     }
 }

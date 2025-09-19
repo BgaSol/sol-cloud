@@ -9,16 +9,11 @@ export type FileUpdateDto = {
     /**
      * 主键
      */
-    id: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 描述
-     */
-    description?: string;
+    id?: string;
     uploadFile?: Blob;
+    /**
+     * 文件名称
+     */
     name?: string;
     /**
      * 文件状态
@@ -32,5 +27,13 @@ export type FileUpdateDto = {
      * 文件来源
      */
     source?: string;
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 描述
+     */
+    description?: string;
 };
 

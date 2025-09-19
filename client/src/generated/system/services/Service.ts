@@ -430,10 +430,10 @@ export class Service {
     }
     /**
      * 下载角色导入模板
-     * @returns string OK
+     * @returns binary OK
      * @throws ApiError
      */
-    public static downloadRoleImportTemplate(): CancelablePromise<string> {
+    public static downloadRoleImportTemplate(): CancelablePromise<Blob> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/role/template-download',
@@ -503,6 +503,27 @@ export class Service {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/menu/routes',
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 查询指定菜单组下的菜单
+     * @param group
+     * @returns BaseVoListMenuEntity OK
+     * @throws ApiError
+     */
+    public static findByMenuGroup(
+        group: string,
+    ): CancelablePromise<BaseVoListMenuEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/menu/find-by-menu-group/{group}',
+            path: {
+                'group': group,
+            },
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,

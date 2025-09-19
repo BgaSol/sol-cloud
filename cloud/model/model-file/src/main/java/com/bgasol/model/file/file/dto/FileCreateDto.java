@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_IMPL;
@@ -37,6 +38,9 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
+        if (ObjectUtils.isEmpty(this.source)) {
+            this.source = "default";
+        }
         return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
     }
 }

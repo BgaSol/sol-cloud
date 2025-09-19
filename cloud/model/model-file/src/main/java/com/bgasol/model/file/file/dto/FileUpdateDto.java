@@ -32,9 +32,6 @@ public class FileUpdateDto {
     @Schema(description = "文件后缀")
     private String suffix;
 
-    @Schema(description = "文件来源")
-    private String source;
-
     @Schema(description = "排序")
     private Integer sort;
 

@@ -85,7 +85,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     public InputStream imageStreamFindById(String id) {
         ImageEntity imageEntity = this.findById(id);
         FileEntity file = imageEntity.getFile();
-        return ossService.readFileStream(file.getBucket(), file.getId(), file.getName());
+        return ossService.readFileStream(file);
     }
 
     /**

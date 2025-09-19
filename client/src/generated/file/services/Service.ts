@@ -7,16 +7,61 @@ import type { BaseVoImageEntity } from '../models/BaseVoImageEntity';
 import type { BaseVoInteger } from '../models/BaseVoInteger';
 import type { BaseVoPageVoFileEntity } from '../models/BaseVoPageVoFileEntity';
 import type { BaseVoPageVoImageEntity } from '../models/BaseVoPageVoImageEntity';
+import type { BaseVoPageVoVideoEntity } from '../models/BaseVoPageVoVideoEntity';
+import type { BaseVoVideoEntity } from '../models/BaseVoVideoEntity';
 import type { FileCreateDto } from '../models/FileCreateDto';
 import type { FilePageDto } from '../models/FilePageDto';
 import type { FileUpdateDto } from '../models/FileUpdateDto';
 import type { ImageCreateDto } from '../models/ImageCreateDto';
 import type { ImagePageDto } from '../models/ImagePageDto';
 import type { ImageUpdateDto } from '../models/ImageUpdateDto';
+import type { VideoCreateDto } from '../models/VideoCreateDto';
+import type { VideoPageDto } from '../models/VideoPageDto';
+import type { VideoUpdateDto } from '../models/VideoUpdateDto';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class Service {
+    /**
+     * 更新视频
+     * @param requestBody
+     * @returns BaseVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static updateVideo(
+        requestBody: VideoUpdateDto,
+    ): CancelablePromise<BaseVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'PUT',
+            url: '/video',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 新增视频
+     * @param requestBody
+     * @returns BaseVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static saveVideo(
+        requestBody: VideoCreateDto,
+    ): CancelablePromise<BaseVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/video',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
     /**
      * 更新图片
      * @param requestBody
@@ -59,19 +104,18 @@ export class Service {
     }
     /**
      * 更新|上传文件
-     * @param fileUpdateDto
+     * @param formData
      * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
     public static updateFile(
-        fileUpdateDto: FileUpdateDto,
+        formData?: FileUpdateDto,
     ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/file',
-            query: {
-                'fileUpdateDto': fileUpdateDto,
-            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,
@@ -80,19 +124,38 @@ export class Service {
     }
     /**
      * 保存|上传文件
-     * @param fileCreateDto
+     * @param formData
      * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
     public static saveFile(
-        fileCreateDto: FileCreateDto,
+        formData?: FileCreateDto,
     ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/file',
-            query: {
-                'fileCreateDto': fileCreateDto,
+            formData: formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
             },
+        });
+    }
+    /**
+     * 分页查询视频
+     * @param requestBody
+     * @returns BaseVoPageVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static findPageVideo(
+        requestBody: VideoPageDto,
+    ): CancelablePromise<BaseVoPageVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/video/page',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
                 500: `业务异常`,
@@ -140,6 +203,48 @@ export class Service {
         });
     }
     /**
+     * 查询视频
+     * @param id
+     * @returns BaseVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static findVideoById(
+        id: string,
+    ): CancelablePromise<BaseVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/video/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 下载视频
+     * @param id
+     * @returns binary OK
+     * @throws ApiError
+     */
+    public static downloadVideo(
+        id: string,
+    ): CancelablePromise<Blob> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/video/download/{id}',
+            path: {
+                'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 查询图片
      * @param id
      * @returns BaseVoImageEntity OK
@@ -166,7 +271,7 @@ export class Service {
      * @returns binary OK
      * @throws ApiError
      */
-    public static downloadFile(
+    public static downloadImage(
         id: string,
     ): CancelablePromise<Blob> {
         return __request(OpenAPI, {
@@ -203,12 +308,38 @@ export class Service {
         });
     }
     /**
+     * 在线播放文件
+     * @param id
+     * @param range
+     * @returns binary OK
+     * @throws ApiError
+     */
+    public static streamFile(
+        id: string,
+        range?: string,
+    ): CancelablePromise<Blob> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/file/stream/{id}',
+            path: {
+                'id': id,
+            },
+            headers: {
+                'Range': range,
+            },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 下载文件
      * @param id
      * @returns binary OK
      * @throws ApiError
      */
-    public static downloadFile1(
+    public static downloadFile(
         id: string,
     ): CancelablePromise<Blob> {
         return __request(OpenAPI, {
@@ -216,6 +347,27 @@ export class Service {
             url: '/file/download/{id}',
             path: {
                 'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 删除视频
+     * @param ids
+     * @returns BaseVoInteger<any> OK
+     * @throws ApiError
+     */
+    public static deleteVideo(
+        ids: string,
+    ): CancelablePromise<BaseVoInteger> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/video/{ids}',
+            path: {
+                'ids': ids,
             },
             errors: {
                 400: `参数校验异常`,
