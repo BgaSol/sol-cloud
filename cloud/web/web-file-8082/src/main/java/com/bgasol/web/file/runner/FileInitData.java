@@ -40,6 +40,7 @@ public class FileInitData implements ApplicationRunner {
                                 .icon("IconParkFileCabinet")
                                 .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/file")
                                 .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_file")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
                                 .build(),
                         MenuEntity.builder()
                                 .id("image")
@@ -49,6 +50,7 @@ public class FileInitData implements ApplicationRunner {
                                 .icon("IconParkPic")
                                 .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/image")
                                 .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_image")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
                                 .build()
                 )).build();
         menuApi.init(fileServiceMenu);
