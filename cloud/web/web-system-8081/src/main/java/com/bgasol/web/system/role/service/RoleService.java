@@ -17,8 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +93,9 @@ public class RoleService extends BasePoiService<RoleEntity,
     }
 
     private List<String> toIds(List<? extends BaseEntity> list) {
-        if (list == null) return null;
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyList();
+        }
         return list.stream().map(BaseEntity::getId).collect(Collectors.toList());
     }
 
