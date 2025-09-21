@@ -9,7 +9,6 @@ import com.bgasol.model.file.video.dto.VideoCreateDto;
 import com.bgasol.model.file.video.dto.VideoPageDto;
 import com.bgasol.model.file.video.dto.VideoUpdateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
-import com.bgasol.web.file.file.service.OssService;
 import com.bgasol.web.file.video.service.VideoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,8 +34,6 @@ public class VideoController extends BaseController<
         VideoCreateDto,
         VideoUpdateDto> {
     private final VideoService videoService;
-
-    private final OssService ossService;
 
     @Override
     public VideoService commonBaseService() {
@@ -84,7 +81,7 @@ public class VideoController extends BaseController<
     }
 
     @SneakyThrows
-    @GetMapping("/{id}")
+    @GetMapping("/play/{id}")
     @Operation(summary = "在线播放文件", operationId = "playVideo")
     @SaCheckPermission("video:playVideo")
     public ResponseEntity<Resource> playVideo(
