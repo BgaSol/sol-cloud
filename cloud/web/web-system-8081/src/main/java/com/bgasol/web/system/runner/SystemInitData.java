@@ -15,7 +15,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -40,7 +39,6 @@ public class SystemInitData implements ApplicationRunner {
     }
 
     public void initMenus() {
-        List<MenuEntity> systemServiceMenuChildren = new ArrayList<>();
         String systemServiceId = "system-service";
         MenuEntity systemServiceMenu = MenuEntity.builder()
                 .id(systemServiceId)

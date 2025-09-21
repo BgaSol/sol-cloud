@@ -1,7 +1,6 @@
 package com.bgasol.web.system.permission.service;
 
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.web.system.permission.mapper.PermissionMapper;
