@@ -7,7 +7,6 @@ import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.plugin.minio.config.MinioConfig;
 import com.bgasol.web.file.file.mapper.FileMapper;
 import io.micrometer.common.util.StringUtils;
-import jakarta.activation.MimetypesFileTypeMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
