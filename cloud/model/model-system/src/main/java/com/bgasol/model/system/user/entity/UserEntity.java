@@ -2,6 +2,7 @@ package com.bgasol.model.system.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.bgasol.common.core.base.bo.ScopeField;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
@@ -76,6 +77,6 @@ public class UserEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @ScopeField
     private DepartmentEntity department;
-
 }

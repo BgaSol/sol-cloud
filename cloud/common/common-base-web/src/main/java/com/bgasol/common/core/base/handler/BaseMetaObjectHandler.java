@@ -1,4 +1,4 @@
-package com.bgasol.plugin.mybatisPlus.config;
+package com.bgasol.common.core.base.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.commons.lang3.ObjectUtils;

@@ -18,12 +18,17 @@ public class FeignInterceptor implements RequestInterceptor {
      */
     @Override
     public void apply(RequestTemplate requestTemplate) {
+
         // 添加来自网关的标识
         requestTemplate.header(GatewayConfigValues.XFromGateway, "false");
         // 添加Same-Token请求头
         requestTemplate.header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken());
         // 添加用户身份令牌
         if (InWebRequest()) {
+            // 如果请求来自"UserApi#findById" 则不处理
+            if ("UserApi#findById(String)".equals(requestTemplate.methodMetadata().configKey())) {
+                return;
+            }
             if (StpUtil.isLogin()) {
                 requestTemplate.header(StpUtil.getTokenName(), StpUtil.getTokenValue());
             }
