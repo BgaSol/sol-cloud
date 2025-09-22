@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "用户实体类")
 @TableName("system_t_user")
+@Entity
 public class UserEntity extends BaseEntity {
 
     @Schema(description = "用户名")

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.file.file.entity.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
@@ -19,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @TableName("file_t_video")
 @Schema(description = "视频实体类")
+@Entity
 public class VideoEntity extends BaseEntity {
     @Schema(description = "视频名称")
     @TableField("name")

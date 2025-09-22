@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.file.file.entity.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Setter
@@ -17,6 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @TableName("file_t_image")
 @Schema(description = "图片实体类")
+@Entity
 public class ImageEntity extends BaseEntity {
     @Schema(description = "图片名称")
     @TableField("name")

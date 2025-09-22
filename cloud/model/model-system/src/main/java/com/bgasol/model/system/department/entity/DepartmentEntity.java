@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "部门实体")
 @TableName("system_t_department")
+@Entity
 public class DepartmentEntity extends BaseTreeEntity<DepartmentEntity> {
 
     @Schema(description = "部门名")

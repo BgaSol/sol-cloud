@@ -2,9 +2,9 @@ package com.bgasol.common.core.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +18,7 @@ import java.util.Date;
 @SuperBuilder
 @NoArgsConstructor
 @MappedSuperclass
+@Entity
 public class BaseEntity implements Serializable {
     @Id
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

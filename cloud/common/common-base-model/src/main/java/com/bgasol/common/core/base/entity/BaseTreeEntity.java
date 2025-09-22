@@ -15,6 +15,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @MappedSuperclass
+@Entity
 public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
     public static final String PARENT_ID = "parent_id";
     @Schema(description = "父id")
