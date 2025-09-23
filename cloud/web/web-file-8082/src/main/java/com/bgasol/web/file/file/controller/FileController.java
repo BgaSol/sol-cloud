@@ -90,7 +90,6 @@ public class FileController extends BaseController<
     public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
         FileEntity file = fileService.findById(id);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
                         fileService.getFileName(file),
                         StandardCharsets.UTF_8

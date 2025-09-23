@@ -89,7 +89,6 @@ public class ImageController extends BaseController<
         ImageEntity imageEntity = imageService.findById(id);
         FileEntity file = imageEntity.getFile();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
                         fileService.getFileName(file),
                         StandardCharsets.UTF_8

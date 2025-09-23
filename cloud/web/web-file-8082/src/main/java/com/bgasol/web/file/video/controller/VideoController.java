@@ -88,35 +88,34 @@ public class VideoController extends BaseController<
             @PathVariable("id") String id,
             @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
-        FileEntity file = videoService.findById(id).getFile();
-        // 视频总大小
-        long fileSize = file.getSize();
-        String contentType = file.getType();
+        String contentType = videoService.findById(id).getFile().getType();
 
-        // 默认从头到尾
-        long rangeStart = 0;
-        long rangeEnd = fileSize - 1;
-
+        // 获取输入流（你的视频数据来源，不要求知道大小）
+        InputStream inputStream;
         if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
+            // 如果后端能支持 Range，就自己实现 skip
             String[] ranges = rangeHeader.substring(6).split("-");
-            rangeStart = Long.parseLong(ranges[0]);
-            if (ranges.length > 1 && !ranges[1].isEmpty()) {
-                rangeEnd = Long.parseLong(ranges[1]);
-            }
+            long rangeStart = Long.parseLong(ranges[0]);
+
+            inputStream = videoService.videoStreamFindById(id);
+            inputStream.skip(rangeStart);
+
+            // 注意：这里没法知道 end 和总大小，只能返回 open-ended 的 Content-Range
+            // 规范允许写成 "bytes {start}-/ * "
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
+                    .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-/*")
+                    .body(new InputStreamResource(inputStream));
+
+        } else {
+            // 普通全量流式返回
+            inputStream = videoService.videoStreamFindById(id);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
+                    .body(new InputStreamResource(inputStream));
         }
-
-        long contentLength = rangeEnd - rangeStart + 1;
-
-        InputStream inputStream = videoService.videoStreamFindById(id);
-        inputStream.skip(rangeStart); // 跳到起始位置
-
-        InputStreamResource resource = new InputStreamResource(inputStream);
-
-        return ResponseEntity.status(rangeHeader == null ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT)
-                .header(HttpHeaders.CONTENT_TYPE, contentType)
-                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
-                .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize)
-                .body(resource);
     }
 }

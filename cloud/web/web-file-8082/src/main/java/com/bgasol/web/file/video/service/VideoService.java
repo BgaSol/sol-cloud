@@ -4,8 +4,8 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.video.dto.VideoPageDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
-import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.plugin.minio.service.OssService;
+import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.video.mapper.VideoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     }
 
     /**
-     * 读取图片文件流
+     * 读取视频文件流
      */
     public InputStream videoStreamFindById(String id) {
         VideoEntity imageEntity = this.findById(id);
