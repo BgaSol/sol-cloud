@@ -91,7 +91,7 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             finalExpression = equalsTo;
         }
 
-        if (scopeOption.isDepartmentList()) {
+        if (scopeOption.isUserList()) {
             PlainSelect plainSelect = new PlainSelect();
             plainSelect.addSelectItems(new SelectItem<>(new StringValue("1")));
 
@@ -103,12 +103,13 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             joinCondition.setRightExpression(new Column(table, "id"));
 
             EqualsTo equalsTo = new EqualsTo();
-            joinCondition.setLeftExpression(new Column(subTable, scopeOption.getUserListJoinColumnName()));
-            joinCondition.setRightExpression(new StringValue(userId));
+            equalsTo.setLeftExpression(new Column(subTable, scopeOption.getUserListInverseJoinColumnName()));
+            equalsTo.setRightExpression(new StringValue(userId));
 
             plainSelect.setWhere(new AndExpression(joinCondition, equalsTo));
 
-            ParenthesedSelect parenthesedSelect = new ParenthesedSelect(plainSelect);
+            ParenthesedSelect parenthesedSelect = new ParenthesedSelect();
+            parenthesedSelect.setSelect(plainSelect);
             ExistsExpression existsExpression = new ExistsExpression();
             existsExpression.setRightExpression(parenthesedSelect);
 
@@ -155,7 +156,8 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
 
             plainSelect.setWhere(new AndExpression(joinCondition, inCondition));
 
-            ParenthesedSelect parenthesedSelect = new ParenthesedSelect(plainSelect);
+            ParenthesedSelect parenthesedSelect = new ParenthesedSelect();
+            parenthesedSelect.setSelect(plainSelect);
             ExistsExpression existsExpression = new ExistsExpression();
             existsExpression.setRightExpression(parenthesedSelect);
             finalExpression = finalExpression == null ? existsExpression : new AndExpression(finalExpression, existsExpression);
