@@ -5,11 +5,11 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.plugin.minio.config.MinioConfig;
+import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.mapper.FileMapper;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -97,7 +97,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         fileEntity.setSize(multipartFile.getSize());
         // 获取文件HASH
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            fileEntity.setHash(this.getFileHash(inputStream));
+            fileEntity.setHash(ossService.getFileHash(inputStream));
         } catch (IOException e) {
             throw new BaseException("获取文件HASH失败");
         }
@@ -146,20 +146,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         }
         ossService.removeFile(fileEntity);
         return super.delete(id);
-    }
-
-    /**
-     * 获取文件HASH
-     */
-    public String getFileHash(InputStream inputStream) {
-        String hash;
-        try {
-            hash = DigestUtils.sha256Hex(inputStream);
-            inputStream.close();
-        } catch (IOException e) {
-            throw new BaseException("获取文件HASH失败");
-        }
-        return hash;
     }
 
     /**

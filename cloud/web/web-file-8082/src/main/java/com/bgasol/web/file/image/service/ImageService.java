@@ -6,7 +6,7 @@ import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
 import com.bgasol.web.file.file.service.FileService;
-import com.bgasol.web.file.file.service.OssService;
+import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

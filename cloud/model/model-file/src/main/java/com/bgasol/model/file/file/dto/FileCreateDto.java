@@ -24,8 +24,11 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "要上传的文件块")
     private MultipartFile uploadFile;
 
-    @Schema(description = "文件名称")
+    @Schema(description = "文件名称(包含文件后缀)")
     private String name;
+
+    @Schema(description = "文件hash")
+    private String hash;
 
     @Schema(description = "文件状态")
     private String status;

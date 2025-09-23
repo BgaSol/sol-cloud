@@ -1,4 +1,4 @@
-package com.bgasol.web.file.file.service;
+package com.bgasol.plugin.minio.service;
 
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.model.file.file.entity.FileEntity;
@@ -9,8 +9,8 @@ import io.minio.RemoveObjectArgs;
 import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class OssService {
     private final MinioClient minioClient;
@@ -55,7 +54,6 @@ public class OssService {
      *
      * @return 文件流
      */
-    @Transactional(readOnly = true)
     public InputStream readFileStream(FileEntity file) {
         try {
             GetObjectArgs build = GetObjectArgs
@@ -107,5 +105,19 @@ public class OssService {
                 file.getId(),
                 file.getName()
         );
+    }
+
+    /**
+     * 获取文件HASH
+     */
+    public String getFileHash(InputStream inputStream) {
+        String hash;
+        try {
+            hash = DigestUtils.sha256Hex(inputStream);
+            inputStream.close();
+        } catch (IOException e) {
+            throw new BaseException("获取文件HASH失败");
+        }
+        return hash;
     }
 }

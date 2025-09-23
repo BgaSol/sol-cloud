@@ -19,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 public class FileEntity extends BaseEntity {
     @TableField("name")
-    @Schema(description = "文件名称")
+    @Schema(description = "文件名称(包含文件后缀)")
     private String name;
 
     @Schema(description = "文件地址")

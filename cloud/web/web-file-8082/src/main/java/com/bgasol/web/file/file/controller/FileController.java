@@ -10,7 +10,7 @@ import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.web.file.file.service.FileService;
-import com.bgasol.web.file.file.service.OssService;
+import com.bgasol.plugin.minio.service.OssService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
