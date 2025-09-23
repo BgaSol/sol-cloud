@@ -1,4 +1,4 @@
-package com.bgasol.common.core.base.bo;
+package com.bgasol.model.system.user.bo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
