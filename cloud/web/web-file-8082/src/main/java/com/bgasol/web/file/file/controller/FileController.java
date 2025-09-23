@@ -9,8 +9,8 @@ import com.bgasol.model.file.file.dto.FileCreateDto;
 import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
-import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.plugin.minio.service.OssService;
+import com.bgasol.web.file.file.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -61,12 +61,11 @@ public class FileController extends BaseController<
         return BaseVo.success(save, "文件上传成功");
     }
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "更新|上传文件", operationId = "updateFile")
+    @PutMapping
+    @Operation(summary = "更新文件状态", operationId = "updateFile")
     @SaCheckPermission("file:update")
-    public BaseVo<FileEntity> update(FileUpdateDto fileUpdateDto) {
-        FileEntity update = fileService.update(fileUpdateDto.getUploadFile(), fileUpdateDto.toEntity());
-        return BaseVo.success(update, "文件更新成功");
+    public BaseVo<FileEntity> update(@RequestBody FileUpdateDto fileUpdateDto) {
+        return super.update(fileUpdateDto);
     }
 
     @Override

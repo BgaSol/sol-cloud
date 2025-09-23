@@ -4,6 +4,7 @@ import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import com.bgasol.model.file.file.entity.FileStaus;
 import com.bgasol.plugin.minio.config.MinioConfig;
 import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.mapper.FileMapper;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,59 +57,47 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         }
 
         if (ObjectUtils.isEmpty(multipartFile)) {
+
+            if (ObjectUtils.isEmpty(fileEntity.getType())) {
+                String fileType = MediaTypeFactory
+                        .getMediaType(fileEntity.getName())
+                        .orElse(MediaType.APPLICATION_OCTET_STREAM)
+                        .toString();
+                fileEntity.setType(fileType);
+            }
+
+            if (ObjectUtils.isEmpty(fileEntity.getSuffix())) {
+                fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
+            }
+
+            fileEntity.setStatus(FileStaus.LOADING);
             return this.save(fileEntity);
-        }
-        // 获取文件元数据
-        getFileMateDate(multipartFile, fileEntity);
-        // 保存文件实体
-        fileEntity = this.save(fileEntity);
-        // 上传文件
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            ossService.writeFileStream(inputStream, fileEntity);
-        } catch (IOException e) {
-            throw new BaseException("上传文件失败");
-        }
-        return fileEntity;
-    }
+        } else {
 
-    public FileEntity update(MultipartFile multipartFile, FileEntity fileEntity) {
-        if (ObjectUtils.isEmpty(multipartFile)) {
-            return this.update(fileEntity);
-        }
-        // 获取文件元数据
-        getFileMateDate(multipartFile, fileEntity);
-        // 更新文件实体
-        fileEntity = this.update(fileEntity);
-        // 上传文件
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            ossService.writeFileStream(inputStream, fileEntity);
-        } catch (IOException e) {
-            throw new BaseException("上传文件失败");
-        }
-        return fileEntity;
-    }
-
-    /**
-     * 获取文件元数据
-     * 若entity中没有 文件名、文件类型、文件后缀 则从文件流中获取
-     */
-    public void getFileMateDate(MultipartFile multipartFile, FileEntity fileEntity) {
-        if (ObjectUtils.isEmpty(fileEntity.getName())) {
             fileEntity.setName(multipartFile.getOriginalFilename());
-        }
-        if (ObjectUtils.isEmpty(fileEntity.getType())) {
             fileEntity.setType(multipartFile.getContentType());
-        }
-        if (ObjectUtils.isEmpty(fileEntity.getSuffix())) {
-            fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
-        }
 
-        fileEntity.setSize(multipartFile.getSize());
-        // 获取文件HASH
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            fileEntity.setHash(ossService.getFileHash(inputStream));
-        } catch (IOException e) {
-            throw new BaseException("获取文件HASH失败");
+            fileEntity.setSuffix(this.getSuffix(fileEntity.getName()));
+
+            fileEntity.setSize(multipartFile.getSize());
+            // 获取文件HASH
+            try (InputStream inputStream = multipartFile.getInputStream()) {
+                fileEntity.setHash(ossService.getFileHash(inputStream));
+            } catch (IOException e) {
+                throw new BaseException("获取文件HASH失败");
+            }
+
+            // 保存文件实体
+            fileEntity.setStatus(FileStaus.SUCCESS);
+            fileEntity = this.save(fileEntity);
+
+            // 上传文件
+            try (InputStream inputStream = multipartFile.getInputStream()) {
+                ossService.writeFileStream(inputStream, fileEntity);
+            } catch (IOException e) {
+                throw new BaseException("上传文件失败");
+            }
+            return fileEntity;
         }
     }
 

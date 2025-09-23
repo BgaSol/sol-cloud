@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,7 +38,8 @@ public class FileEntity extends BaseEntity {
 
     @Schema(description = "文件状态")
     @TableField("status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FileStaus status;
 
     @Schema(description = "文件后缀")
     @TableField("suffix")

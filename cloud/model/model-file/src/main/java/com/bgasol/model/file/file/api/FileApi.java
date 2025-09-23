@@ -19,16 +19,10 @@ public interface FileApi {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     BaseVo<FileEntity> save(FileCreateDto fileCreateDto);
 
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    BaseVo<FileEntity> update(FileUpdateDto fileUpdateDto);
-
     @DeleteMapping("/{ids}")
     BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
 
     @GetMapping("/{id}")
     BaseVo<FileEntity> findById(@PathVariable("id") String id);
-
-    @GetMapping(value = "/download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Response download(@PathVariable("id") String id);
 
 }

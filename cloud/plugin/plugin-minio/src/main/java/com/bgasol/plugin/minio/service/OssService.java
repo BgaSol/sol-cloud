@@ -10,6 +10,7 @@ import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,13 +30,17 @@ public class OssService {
     public void writeFileStream(InputStream inputStream, FileEntity file) {
         try {
             // 创建上传文件参数
-            PutObjectArgs objectArgs = PutObjectArgs
+            PutObjectArgs.Builder builder = PutObjectArgs
                     .builder()
                     .bucket(file.getBucket())
-                    .object(buildObjectPath(file))
-                    .stream(inputStream, -1, 64 * 1024 * 1024)
-                    .contentType(file.getType())
-                    .build();
+                    .object(buildObjectPath(file));
+            if (ObjectUtils.isNotEmpty(file.getSize())) {
+                builder.stream(inputStream, file.getSize(), -1);
+            } else {
+                builder.stream(inputStream, -1, 64 * 1024 * 1024);
+            }
+            builder.contentType(file.getType());
+            PutObjectArgs objectArgs = builder.build();
             // 上传文件到minio id 相同会覆盖
             minioClient.putObject(objectArgs);
             inputStream.close();
