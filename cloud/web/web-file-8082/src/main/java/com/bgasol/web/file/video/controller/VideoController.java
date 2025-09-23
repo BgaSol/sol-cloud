@@ -102,7 +102,6 @@ public class VideoController extends BaseController<
         String bucket = file.getBucket();
         String objectName = ossService.buildObjectPath(file);
 
-        // ----------- 用 MinIO 获取对象大小（HEAD / stat） -----------
         StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
                 .bucket(bucket)
                 .object(objectName)

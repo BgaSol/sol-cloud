@@ -9,12 +9,17 @@ import com.bgasol.model.file.image.dto.ImageCreateDto;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.dto.ImageUpdateDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
+import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.image.service.ImageService;
+import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -36,6 +41,8 @@ public class ImageController extends BaseController<
     private final ImageService imageService;
 
     private final FileService fileService;
+    private final OssService ossService;
+    private final MinioClient minioClient;
 
     @Override
     public ImageService commonBaseService() {
@@ -82,13 +89,22 @@ public class ImageController extends BaseController<
         return super.delete(ids);
     }
 
+    @SneakyThrows
     @GetMapping("/download/{id}")
     @Operation(summary = "下载图片", operationId = "downloadImage")
     @SaCheckPermission("file:download")
     public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
         ImageEntity imageEntity = imageService.findById(id);
         FileEntity file = imageEntity.getFile();
+        String bucket = file.getBucket();
+        String objectName = ossService.buildObjectPath(file);
+
+        StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
+                .bucket(bucket)
+                .object(objectName)
+                .build());
         return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(stat.size()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
                         fileService.getFileName(file),
                         StandardCharsets.UTF_8

@@ -11,10 +11,14 @@ import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
+import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +42,7 @@ public class FileController extends BaseController<
     private final FileService fileService;
 
     private final OssService ossService;
+    private final MinioClient minioClient;
 
     @Override
     public FileService commonBaseService() {
@@ -84,12 +89,21 @@ public class FileController extends BaseController<
         return super.findById(id);
     }
 
+    @SneakyThrows
     @GetMapping("/download/{id}")
     @Operation(summary = "下载文件", operationId = "downloadFile")
     @SaCheckPermission("file:download")
     public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
         FileEntity file = fileService.findById(id);
+        String bucket = file.getBucket();
+        String objectName = ossService.buildObjectPath(file);
+
+        StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
+                .bucket(bucket)
+                .object(objectName)
+                .build());
         return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(stat.size()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
                         fileService.getFileName(file),
                         StandardCharsets.UTF_8
