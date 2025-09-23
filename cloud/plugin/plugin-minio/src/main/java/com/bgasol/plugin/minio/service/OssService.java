@@ -25,9 +25,7 @@ import java.time.format.DateTimeFormatter;
 public class OssService {
     private final MinioClient minioClient;
 
-    /**
-     * 写入文件流到对象存储
-     */
+    /// 写入文件流到对象存储
     public void writeFileStream(InputStream inputStream, FileEntity file) {
         try {
             // 创建上传文件参数
@@ -35,7 +33,7 @@ public class OssService {
                     .builder()
                     .bucket(file.getBucket())
                     .object(buildObjectPath(file))
-                    .stream(inputStream, file.getSize(), -1)
+                    .stream(inputStream, -1, 64 * 1024 * 1024)
                     .contentType(file.getType())
                     .build();
             // 上传文件到minio id 相同会覆盖
