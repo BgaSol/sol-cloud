@@ -66,5 +66,3 @@ public class StringToStringListConverter implements Converter<List<String>> {
         };
     }
 }
-
-

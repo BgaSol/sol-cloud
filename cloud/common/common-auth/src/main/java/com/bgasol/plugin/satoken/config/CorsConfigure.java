@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/// 跨域配置
 @Configuration
 public class CorsConfigure implements WebMvcConfigurer {
     @Override

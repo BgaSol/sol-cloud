@@ -17,9 +17,7 @@ import java.util.Set;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 
-/**
- * 自定义权限验证接口扩展
- */
+/// 权限数据加载源
 @Component
 @RequiredArgsConstructor
 public class StpInterfaceImpl implements StpInterface {
@@ -34,9 +32,7 @@ public class StpInterfaceImpl implements StpInterface {
         return userEntityBaseVo.getData();
     }
 
-    /**
-     * 返回一个账号所拥有的权限码集合
-     */
+    /// 返回一个账号所拥有的权限码集合
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);
@@ -55,9 +51,7 @@ public class StpInterfaceImpl implements StpInterface {
         return new ArrayList<>(permissions);
     }
 
-    /**
-     * 返回一个账号所拥有的角色标识集合 (权限与角色可分开校验)
-     */
+    /// 返回一个账号所拥有的角色标识集合 (权限与角色可分开校验)
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);

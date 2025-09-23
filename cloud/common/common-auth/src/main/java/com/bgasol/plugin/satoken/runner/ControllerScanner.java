@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/// 扫描controller
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -39,9 +40,7 @@ public class ControllerScanner {
 
     private final static String controllerPackage = "com.bgasol.web.**.controller";
 
-    /**
-     * 扫描controller类和方法，将权限信息存入数据库
-     */
+    /// 扫描controller类和方法，将权限信息存入数据库
     public void scanController(Class<?> controllerClass) {
         // 只扫描controller的类
         PermissionEntity parentPermissionEntity = new PermissionEntity();
@@ -123,6 +122,7 @@ public class ControllerScanner {
         }
     }
 
+    /// 开始扫描controller
     @EventListener(InstanceRegisteredEvent.class)
     @Async()
     public void scanControllers() throws ClassNotFoundException, InterruptedException {

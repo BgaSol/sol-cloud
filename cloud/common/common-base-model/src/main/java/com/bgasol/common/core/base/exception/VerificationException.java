@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+/// 自定义验证异常
 @Slf4j
 @Getter
 public class VerificationException extends RuntimeException {

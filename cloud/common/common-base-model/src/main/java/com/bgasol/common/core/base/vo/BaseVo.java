@@ -15,18 +15,23 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "基础响应数据")
 public class BaseVo<T> {
+    /// 响应码
     @Schema(description = "响应码")
     private Integer code;
 
+    /// 响应消息
     @Schema(description = "响应消息")
     private String message;
 
+    /// 响应数据
     @Schema(description = "响应数据")
     private T data;
 
+    /// 响应时间
     @Schema(description = "响应时间")
     private Date time;
 
+    /// 响应类型
     @Schema(description = "响应类型")
     private ResponseType type;
 

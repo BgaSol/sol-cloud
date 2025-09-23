@@ -13,9 +13,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Sa-Token 权限认证 配置类
- */
+/// Sa-Token 权限认证 配置类
 @Configuration
 @Slf4j
 public class SaTokenConfigure implements WebMvcConfigurer {

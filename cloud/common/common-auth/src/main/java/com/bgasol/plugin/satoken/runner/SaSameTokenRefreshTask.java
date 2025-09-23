@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Same-Token，定时刷新（分布式锁保证同一时刻只有一个实例执行）
- */
+/// Same-Token，定时刷新（分布式锁保证同一时刻只有一个实例执行）
 @Component
 @RequiredArgsConstructor
 @Slf4j

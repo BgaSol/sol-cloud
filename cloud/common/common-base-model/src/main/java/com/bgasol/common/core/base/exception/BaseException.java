@@ -5,6 +5,7 @@ import com.bgasol.common.core.base.vo.ResponseType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+/// 自定义通用异常
 @Getter
 @Slf4j
 public class BaseException extends RuntimeException {
