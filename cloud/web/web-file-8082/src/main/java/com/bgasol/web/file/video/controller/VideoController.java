@@ -9,7 +9,12 @@ import com.bgasol.model.file.video.dto.VideoCreateDto;
 import com.bgasol.model.file.video.dto.VideoPageDto;
 import com.bgasol.model.file.video.dto.VideoUpdateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
+import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.video.service.VideoService;
+import io.minio.GetObjectArgs;
+import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +39,9 @@ public class VideoController extends BaseController<
         VideoCreateDto,
         VideoUpdateDto> {
     private final VideoService videoService;
+    private final OssService ossService;
+
+    private final MinioClient minioClient;
 
     @Override
     public VideoService commonBaseService() {
@@ -80,6 +88,7 @@ public class VideoController extends BaseController<
         return super.delete(ids);
     }
 
+
     @SneakyThrows
     @GetMapping("/play/{id}")
     @Operation(summary = "在线播放文件", operationId = "playVideo")
@@ -88,34 +97,88 @@ public class VideoController extends BaseController<
             @PathVariable("id") String id,
             @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
-        String contentType = videoService.findById(id).getFile().getType();
+        FileEntity file = videoService.findById(id).getFile();
+        String contentType = file.getType();
+        String bucket = file.getBucket();
+        String objectName = ossService.buildObjectPath(file);
 
-        // 获取输入流（你的视频数据来源，不要求知道大小）
-        InputStream inputStream;
+        // ----------- 用 MinIO 获取对象大小（HEAD / stat） -----------
+        StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
+                .bucket(bucket)
+                .object(objectName)
+                .build());
+        long fileSize = stat.size();
+
+        // 默认返回整个文件
+        long rangeStart = 0L;
+        long rangeEnd = fileSize - 1L;
+        boolean isPartial = false;
+
+        // 只支持单个 Range；多段 Range（含逗号）不处理 -> 返回 416
         if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
-            // 如果后端能支持 Range，就自己实现 skip
-            String[] ranges = rangeHeader.substring(6).split("-");
-            long rangeStart = Long.parseLong(ranges[0]);
+            String rangesSpec = rangeHeader.substring(6).trim();
+            if (rangesSpec.contains(",")) {
+                // 多区间不支持
+                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+                        .header(HttpHeaders.CONTENT_RANGE, "bytes */" + fileSize)
+                        .build();
+            }
 
-            inputStream = videoService.videoStreamFindById(id);
-            inputStream.skip(rangeStart);
+            if (rangesSpec.startsWith("-")) {
+                // suffix bytes: e.g. bytes=-500  -> last 500 bytes
+                long suffixLength = Long.parseLong(rangesSpec.substring(1));
+                if (suffixLength <= 0) {
+                    return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+                            .header(HttpHeaders.CONTENT_RANGE, "bytes */" + fileSize)
+                            .build();
+                }
+                if (suffixLength > fileSize) suffixLength = fileSize;
+                rangeStart = fileSize - suffixLength;
+                rangeEnd = fileSize - 1;
+            } else {
+                String[] parts = rangesSpec.split("-", 2);
+                rangeStart = Long.parseLong(parts[0].trim());
+                if (parts.length > 1 && !parts[1].isEmpty()) {
+                    rangeEnd = Long.parseLong(parts[1].trim());
+                } else {
+                    rangeEnd = fileSize - 1;
+                }
+            }
 
-            // 注意：这里没法知道 end 和总大小，只能返回 open-ended 的 Content-Range
-            // 规范允许写成 "bytes {start}-/ * "
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                    .header(HttpHeaders.CONTENT_TYPE, contentType)
-                    .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                    .header(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-/*")
-                    .body(new InputStreamResource(inputStream));
+            if (rangeStart > rangeEnd || rangeStart >= fileSize) {
+                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+                        .header(HttpHeaders.CONTENT_RANGE, "bytes */" + fileSize)
+                        .build();
+            }
+            isPartial = true;
+        }
 
+        long contentLength = rangeEnd - rangeStart + 1; // 逐位计算，确保无误
+
+        // 从 MinIO 获取分片或全量流
+        GetObjectArgs.Builder getArgsBuilder = GetObjectArgs.builder()
+                .bucket(bucket)
+                .object(objectName);
+        if (isPartial) {
+            getArgsBuilder.offset(rangeStart).length(contentLength);
+        }
+        InputStream objectStream = minioClient.getObject(getArgsBuilder.build());
+        InputStreamResource resource = new InputStreamResource(objectStream);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, contentType);
+        headers.set(HttpHeaders.ACCEPT_RANGES, "bytes");
+        headers.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength));
+        // 可选：ETag/Last-Modified 如果需要缓存或断点续传
+        if (stat.etag() != null) {
+            headers.set(HttpHeaders.ETAG, stat.etag());
+        }
+        if (isPartial) {
+            headers.set(HttpHeaders.CONTENT_RANGE,
+                    "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).headers(headers).body(resource);
         } else {
-            // 普通全量流式返回
-            inputStream = videoService.videoStreamFindById(id);
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_TYPE, contentType)
-                    .header(HttpHeaders.TRANSFER_ENCODING, "chunked")
-                    .body(new InputStreamResource(inputStream));
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(resource);
         }
     }
 }

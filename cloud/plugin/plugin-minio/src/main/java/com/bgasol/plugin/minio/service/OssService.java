@@ -97,7 +97,7 @@ public class OssService {
     /**
      * 构建对象存储路径
      */
-    private String buildObjectPath(FileEntity file) {
+    public String buildObjectPath(FileEntity file) {
         return "%s/%s/%s_%s".formatted(
                 file.getSource(),
                 file.getCreateTime()
