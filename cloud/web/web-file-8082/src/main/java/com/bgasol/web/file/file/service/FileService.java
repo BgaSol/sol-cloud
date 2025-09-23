@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +47,12 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
      * 通过文件流保存文件
      */
     public FileEntity save(MultipartFile multipartFile, FileEntity fileEntity) {
+        fileEntity.setCreateTime(new Date());
+        fileEntity.setBucket(minioConfig.getBucket());
+        if (ObjectUtils.isEmpty(fileEntity.getSource())) {
+            fileEntity.setSource("default");
+        }
+
         if (ObjectUtils.isEmpty(multipartFile)) {
             return this.save(fileEntity);
         }
@@ -101,7 +108,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         } catch (IOException e) {
             throw new BaseException("获取文件HASH失败");
         }
-        fileEntity.setBucket(minioConfig.getBucket());
     }
 
     /**

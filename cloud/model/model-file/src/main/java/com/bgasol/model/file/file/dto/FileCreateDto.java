@@ -43,11 +43,6 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
-        FileEntity entity = super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
-        if (ObjectUtils.isEmpty(entity.getSource())) {
-            this.source = "default";
-        }
-        entity.setCreateTime(new Date());
-        return entity;
+        return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
     }
 }
