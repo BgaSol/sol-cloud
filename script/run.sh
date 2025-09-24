@@ -1,4 +1,5 @@
 #!/bin/bash
+# 启动脚本
 set -e
 cd ..
 

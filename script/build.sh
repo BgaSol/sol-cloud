@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# 打包脚本
 set -euo pipefail
 cd ..
 
