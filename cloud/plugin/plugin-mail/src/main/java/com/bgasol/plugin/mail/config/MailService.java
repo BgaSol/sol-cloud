@@ -1,18 +1,14 @@
 package com.bgasol.plugin.mail.config;
 
-import com.bgasol.model.file.file.api.FileApi;
-import feign.Response;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -21,7 +17,6 @@ import java.util.List;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private final FileApi fileApi;
 
     @Value("${spring.mail.username}")
     private String mailUsername;
@@ -34,7 +29,6 @@ public class MailService {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = createHelper(mimeMessage, to, subject, htmlContent);
 
-            addInlineResources(helper, fileIds);
 
             javaMailSender.send(mimeMessage);
             log.info("发送邮件成功, 收件人: {}", to);
@@ -58,24 +52,4 @@ public class MailService {
         return helper;
     }
 
-    /**
-     * 添加内联资源
-     */
-    private void addInlineResources(MimeMessageHelper helper, List<String> fileIds) {
-        for (String fileId : fileIds) {
-            Response download = fileApi.download(fileId);
-            try (InputStream inputStream = download.body().asInputStream()) {
-                // 把输入流读入内存
-                byte[] bytes = inputStream.readAllBytes();
-                ByteArrayResource resource = new ByteArrayResource(bytes);
-
-                // Content-Type 可能是 List<String>，取第一个即可
-                String contentType = download.headers().get("Content-Type").iterator().next();
-
-                helper.addInline("cid-" + fileId, resource, contentType);
-            } catch (Exception e) {
-                log.error("加载文件失败, fileId: {}", fileId, e);
-            }
-        }
-    }
 }
