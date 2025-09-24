@@ -3,12 +3,13 @@ package com.bgasol.common.core.base.handler;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.handler.MultiDataPermissionHandler;
-import com.bgasol.model.system.user.bo.ScopeField;
-import com.bgasol.model.system.user.bo.ScopeOptionsBo;
 import com.bgasol.common.core.base.entity.BaseEntity;
+import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.user.api.UserApi;
+import com.bgasol.model.system.user.bo.ScopeField;
+import com.bgasol.model.system.user.bo.ScopeOptionsBo;
 import com.bgasol.model.system.user.entity.UserEntity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -62,7 +63,7 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             Class<? extends BaseEntity> entityClass = getEntityClassByMapper(mappedStatementId);
             scopeOption = getScopeOption(entityClass);
         } catch (RuntimeException e) {
-            log.warn("无法获取实体类: {}", mappedStatementId, e);
+            log.warn(e.getMessage(), e);
             return null;
         }
         if (!scopeOption.hasTrue()) {
@@ -174,6 +175,10 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             mapperClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("无法解析实体类: " + mappedStatementId, e);
+        }
+        // 判断是否继承于MyBaseMapper
+        if (!MyBaseMapper.class.isAssignableFrom(mapperClass)) {
+            throw new BaseException("忽略" + mappedStatementId + " 不是 MyBaseMapper");
         }
         // 直接获取 BaseMapper<T> 的泛型映射
         Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(mapperClass, BaseMapper.class);
