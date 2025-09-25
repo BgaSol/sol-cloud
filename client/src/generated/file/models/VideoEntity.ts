@@ -31,7 +31,7 @@ export type VideoEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
      * 视频名称
      */

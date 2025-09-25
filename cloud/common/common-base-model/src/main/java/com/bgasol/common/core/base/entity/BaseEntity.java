@@ -50,6 +50,6 @@ public class BaseEntity implements Serializable {
 
     @Schema(description = "是否删除")
     @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic
-    private Integer deleted;
+    @TableLogic(value = "false", delval = "true")
+    private Boolean deleted;
 }

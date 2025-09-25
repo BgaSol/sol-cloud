@@ -1,1 +1,2 @@
 CREATE DATABASE cloud;
+CREATE DATABASE atlas;

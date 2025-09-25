@@ -32,7 +32,7 @@ export type UserEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
      * 用户名
      */

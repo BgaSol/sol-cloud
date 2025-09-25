@@ -30,9 +30,9 @@ export type FileEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
-     * 文件名称
+     * 文件名称(包含文件后缀)
      */
     name?: string;
     /**
@@ -48,9 +48,9 @@ export type FileEntity = {
      */
     hash?: string;
     /**
-     * 文件状态
+     * 文件状态：LOADING, SUCCESS
      */
-    status?: string;
+    status?: FileEntity.status;
     /**
      * 文件后缀
      */
@@ -64,4 +64,13 @@ export type FileEntity = {
      */
     bucket?: string;
 };
+export namespace FileEntity {
+    /**
+     * 文件状态：LOADING, SUCCESS
+     */
+    export enum status {
+        LOADING = 'LOADING',
+        SUCCESS = 'SUCCESS',
+    }
+}
 

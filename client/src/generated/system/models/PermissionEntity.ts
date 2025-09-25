@@ -30,7 +30,7 @@ export type PermissionEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
      * 父id
      */

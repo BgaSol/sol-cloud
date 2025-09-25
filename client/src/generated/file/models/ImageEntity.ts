@@ -31,7 +31,7 @@ export type ImageEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
      * 图片名称
      */

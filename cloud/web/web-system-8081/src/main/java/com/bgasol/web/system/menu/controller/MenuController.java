@@ -78,8 +78,8 @@ public class MenuController extends BaseController<
     }
 
     @PostMapping("/init")
-    @Operation(summary = "批量初始化系统的菜单信息", operationId = "initPermission")
-    @SaCheckPermission("permission:init")
+    @Operation(summary = "批量初始化系统的菜单信息", operationId = "initMenu")
+    @SaCheckPermission("menu:init")
     public BaseVo<MenuEntity> init(@RequestBody() MenuEntity entity) {
         MenuEntity save = menuService.init(entity);
         return BaseVo.success(save, "保存成功");

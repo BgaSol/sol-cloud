@@ -50,6 +50,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -70,6 +72,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -90,6 +94,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -110,6 +116,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -125,6 +133,8 @@ export class Service {
             url: '/role',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -145,6 +155,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -165,6 +177,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -180,6 +194,8 @@ export class Service {
             url: '/department',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -200,6 +216,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -220,6 +238,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -240,6 +260,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -255,6 +277,8 @@ export class Service {
             url: '/user/logout',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -275,6 +299,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -297,6 +323,8 @@ export class Service {
             mediaType: 'multipart/form-data',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -317,6 +345,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -327,7 +357,7 @@ export class Service {
      * @returns BaseVoMenuEntity OK
      * @throws ApiError
      */
-    public static initPermission1(
+    public static initMenu(
         requestBody: MenuEntity,
     ): CancelablePromise<BaseVoMenuEntity> {
         return __request(OpenAPI, {
@@ -337,6 +367,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -358,6 +390,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -373,6 +407,8 @@ export class Service {
             url: '/user/user-info',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -388,6 +424,8 @@ export class Service {
             url: '/user/get-verification-code',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -403,6 +441,8 @@ export class Service {
             url: '/user/findAllOnlineUser',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -424,6 +464,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -439,6 +481,8 @@ export class Service {
             url: '/role/template-download',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -454,6 +498,8 @@ export class Service {
             url: '/permission',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -469,6 +515,8 @@ export class Service {
             url: '/menu',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -490,6 +538,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -505,6 +555,8 @@ export class Service {
             url: '/menu/routes',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -526,6 +578,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -541,6 +595,8 @@ export class Service {
             url: '/menu/find-admin-menu-group',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -562,6 +618,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -577,6 +635,8 @@ export class Service {
             url: '/department/get-my-department',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -592,6 +652,8 @@ export class Service {
             url: '/department/find-by-id-is-default',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -613,6 +675,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -634,6 +698,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -655,6 +721,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -676,6 +744,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -697,6 +767,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });

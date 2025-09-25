@@ -38,7 +38,9 @@ print_step "进入 docker 目录 📁"
 cd docker || { print_error "❌ 未找到 docker 目录"; exit 1; }
 
 print_step "关闭现有 Docker Compose 服务 🧹"
-docker compose down || { print_error "❌ docker compose down 执行失败"; exit 1; }
+docker compose -f app.docker-compose.yml down || { print_error "❌ docker compose down app.docker-compose.yml 执行失败"; exit 1; }
+docker compose -f infra.docker-compose.yml down || { print_error "❌ docker compose down infra.docker-compose.yml 执行失败"; exit 1; }
+
 print_step "退出 docker 目录 🚪"
 cd ..
 

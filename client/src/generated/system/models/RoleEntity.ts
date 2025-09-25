@@ -32,7 +32,7 @@ export type RoleEntity = {
     /**
      * 是否删除
      */
-    deleted?: number;
+    deleted?: boolean;
     /**
      * 角色名
      */

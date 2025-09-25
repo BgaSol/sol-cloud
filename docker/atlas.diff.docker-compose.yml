@@ -1,0 +1,21 @@
+networks:
+  cloud-app:
+    external: true
+services:
+  atlas-go:
+    image: arigaio/atlas:0.37.0-alpine
+    container_name: atlas-go
+    working_dir: /app
+    entrypoint: ["/bin/sh"]
+    command: ["diff.sh"]
+    environment:
+      DB_HOST: cloud-app-postgres
+      DB_PORT: 5432
+      DB_NAME: cloud
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      VERBOSE: true
+    volumes:
+      - ./config/atlas:/app:ro
+    networks:
+      - cloud-app

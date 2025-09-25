@@ -24,6 +24,7 @@ export { BaseVoRoleEntity } from './models/BaseVoRoleEntity';
 export { BaseVoSaTokenInfo } from './models/BaseVoSaTokenInfo';
 export { BaseVoUserEntity } from './models/BaseVoUserEntity';
 export { BaseVoVerificationVo } from './models/BaseVoVerificationVo';
+export { BaseVoVoid } from './models/BaseVoVoid';
 export type { DepartmentCreateDto } from './models/DepartmentCreateDto';
 export type { DepartmentEntity } from './models/DepartmentEntity';
 export type { DepartmentUpdateDto } from './models/DepartmentUpdateDto';

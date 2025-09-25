@@ -38,6 +38,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -58,6 +60,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -78,6 +82,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -98,26 +104,30 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
     }
     /**
-     * 更新|上传文件
-     * @param formData
+     * 更新文件状态
+     * @param requestBody
      * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
     public static updateFile(
-        formData?: FileUpdateDto,
+        requestBody: FileUpdateDto,
     ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
             method: 'PUT',
             url: '/file',
-            formData: formData,
-            mediaType: 'multipart/form-data',
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -138,6 +148,8 @@ export class Service {
             mediaType: 'multipart/form-data',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -158,6 +170,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -178,6 +192,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -198,6 +214,8 @@ export class Service {
             mediaType: 'application/json',
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -219,27 +237,36 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
     }
     /**
-     * 下载视频
+     * 在线播放文件
      * @param id
+     * @param range
      * @returns binary OK
      * @throws ApiError
      */
-    public static downloadVideo(
+    public static playVideo(
         id: string,
+        range?: string,
     ): CancelablePromise<Blob> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/video/download/{id}',
+            url: '/video/play/{id}',
             path: {
                 'id': id,
             },
+            headers: {
+                'Range': range,
+            },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -261,6 +288,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -282,6 +311,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -303,32 +334,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 在线播放文件
-     * @param id
-     * @param range
-     * @returns binary OK
-     * @throws ApiError
-     */
-    public static streamFile(
-        id: string,
-        range?: string,
-    ): CancelablePromise<Blob> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/file/stream/{id}',
-            path: {
-                'id': id,
-            },
-            headers: {
-                'Range': range,
-            },
-            errors: {
-                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -350,6 +357,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -371,6 +380,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -392,6 +403,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });
@@ -413,6 +426,8 @@ export class Service {
             },
             errors: {
                 400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
                 500: `业务异常`,
             },
         });

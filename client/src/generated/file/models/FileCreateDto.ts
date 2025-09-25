@@ -16,9 +16,13 @@ export type FileCreateDto = {
     description?: string;
     uploadFile?: Blob;
     /**
-     * 文件名称
+     * 文件名称(包含文件后缀)
      */
     name?: string;
+    /**
+     * 文件hash
+     */
+    hash?: string;
     /**
      * 文件状态
      */

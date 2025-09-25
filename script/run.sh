@@ -56,7 +56,8 @@ print_step "进入 docker 目录 📁"
 cd docker || { print_error "❌ 未找到 docker 目录"; exit 1; }
 
 print_step "关闭现有 Docker Compose 服务 🧹"
-docker compose down || { print_error "❌ docker compose down 执行失败"; exit 1; }
+docker compose -f app.docker-compose.yml down || { print_error "❌ docker compose down app.docker-compose.yml 执行失败"; exit 1; }
+docker compose -f infra.docker-compose.yml down || { print_error "❌ docker compose down infra.docker-compose.yml 执行失败"; exit 1; }
 
 # 检查并创建 Docker Volumes
 print_step "🔍 检查并创建 Docker Volumes"
@@ -77,8 +78,21 @@ for volume in "${VOLUMES[@]}"; do
   fi
 done
 
+print_step "🔍 检查并创建 Docker 网络"
+if docker network inspect cloud-app > /dev/null 2>&1; then
+  print_info "网络 cloud-app 已存在"
+else
+  print_info "🌐 创建网络: cloud-app"
+  docker network create cloud-app || { print_error "无法创建网络: cloud-app"; exit 1; }
+  print_success "网络 cloud-app 创建成功"
+fi
+
 print_step "重新启动 Docker Compose 服务 🚀"
-docker compose up -d || { print_error "❌ docker compose up 执行失败"; exit 1; }
+docker compose -f infra.docker-compose.yml up -d || { print_error "❌ docker compose up infra.compose.yml 执行失败"; exit 1; }
+print_info "🚀 正在等待服务启动..."
+sleep 10
+
+docker compose -f app.docker-compose.yml up -d || { print_error "❌ docker compose up app.docker-compose.yml 执行失败"; exit 1; }
 
 print_success "🎉 服务已重新启动成功！使用 docker ps 查看运行状态"
 
