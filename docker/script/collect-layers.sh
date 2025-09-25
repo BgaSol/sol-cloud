@@ -8,8 +8,8 @@ set -euo pipefail
 # 记录开始时间
 START_TIME=$(date +%s)
 
-# 计算项目根目录
-BASE_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
+# 计算项目根目录 (从 docker/script/ 回到项目根目录)
+BASE_DIR="$(cd "$(dirname "$0")"/../.. && pwd)"
 
 # 颜色与日志函数
 GREEN='\033[0;32m'
@@ -27,22 +27,28 @@ print_divider() { echo -e "${YELLOW}----------------------------------------${RE
 # 生成时间戳
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 COLLECTION_DIR="layers-collection-$TIMESTAMP"
-# 脚本同级目录作为临时工作目录
+# docker/script 目录作为临时工作目录
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OUTPUT_DIR="$SCRIPT_DIR/$COLLECTION_DIR"
-# collect目录用于存放最终压缩包
-COLLECT_DIR="$SCRIPT_DIR/collect"
+# script/collect目录用于存放最终压缩包（与compare-sync.sh脚本同级）
+COLLECT_DIR="$(cd "$(dirname "$0")"/../script && pwd)/collect"
 
 print_step "开始收集现场 layers.idx 文件"
 print_info "项目根目录: $BASE_DIR"
 print_info "临时目录: $OUTPUT_DIR"
 print_info "压缩包目录: $COLLECT_DIR"
 
+# 清空collect目录
+if [[ -d "$COLLECT_DIR" ]]; then
+  print_info "清空collect目录: $COLLECT_DIR"
+  rm -rf "$COLLECT_DIR"/*
+fi
+
 # 创建输出目录和collect目录
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$COLLECT_DIR"
 
-# 扫描路径列表
+# 扫描路径列表 (相对于项目根目录)
 SCAN_PATHS=(
   "docker/output/server"
 )
@@ -123,16 +129,22 @@ fi
 # 创建压缩包
 print_step "创建压缩包"
 cd "$SCRIPT_DIR"
-if tar -czf "$COLLECT_DIR/$COLLECTION_DIR.tar.gz" "$COLLECTION_DIR"; then
-  print_success "已创建压缩包: $COLLECTION_DIR.tar.gz"
+ARCHIVE_NAME="layers-collection.tar.gz"
+if tar -czf "$COLLECT_DIR/$ARCHIVE_NAME" "$COLLECTION_DIR"; then
+  print_success "已创建压缩包: $ARCHIVE_NAME"
 else
   print_error "创建压缩包失败"
   rm -rf "$OUTPUT_DIR"
   exit 1
 fi
 
+# 创建时间戳信息文件
+TIMESTAMP_FILE="生成于$(date +'%Y-%m-%d %H点%M分%S秒')"
+touch "$COLLECT_DIR/$TIMESTAMP_FILE"
+print_info "已创建时间戳文件: $TIMESTAMP_FILE"
+
 # 显示文件大小
-file_size=$(du -h "$COLLECT_DIR/$COLLECTION_DIR.tar.gz" | cut -f1)
+file_size=$(du -h "$COLLECT_DIR/$ARCHIVE_NAME" | cut -f1)
 print_info "文件大小: $file_size"
 
 # 清理临时目录
@@ -145,7 +157,7 @@ END_TIME=$(date +%s)
 EXEC_TIME=$((END_TIME - START_TIME))
 
 print_step "收集完成"
-print_info "压缩包位置: $COLLECT_DIR/$COLLECTION_DIR.tar.gz"
+print_info "压缩包位置: $COLLECT_DIR/$ARCHIVE_NAME"
 print_info "收集模块数: $collected_count"
 print_info "执行耗时: ${EXEC_TIME}秒"
 print_info "请将此文件发送给开发人员进行差异分析"

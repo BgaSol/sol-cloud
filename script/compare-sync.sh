@@ -4,7 +4,8 @@ set -euo pipefail
 
 # 开发环境差异生成脚本
 # 基于现场收集的 layers.idx 文件生成差异应用包
-# 用法： script/compare-sync.sh --layers-collection <path> [--spring-boot-upgraded] [--has-snapshot] [--modules module1,module2]
+# 用法： script/compare-sync.sh [--layers-collection <path>] [--spring-boot-upgraded] [--has-snapshot] [--modules module1,module2]
+# 注意：如果不指定--layers-collection参数，会自动解压docker/script/collect/layers-collection.tar.gz
 
 # 计算项目根目录（脚本所在目录的上一级）
 BASE_DIR="$(cd "$(dirname "$0")"/.. && pwd)"
@@ -46,11 +47,66 @@ print_error()   { echo -e "${RED}❌ $1${RESET}"; }
 print_step()    { echo -e "\n${YELLOW}🚀 $1${RESET}"; }
 print_divider() { echo -e "${YELLOW}----------------------------------------${RESET}"; }
 
+# 如果未提供layers-collection参数，尝试自动解压docker/script/collect/layers-collection.tar.gz
 if [[ -z "$LAYERS_COLLECTION_DIR" ]]; then
-  print_error "Usage: $0 --layers-collection <path> [--spring-boot-upgraded] [--has-snapshot] [--modules module1,module2]"
-  print_info "Example: tar -xzf script/collect/layers-collection-20241217-143022.tar.gz -C /tmp/"
-  print_info "         $0 --layers-collection /tmp/layers-collection-20241217-143022/"
-  exit 2
+  print_info "未指定--layers-collection参数，尝试自动解压docker/script/collect/layers-collection.tar.gz"
+  
+  AUTO_ARCHIVE="$BASE_DIR/docker/script/collect/layers-collection.tar.gz"
+  print_info "项目根目录: $BASE_DIR"
+  print_info "查找压缩包: $AUTO_ARCHIVE"
+  
+  if [[ ! -f "$AUTO_ARCHIVE" ]]; then
+    print_error "自动解压失败：未找到压缩包 $AUTO_ARCHIVE"
+    print_info "当前工作目录: $(pwd)"
+    print_info "脚本位置: $(dirname "$0")"
+    print_info "请检查以下可能的位置："
+    print_info "  - $BASE_DIR/docker/script/collect/layers-collection.tar.gz"
+    print_info "  - $(dirname "$0")/../docker/script/collect/layers-collection.tar.gz"
+    
+    # 尝试其他可能的路径
+    ALT_ARCHIVE="$(dirname "$0")/../docker/script/collect/layers-collection.tar.gz"
+    if [[ -f "$ALT_ARCHIVE" ]]; then
+      print_success "找到备用路径的压缩包: $ALT_ARCHIVE"
+      AUTO_ARCHIVE="$ALT_ARCHIVE"
+    else
+      print_info "请先运行 docker/script/collect-layers.sh 生成压缩包，或手动指定--layers-collection参数"
+      print_info "Usage: $0 --layers-collection <path> [--spring-boot-upgraded] [--has-snapshot] [--modules module1,module2]"
+      print_info "Example: tar -xzf docker/script/collect/layers-collection.tar.gz -C /tmp/"
+      print_info "         $0 --layers-collection /tmp/layers-collection-xxx/"
+      exit 2
+    fi
+  fi
+  
+  # 直接在docker/script/collect目录下解压
+  COLLECT_DIR="$(dirname "$AUTO_ARCHIVE")"
+  TARGET_EXTRACT_DIR="$COLLECT_DIR/layers-collection"
+  
+  # 如果目标目录已存在，先删除
+  if [[ -d "$TARGET_EXTRACT_DIR" ]]; then
+    rm -rf "$TARGET_EXTRACT_DIR"
+    print_info "清理已存在的解压目录: $TARGET_EXTRACT_DIR"
+  fi
+  
+  print_info "解压压缩包到: $COLLECT_DIR"
+  if tar -xzf "$AUTO_ARCHIVE" -C "$COLLECT_DIR"; then
+    # 查找解压后的目录（通常是layers-collection-*格式）
+    extracted_dir=$(find "$COLLECT_DIR" -maxdepth 1 -type d -name "layers-collection-*" | head -1)
+    if [[ -n "$extracted_dir" && -d "$extracted_dir" ]]; then
+      # 重命名为固定名称，去掉时间戳
+      mv "$extracted_dir" "$TARGET_EXTRACT_DIR"
+      LAYERS_COLLECTION_DIR="$TARGET_EXTRACT_DIR"
+      print_success "自动解压成功，使用目录: $LAYERS_COLLECTION_DIR"
+      # 不设置AUTO_CLEANUP_DIR，保留解压文件
+    else
+      print_error "解压后未找到预期的layers-collection目录"
+      print_info "collect目录内容："
+      ls -la "$COLLECT_DIR"
+      exit 2
+    fi
+  else
+    print_error "解压失败: $AUTO_ARCHIVE"
+    exit 2
+  fi
 fi
 
 if [[ ! -d "$LAYERS_COLLECTION_DIR" ]]; then
@@ -58,14 +114,14 @@ if [[ ! -d "$LAYERS_COLLECTION_DIR" ]]; then
   exit 2
 fi
 
-# 生成时间戳和输出目录
-TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-DIFF_PACKAGE_DIR="diff-package-$TIMESTAMP"
-# 脚本同级目录作为临时工作目录
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-OUTPUT_DIR="$SCRIPT_DIR/$DIFF_PACKAGE_DIR"
-# diff目录用于存放最终压缩包
-DIFF_DIR="$SCRIPT_DIR/diff"
+# 生成输出目录
+DIFF_PACKAGE_DIR="diff-package"
+# diff目录用于存放最终压缩包（与collect同级）
+DIFF_DIR="$BASE_DIR/docker/script/diff"
+# 临时工作目录也放在docker/script/diff下
+OUTPUT_DIR="$DIFF_DIR/$DIFF_PACKAGE_DIR"
+# 压缩包固定名称
+ARCHIVE_NAME="diff-package.tar.gz"
 
 # 参数与生效路径回显
 print_step "开始生成差异包"
@@ -76,16 +132,23 @@ if [[ "$SPRING_BOOT_UPGRADED" == true || "$HAS_SNAPSHOT" == true ]]; then
   print_info "flags: $( [[ "$SPRING_BOOT_UPGRADED" == true ]] && echo -n "spring-boot-upgraded " )$( [[ "$HAS_SNAPSHOT" == true ]] && echo -n "has-snapshot" )"
 fi
 
-# 创建差异包目录结构
+# 清理并创建差异包目录结构
+if [[ -d "$OUTPUT_DIR" ]]; then
+  rm -rf "$OUTPUT_DIR"
+  print_info "清理已存在的临时目录: $OUTPUT_DIR"
+fi
 mkdir -p "$OUTPUT_DIR/modules"
+mkdir -p "$OUTPUT_DIR/client"
 mkdir -p "$DIFF_DIR"
 
 # 发现收集的模块
 print_step "发现收集的模块"
 collected_modules=()
+
 for module_dir in "$LAYERS_COLLECTION_DIR"/*/; do
   if [[ -d "$module_dir" ]]; then
     module_name=$(basename "$module_dir")
+    
     if [[ -f "$module_dir/layers.idx" ]]; then
       # 检查是否指定了特定模块
       if [[ -n "$SPECIFIC_MODULES" ]]; then
@@ -378,12 +441,59 @@ EOF
   rm -f "$only_in_new" "$only_in_collected"
 done
 
+# 复制client目录
+print_step "复制client目录"
+CLIENT_SOURCE_DIR="$BASE_DIR/docker/output/client"
+if [[ -d "$CLIENT_SOURCE_DIR" ]]; then
+  print_info "复制client目录: $CLIENT_SOURCE_DIR -> $OUTPUT_DIR/client/"
+  rsync -a --delete "$CLIENT_SOURCE_DIR/" "$OUTPUT_DIR/client/"
+  print_success "client目录复制完成"
+else
+  print_info "未找到client目录: $CLIENT_SOURCE_DIR"
+fi
+
 # 完成apply脚本
 cat >> "$apply_script" <<EOF
 
 print_step "=== 所有模块处理完成 ==="
 print_success "共处理 $processed_modules 个模块"
 print_info "如需验证结果，请检查各模块的jar文件是否正确更新"
+
+# === 处理client目录 ===
+print_step "处理client目录"
+
+if [[ -d "\$SCRIPT_DIR/client" ]]; then
+  print_info "发现client目录，开始更新..."
+  
+  # 查找项目根目录中的client目录
+  CLIENT_TARGET_DIR=""
+  if [[ -d "\$PROJECT_ROOT/docker/output/client" ]]; then
+    CLIENT_TARGET_DIR="\$PROJECT_ROOT/docker/output/client"
+  elif [[ -d "\$PROJECT_ROOT/client" ]]; then
+    CLIENT_TARGET_DIR="\$PROJECT_ROOT/client"
+  fi
+  
+  if [[ -n "\$CLIENT_TARGET_DIR" ]]; then
+    print_info "目标client目录: \$CLIENT_TARGET_DIR"
+    
+    # 删除现有client目录
+    if [[ -d "\$CLIENT_TARGET_DIR" ]]; then
+      print_info "删除现有client目录: \$CLIENT_TARGET_DIR"
+      rm -rf "\$CLIENT_TARGET_DIR"
+    fi
+    
+    # 复制新的client目录
+    print_info "复制新的client目录..."
+    mkdir -p "\$(dirname "\$CLIENT_TARGET_DIR")"
+    cp -r "\$SCRIPT_DIR/client" "\$CLIENT_TARGET_DIR"
+    print_success "client目录更新完成"
+  else
+    print_error "未找到目标client目录位置"
+    print_info "请手动将 \$SCRIPT_DIR/client 复制到正确位置"
+  fi
+else
+  print_info "差异包中未包含client目录，跳过处理"
+fi
 
 EOF
 
@@ -392,22 +502,25 @@ print_success "差异包生成完成"
 
 # 创建压缩包
 print_step "创建压缩包"
-cd "$SCRIPT_DIR"
-tar -czf "$DIFF_DIR/$DIFF_PACKAGE_DIR.tar.gz" "$DIFF_PACKAGE_DIR"
-print_success "已创建差异包: $DIFF_PACKAGE_DIR.tar.gz"
+cd "$DIFF_DIR"
+tar -czf "$ARCHIVE_NAME" "$DIFF_PACKAGE_DIR"
+print_success "已创建差异包: $ARCHIVE_NAME"
 
 # 显示文件大小
-file_size=$(du -h "$DIFF_DIR/$DIFF_PACKAGE_DIR.tar.gz" | cut -f1)
+file_size=$(du -h "$DIFF_DIR/$ARCHIVE_NAME" | cut -f1)
 print_info "文件大小: $file_size"
 
 # 清理临时目录
 rm -rf "$OUTPUT_DIR"
 print_info "已清理临时目录"
 
+# 保留解压目录供后续使用
+print_info "解压目录已保留: $LAYERS_COLLECTION_DIR"
+
 # 显示结果
 print_divider
 print_step "生成完成"
-print_info "差异包位置: $DIFF_DIR/$DIFF_PACKAGE_DIR.tar.gz"
+print_info "差异包位置: $DIFF_DIR/$ARCHIVE_NAME"
 print_info "处理模块数: $processed_modules"
 print_info "包含模块: ${collected_modules[*]}"
 
