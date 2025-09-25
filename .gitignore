@@ -37,4 +37,5 @@ docker/data
 docker/output
 
 script/collect/
-script/diff/
+/docker/script/diff/
+/docker/script/collect/
