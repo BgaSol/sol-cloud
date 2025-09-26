@@ -89,11 +89,14 @@ fi
 
 print_step "重新启动 Docker Compose 服务 🚀"
 docker compose -f infra.docker-compose.yml up -d || { print_error "❌ docker compose up infra.compose.yml 执行失败"; exit 1; }
-print_info "🚀 正在等待服务启动..."
+print_info "🚀 正在等待服务组件启动..."
 sleep 10
-
+print_info "💾 正在同步数据库..."
+docker compose -f atlas.apply.docker-compose.yml up || { print_error "❌ docker compose up atlas.apply.docker-compose.yml 执行失败"; exit 1; }
+docker compose -f atlas.docker-compose.yml up down || { print_error "❌ docker compose up atlas.docker-compose.yml down 执行失败"; exit 1; }
+print_info "🚀 启动服务应用程序..."
 docker compose -f app.docker-compose.yml up -d || { print_error "❌ docker compose up app.docker-compose.yml 执行失败"; exit 1; }
 
-print_success "🎉 服务已重新启动成功！使用 docker ps 查看运行状态"
+print_success "🎉 服务已启动成功！使用 docker ps 查看运行状态"
 
 print_divider
