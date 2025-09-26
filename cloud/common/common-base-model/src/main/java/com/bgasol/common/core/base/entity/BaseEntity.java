@@ -47,9 +47,4 @@ public class BaseEntity implements Serializable {
     @Schema(description = "描述")
     @TableField("description")
     private String description;
-
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
 }

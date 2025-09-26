@@ -18,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @TableName("system_t_permission")
 @Entity
 public class PermissionEntity extends BaseTreeEntity<PermissionEntity> {
-
     @Schema(description = "权限名")
     @TableField("name")
     private String name;

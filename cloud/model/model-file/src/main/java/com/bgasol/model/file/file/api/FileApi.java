@@ -3,12 +3,13 @@ package com.bgasol.model.file.file.api;
 import com.bgasol.common.constant.value.FileConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.model.file.file.dto.FileCreateDto;
-import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
-import feign.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(
         path = "/" + FileConfigValues.SERVICE_NAME + "/file",

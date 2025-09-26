@@ -1,11 +1,13 @@
 package com.bgasol.model.system.user.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.bgasol.model.system.user.bo.ScopeField;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
+import com.bgasol.model.system.user.bo.ScopeField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -24,6 +26,11 @@ import java.util.List;
 @TableName("system_t_user")
 @Entity
 public class UserEntity extends BaseEntity {
+
+    @Schema(description = "是否删除")
+    @TableField(value = "deleted", fill = FieldFill.INSERT)
+    @TableLogic(value = "false", delval = "true")
+    private Boolean deleted;
 
     @Schema(description = "用户名")
     @TableField("username")

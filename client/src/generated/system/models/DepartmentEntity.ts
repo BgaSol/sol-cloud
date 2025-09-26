@@ -28,10 +28,6 @@ export type DepartmentEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 父id
      */
     parentId?: string;
@@ -40,6 +36,10 @@ export type DepartmentEntity = {
      * 子实体
      */
     children?: Array<DepartmentEntity>;
+    /**
+     * 是否删除
+     */
+    deleted?: boolean;
     /**
      * 部门名
      */

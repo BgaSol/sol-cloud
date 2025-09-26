@@ -4,7 +4,9 @@ import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import static com.bgasol.model.system.department.mapstruct.DepartmentMapstruct.DEPARTMENT_MAPSTRUCT_IMPL;

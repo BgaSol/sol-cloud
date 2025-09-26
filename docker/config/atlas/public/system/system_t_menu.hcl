@@ -28,11 +28,6 @@ table "system_t_menu" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null = true
-    default = false
-  }
 
   column "parent_id" { 
     type = varchar(50)
@@ -97,5 +92,5 @@ table "system_t_menu" {
     null = true
   }
   primary_key { columns = [column.id] }
-  index "idx_menu_create_time" { columns = [column.deleted, column.create_time] }
+  index "idx_menu_create_time" { columns = [column.create_time] }
 }

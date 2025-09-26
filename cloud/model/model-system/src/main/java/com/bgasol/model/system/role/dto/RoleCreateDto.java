@@ -1,15 +1,17 @@
 package com.bgasol.model.system.role.dto;
 
 import cn.idev.excel.annotation.ExcelProperty;
-import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.common.core.base.converter.StringToStringListConverter;
+import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;

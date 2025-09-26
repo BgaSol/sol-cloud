@@ -5,7 +5,9 @@ import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.department.mapstruct.DepartmentMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.mapstruct.factory.Mappers;
 

@@ -20,7 +20,6 @@ import lombok.experimental.SuperBuilder;
 @TableName("system_t_menu")
 @Entity
 public class MenuEntity extends BaseTreeEntity<MenuEntity> {
-
     @Schema(description = "菜单名")
     @TableField("name")
     private String name;

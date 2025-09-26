@@ -1,6 +1,8 @@
 package com.bgasol.model.file.video.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.file.file.entity.FileEntity;
@@ -22,6 +24,12 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "视频实体类")
 @Entity
 public class VideoEntity extends BaseEntity {
+
+    @Schema(description = "是否删除")
+    @TableField(value = "deleted", fill = FieldFill.INSERT)
+    @TableLogic(value = "false", delval = "true")
+    private Boolean deleted;
+
     @Schema(description = "视频名称")
     @TableField("name")
     private String name;

@@ -28,11 +28,6 @@ table "system_t_permission" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null = true
-    default = false
-  }
 
   column "parent_id" { 
     type = varchar(50)
@@ -55,6 +50,6 @@ table "system_t_permission" {
     null = true
   }
   primary_key { columns = [column.id] }
-  index "idx_permission_create_time" { columns = [column.deleted, column.create_time] }
+  index "idx_permission_create_time" { columns = [column.create_time] }
   unique "idx_permission_code" { columns = [column.code] }
 }

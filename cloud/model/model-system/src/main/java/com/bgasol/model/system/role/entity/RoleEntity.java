@@ -1,6 +1,8 @@
 package com.bgasol.model.system.role.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.menu.entity.MenuEntity;
@@ -25,6 +27,12 @@ import java.util.List;
 @TableName("system_t_role")
 @Entity
 public class RoleEntity extends BaseEntity {
+
+    @Schema(description = "是否删除")
+    @TableField(value = "deleted", fill = FieldFill.INSERT)
+    @TableLogic(value = "false", delval = "true")
+    private Boolean deleted;
+
     @Schema(description = "角色名")
     @TableField("name")
     private String name;

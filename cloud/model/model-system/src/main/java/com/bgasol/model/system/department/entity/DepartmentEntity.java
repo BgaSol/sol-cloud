@@ -1,6 +1,8 @@
 package com.bgasol.model.system.department.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,6 +23,10 @@ import java.util.List;
 @TableName("system_t_department")
 @Entity
 public class DepartmentEntity extends BaseTreeEntity<DepartmentEntity> {
+    @Schema(description = "是否删除")
+    @TableField(value = "deleted", fill = FieldFill.INSERT)
+    @TableLogic(value = "false", delval = "true")
+    private Boolean deleted;
 
     @Schema(description = "部门名")
     @TableField("name")

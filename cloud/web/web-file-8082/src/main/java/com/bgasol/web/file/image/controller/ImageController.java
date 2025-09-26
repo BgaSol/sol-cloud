@@ -92,7 +92,7 @@ public class ImageController extends BaseController<
     @SneakyThrows
     @GetMapping("/download/{id}")
     @Operation(summary = "下载图片", operationId = "downloadImage")
-    @SaCheckPermission("file:download")
+    @SaCheckPermission("image:download")
     public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
         ImageEntity imageEntity = imageService.findById(id);
         FileEntity file = imageEntity.getFile();
