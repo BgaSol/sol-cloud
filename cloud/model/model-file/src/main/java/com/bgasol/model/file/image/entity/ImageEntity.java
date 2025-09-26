@@ -24,11 +24,6 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "图片实体类")
 @Entity
 public class ImageEntity extends BaseEntity {
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
-
     @Schema(description = "图片名称")
     @TableField("name")
     private String name;

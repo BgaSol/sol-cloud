@@ -22,11 +22,6 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "文件实体类")
 @Entity
 public class FileEntity extends BaseEntity {
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
-
     @TableField("name")
     @Schema(description = "文件名称(包含文件后缀)")
     private String name;

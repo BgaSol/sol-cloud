@@ -23,11 +23,6 @@ import java.util.List;
 @TableName("system_t_department")
 @Entity
 public class DepartmentEntity extends BaseTreeEntity<DepartmentEntity> {
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
-
     @Schema(description = "部门名")
     @TableField("name")
     private String name;

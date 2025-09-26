@@ -67,40 +67,12 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
     }
 
     /**
-     * 递归查询子菜单id是否存在如果不存在则删除
-     *
-     * @param menus   完整菜单
-     * @param menuIds 用户可访问菜单id列表
-     */
-    @Transactional(readOnly = true)
-    public void findChildMenu(List<MenuEntity> menus, Set<String> menuIds) {
-        for (int i = 0; i < menus.size(); i++) {
-            MenuEntity menu = menus.get(i);
-            if (menuIds.contains(menu.getId())) {
-                // 递归查询子菜单
-                List<MenuEntity> children = menu.getChildren();
-                if (ObjectUtils.isNotEmpty(children)) {
-                    this.findChildMenu(children, menuIds);
-                }
-            } else {
-                menus.remove(i--);
-            }
-        }
-    }
-
-
-    /**
      * 递归初始化菜单及其子菜单
      *
      * @param menuEntity 菜单实体
      * @return 初始化后的菜单实体
      */
     public MenuEntity init(MenuEntity menuEntity) {
-        if (ObjectUtils.isEmpty(cacheSearch(menuEntity.getId()))) {
-            this.save(menuEntity);
-        } else {
-            this.update(menuEntity);
-        }
         this.initChildren(menuEntity);
         return this.findById(menuEntity.getId());
     }
@@ -111,16 +83,17 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      * @param menuEntity 菜单实体
      */
     private void initChildren(MenuEntity menuEntity) {
+        if (ObjectUtils.isEmpty(cacheSearch(menuEntity.getId()))) {
+            this.save(menuEntity);
+        } else {
+            this.update(menuEntity);
+        }
         List<MenuEntity> children = menuEntity.getChildren();
-        if (ObjectUtils.isNotEmpty(children)) {
-            for (MenuEntity child : children) {
-                if (ObjectUtils.isEmpty(cacheSearch(child.getId()))) {
-                    this.save(child);
-                } else {
-                    this.update(child);
-                }
-                this.initChildren(child); // 递归调用
-            }
+        if (ObjectUtils.isEmpty(children)) {
+            return;
+        }
+        for (MenuEntity child : children) {
+            this.initChildren(child); // 递归调用
         }
     }
 
@@ -142,7 +115,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         return getUserMenuEntities(menuEntityList);
     }
 
-    // 获取当前用户可访问的菜单
+    /// 获取当前用户可访问的菜单
     @Transactional(readOnly = true)
     public List<MenuEntity> getUserMenuEntities(List<MenuEntity> menuEntityList) {
         UserEntity user = userService.getUserInfo();
@@ -154,36 +127,30 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         return menuEntityList;
     }
 
-    @Override
-    public Integer delete(String id) {
-        MenuEntity menuEntity = this.findById(id);
-        if (ObjectUtils.isEmpty(menuEntity)) {
-            return 1;
+    /// 根据 ids 过滤 菜单列表
+    @Transactional(readOnly = true)
+    public void findChildMenu(List<MenuEntity> menus, Set<String> menuIds) {
+        for (int i = 0; i < menus.size(); i++) {
+            MenuEntity menu = menus.get(i);
+            if (menuIds.contains(menu.getId())) {
+                // 递归查询子菜单
+                List<MenuEntity> children = menu.getChildren();
+                if (ObjectUtils.isNotEmpty(children)) {
+                    this.findChildMenu(children, menuIds);
+                }
+            } else {
+                menus.remove(i--);
+            }
         }
-        HashSet<String> menuIds = new HashSet<>();
-        menuIds.add(id);
-        List<MenuEntity> menus = findTreeAll(id, null);
-        collectDeleteIds(menus, menuIds);
-        menuIds.forEach(menuId -> {
-            this.menuMapper.deleteFromTable("system_c_role_menu", "menu_id", menuId);
-            super.delete(menuId);
-        });
-        return 1;
     }
 
-    private void collectDeleteIds(List<MenuEntity> menus, Set<String> ids) {
-        List<MenuEntity> menuEntityList = menus.stream()
-                .filter(e -> !e.getChildren().isEmpty())
-                .flatMap(e -> e.getChildren().stream())
-                .toList();
-
-        // 将当前层级子部门的ID添加到删除集合中
-        menuEntityList.forEach(e -> ids.add(e.getId()));
-        menus.forEach(e -> ids.add(e.getId()));
-
-        if (!menuEntityList.isEmpty()) {
-            // 递归处理下一层级的子部门
-            this.collectDeleteIds(menuEntityList, ids);
-        }
+    /// 根据角色id查询菜单列表
+    public List<MenuEntity> findListByRoleId(String roleId) {
+        List<String> roleIds = this.menuMapper.findFromTable(
+                "system_c_role_menu",
+                "role_id",
+                roleId,
+                "menu_id");
+        return this.findIds(roleIds.toArray(String[]::new));
     }
 }

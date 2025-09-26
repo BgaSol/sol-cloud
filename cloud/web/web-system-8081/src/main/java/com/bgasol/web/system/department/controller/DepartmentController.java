@@ -1,6 +1,7 @@
 package com.bgasol.web.system.department.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
@@ -10,7 +11,6 @@ import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.web.system.department.service.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -77,17 +77,10 @@ public class DepartmentController extends BaseController<
         return super.findAll();
     }
 
-    @GetMapping("/find-by-id-is-default")
+    @GetMapping("/find-default")
     @Operation(summary = "查询默认部门", operationId = "findDefaultDepartment")
-    public BaseVo<DepartmentEntity> findById() {
+    @SaIgnore
+    public BaseVo<DepartmentEntity> findDefaultDepartment() {
         return super.findById(DEFAULT_DEPARTMENT_ID);
-    }
-
-    @GetMapping("/get-my-department")
-    @Operation(summary = "获取我的部门", operationId = "getMyDepartment")
-    public BaseVo<DepartmentEntity> getMyDepartment(HttpServletRequest request) {
-        // 获取域名
-        String domain = request.getServerName();
-        return BaseVo.success(departmentService.getMyDepartment(domain));
     }
 }

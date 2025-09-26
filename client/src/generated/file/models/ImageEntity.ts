@@ -29,10 +29,6 @@ export type ImageEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 图片名称
      */
     name?: string;

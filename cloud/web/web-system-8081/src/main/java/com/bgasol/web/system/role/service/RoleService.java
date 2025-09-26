@@ -18,7 +18,6 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,37 +50,13 @@ public class RoleService extends BasePoiService<RoleEntity,
     @Transactional(readOnly = true)
     public void findOtherTable(RoleEntity roleEntity) {
         // 查询关联的角色
-        List<String> permissionIds = this.roleMapper.findFromTable(
-                "system_c_role_permission",
-                "role_id",
-                roleEntity.getId(),
-                "permission_id");
-        List<PermissionEntity> permissionEntities = new ArrayList<>();
-        for (String id : permissionIds) {
-            permissionEntities.add(permissionService.findById(id));
-        }
-        roleEntity.setPermissions(permissionEntities);
+        List<PermissionEntity> permissionEntityList = permissionService.findPermissionListByRoleId(roleEntity.getId());
+        roleEntity.setPermissions(permissionEntityList);
 
         // 查询关联的菜单
-        List<String> roleIds = this.roleMapper.findFromTable(
-                "system_c_role_menu",
-                "role_id",
-                roleEntity.getId(),
-                "menu_id");
-        List<MenuEntity> menuEntities = new ArrayList<>();
-        for (String id : roleIds) {
-            menuEntities.add(menuService.findById(id));
-        }
-        roleEntity.setMenus(menuEntities);
+        List<MenuEntity> menuEntityList = menuService.findListByRoleId(roleEntity.getId());
+        roleEntity.setMenus(menuEntityList);
         super.findOtherTable(roleEntity);
-    }
-
-    @Override
-    public Integer delete(String id) {
-        this.roleMapper.deleteFromTable("system_c_role_permission", "role_id", id);
-        this.roleMapper.deleteFromTable("system_c_role_menu", "role_id", id);
-        this.roleMapper.deleteFromTable("system_c_user_role", "role_id", id);
-        return super.delete(id);
     }
 
     @Override
@@ -142,6 +117,16 @@ public class RoleService extends BasePoiService<RoleEntity,
             }
         }
         return true;
+    }
+
+    /// 根据用户ID查询角色列表
+    public List<RoleEntity> findRoleListByUserId(String userId) {
+        List<String> roleIds = this.roleMapper.findFromTable(
+                "system_c_user_role",
+                "user_id",
+                userId,
+                "role_id");
+        return this.findIds(roleIds.toArray(String[]::new));
     }
 
 }

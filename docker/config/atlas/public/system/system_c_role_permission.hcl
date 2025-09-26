@@ -15,14 +15,12 @@ table "system_c_role_permission" {
   foreign_key "fk_role_permission_permission_id" {
     columns = [column.permission_id]
     ref_columns = [table.system_t_permission.column.id]
-    on_update = NO_ACTION
-    on_delete = CASCADE
+    on_delete = CASCADE # 跟随权限表删除
   }
   foreign_key "fk_role_permission_role_id" {
     columns = [column.role_id]
     ref_columns = [table.system_t_role.column.id]
-    on_update = NO_ACTION
-    on_delete = CASCADE
+    on_delete = CASCADE # 跟随角色表删除
   }
   index "idx_role_permission_role_id" { columns = [column.role_id] }
   index "idx_role_permission_permission_id" { columns = [column.permission_id] }

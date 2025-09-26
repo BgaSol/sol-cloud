@@ -431,6 +431,23 @@ export class Service {
         });
     }
     /**
+     * 获取我的部门
+     * @returns BaseVoDepartmentEntity OK
+     * @throws ApiError
+     */
+    public static getMyDepartment(): CancelablePromise<BaseVoDepartmentEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/user/get-my',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 查询所有在线用户
      * @returns BaseVoListUserEntity OK
      * @throws ApiError
@@ -625,23 +642,6 @@ export class Service {
         });
     }
     /**
-     * 获取我的部门
-     * @returns BaseVoDepartmentEntity OK
-     * @throws ApiError
-     */
-    public static getMyDepartment(): CancelablePromise<BaseVoDepartmentEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/department/get-my-department',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
      * 查询默认部门
      * @returns BaseVoDepartmentEntity OK
      * @throws ApiError
@@ -649,7 +649,7 @@ export class Service {
     public static findDefaultDepartment(): CancelablePromise<BaseVoDepartmentEntity> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/department/find-by-id-is-default',
+            url: '/department/find-default',
             errors: {
                 400: `参数校验异常`,
                 401: `未登录异常`,

@@ -24,12 +24,6 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "视频实体类")
 @Entity
 public class VideoEntity extends BaseEntity {
-
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
-
     @Schema(description = "视频名称")
     @TableField("name")
     private String name;

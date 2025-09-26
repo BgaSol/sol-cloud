@@ -1,10 +1,13 @@
 package com.bgasol.web.system.user.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
+import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.user.dto.*;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.model.system.user.vo.VerificationVo;
@@ -12,6 +15,7 @@ import com.bgasol.web.system.user.service.LoginService;
 import com.bgasol.web.system.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -124,5 +128,14 @@ public class UserController extends BaseController<
     @SaCheckPermission("user:findOnlineUser")
     public BaseVo<List<UserEntity>> findOnlineUser() {
         return BaseVo.success(this.loginService.findOnlineUser());
+    }
+
+    @GetMapping("/get-my")
+    @Operation(summary = "获取我的部门", operationId = "getMyDepartment")
+    @SaIgnore
+    public BaseVo<DepartmentEntity> getMyDepartment(HttpServletRequest request) {
+        // 获取域名
+        String domain = request.getServerName();
+        return BaseVo.success(userService.getMyDepartment(domain));
     }
 }

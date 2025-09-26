@@ -29,10 +29,6 @@ export type VideoEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 视频名称
      */
     name?: string;

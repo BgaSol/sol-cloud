@@ -30,10 +30,6 @@ export type RoleEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 角色名
      */
     name?: string;

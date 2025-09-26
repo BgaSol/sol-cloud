@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
-import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.dto.UserPageDto;
 import com.bgasol.model.system.user.dto.UserPasswordResetDto;
 import com.bgasol.model.system.user.dto.UserPasswordUpdateDto;
@@ -22,8 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -90,9 +88,11 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         if (!userEntity.getPassword().equals(this.encodePassword(userInputOldPassword))) {
             throw new BaseException("原密码错误");
         }
-        String newPassword = userPasswordUpdateDto.getNewPassword();
-        userEntity.setPassword(this.encodePassword(newPassword));
-        return this.update(userEntity);
+        String newPassword = this.encodePassword(userPasswordUpdateDto.getNewPassword());
+        return this.update(UserEntity.builder()
+                .id(userid)
+                .password(newPassword)
+                .build());
     }
 
     public UserEntity resetPassword(UserPasswordResetDto userPasswordResetDto) {
@@ -128,19 +128,27 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     @Transactional(readOnly = true)
     public void findOtherTable(UserEntity userEntity) {
         // 获取关联角色
-        List<String> roleIds = this.userMapper.findFromTable("system_c_user_role",
-                "user_id",
-                userEntity.getId(),
-                "role_id");
-        List<RoleEntity> roleEntities = new ArrayList<>();
-        for (String id : roleIds) {
-            roleEntities.add(roleService.findById(id));
-        }
-        userEntity.setRoles(roleEntities);
-
+        userEntity.setRoles(roleService.findRoleListByUserId(userEntity.getId()));
         // 获取关联的部门
-        DepartmentEntity departmentEntity = departmentService.findById(userEntity.getDepartmentId());
-        userEntity.setDepartment(departmentEntity);
+        if (ObjectUtils.isNotEmpty(userEntity.getDepartmentId())) {
+            DepartmentEntity departmentEntity = departmentService.findById(userEntity.getDepartmentId());
+            userEntity.setDepartment(departmentEntity);
+        }
         super.findOtherTable(userEntity);
+    }
+
+    /// 获取当前访问者所属的用户的部门
+    @Transactional(readOnly = true)
+    public DepartmentEntity getMyDepartment(String domain) {
+        if (StpUtil.isLogin()) {
+            // 获取当前登录用户的部门
+            String userId = StpUtil.getLoginIdAsString();
+            return this.findById(userId).getDepartment();
+        } else if (ObjectUtils.isNotEmpty(domain)) {
+            // 获取当前域的部门
+            return departmentService.findByDomain(domain);
+        }
+        // 若都找不到则返回默认部门
+        return departmentService.findById(DEFAULT_DEPARTMENT_ID);
     }
 }

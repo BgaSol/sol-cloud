@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<{
   modelValue: string[];
   defaultExpandAll?: boolean;
 }>(), {
-  defaultExpandAll: true
+  defaultExpandAll: true,
 });
 const emit = defineEmits<{
   'update:modelValue': [string[]]
@@ -36,7 +36,7 @@ onMounted(() => {
 const treeRef = ref<InstanceType<typeof ElTreeRefType>>();
 
 // 选中事件
-const treeSelectChange = () => {
+const treeSelectCheck = () => {
   modelValue.value = treeRef.value?.getCheckedKeys() as string[];
 };
 // 父子联动
@@ -78,7 +78,7 @@ const expandTree = (checked: CheckboxValueType) => {
              :default-expand-all="props.defaultExpandAll" :node-key='props.nodeKey'
              :props='props.props' class='form-item-tree'
              show-checkbox
-             @check-change='treeSelectChange'>
+             @check='treeSelectCheck'>
     </el-tree>
   </el-form-item>
 </template>

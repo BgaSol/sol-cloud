@@ -28,10 +28,6 @@ export type FileEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 文件名称(包含文件后缀)
      */
     name?: string;

@@ -98,4 +98,9 @@ table "system_t_menu" {
   index "idx_menu_create_time" {
     columns = [column.create_time]
   }
+  foreign_key "fk_menu_parent_id" {
+    columns = [column.parent_id]
+    ref_columns = [column.id]
+    on_delete = CASCADE # 删父菜单，子菜单会级联删除
+  }
 }

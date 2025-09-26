@@ -37,10 +37,6 @@ export type DepartmentEntity = {
      */
     children?: Array<DepartmentEntity>;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 部门名
      */
     name?: string;

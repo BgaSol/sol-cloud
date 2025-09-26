@@ -1,6 +1,6 @@
 <script lang='ts' setup>
 import {ref} from 'vue';
-import {ElMessage} from 'element-plus';
+import {ElButton, ElDialog, ElForm, ElFormItem, ElIcon, ElInput, ElMessage, ElUpload} from 'element-plus';
 import {ImageUpdateDto, Service, VerificationResult} from "~/generated/file";
 import {useFormValidation} from "~/composables/FormValidationHook";
 import {buildDto, getFileUrl, getHeaders, uploadFilePath} from "~/api/HttpRequest";

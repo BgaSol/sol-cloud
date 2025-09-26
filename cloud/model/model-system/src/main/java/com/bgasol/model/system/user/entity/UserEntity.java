@@ -26,12 +26,6 @@ import java.util.List;
 @TableName("system_t_user")
 @Entity
 public class UserEntity extends BaseEntity {
-
-    @Schema(description = "是否删除")
-    @TableField(value = "deleted", fill = FieldFill.INSERT)
-    @TableLogic(value = "false", delval = "true")
-    private Boolean deleted;
-
     @Schema(description = "用户名")
     @TableField("username")
     private String username;

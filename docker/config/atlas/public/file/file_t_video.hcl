@@ -28,12 +28,6 @@ table "file_t_video" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null    = true
-    default = false
-  }
-
   column "name" {
     type = varchar(255)
     null = false
@@ -73,6 +67,5 @@ table "file_t_video" {
   primary_key { columns = [column.id] }
   index "idx_video_create_time" {
     columns = [column.create_time]
-    where = "deleted = false"
   }
 }

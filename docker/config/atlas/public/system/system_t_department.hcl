@@ -28,12 +28,6 @@ table "system_t_department" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null    = true
-    default = false
-  }
-
   column "parent_id" {
     type = varchar(50)
     null = true
@@ -70,15 +64,17 @@ table "system_t_department" {
   primary_key { columns = [column.id] }
   index "idx_department_parent_id" {
     columns = [column.parent_id]
-    where = "deleted = false"
   }
   index "idx_department_create_time" {
     columns = [column.create_time]
-    where = "deleted = false"
   }
   index "uk_department_code" {
     unique = true
     columns = [column.code]
-    where  = "deleted = false"
+  }
+  foreign_key "fk_department_parent_id" {
+    columns = [column.parent_id]
+    ref_columns = [column.id]
+    on_delete = CASCADE # 删父部门，子部门级联删除
   }
 }

@@ -18,6 +18,7 @@ import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ResolvableType;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -233,7 +234,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
-        int i = commonBaseMapper().deleteById(id);
+        int i;
+        try {
+            i = commonBaseMapper().deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new BaseException("删除失败 数据已被引用");
+        }
         this.cacheDelete(id);
         return i;
     }

@@ -28,12 +28,6 @@ table "file_t_image" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null    = true
-    default = false
-  }
-
   column "name" {
     type = varchar(255)
     null = false
@@ -53,6 +47,5 @@ table "file_t_image" {
   primary_key { columns = [column.id] }
   index "idx_image_create_time" {
     columns = [column.create_time]
-    where = "deleted = false"
   }
 }

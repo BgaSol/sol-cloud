@@ -47,36 +47,12 @@ public class PermissionService extends BaseTreeService<PermissionEntity, BasePag
         return this.findById(parentPermission.getId());
     }
 
-    @Override
-    public Integer delete(String id) {
-        PermissionEntity permissionEntity = this.findById(id);
-        if (ObjectUtils.isEmpty(permissionEntity)) {
-            return 1;
-        }
-        HashSet<String> permissionIds = new HashSet<>();
-        permissionIds.add(id);
-        List<PermissionEntity> permissions = findTreeAll(id, null);
-        collectDeleteIds(permissions, permissionIds);
-        permissionIds.forEach(e -> {
-            this.permissionMapper.deleteFromTable("system_c_role_permission", "permission_id", e);
-            super.delete(e);
-        });
-        return 1;
-    }
-
-    private void collectDeleteIds(List<PermissionEntity> permissions, HashSet<String> ids) {
-        List<PermissionEntity> permissionEntityList = permissions.stream()
-                .filter(e -> !e.getChildren().isEmpty())
-                .flatMap(e -> e.getChildren().stream())
-                .toList();
-
-        // 将当前层级子部门的ID添加到删除集合中
-        permissionEntityList.forEach(e -> ids.add(e.getId()));
-        permissions.forEach(e -> ids.add(e.getId()));
-
-        if (!permissionEntityList.isEmpty()) {
-            // 递归处理下一层级的子部门
-            this.collectDeleteIds(permissionEntityList, ids);
-        }
+    public List<PermissionEntity> findPermissionListByRoleId(String roleId) {
+        List<String> permissionIds = this.permissionMapper.findFromTable(
+                "system_c_role_permission",
+                "role_id",
+                roleId,
+                "permission_id");
+        return this.findIds(permissionIds.toArray(String[]::new));
     }
 }

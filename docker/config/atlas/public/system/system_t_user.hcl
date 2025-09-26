@@ -28,12 +28,6 @@ table "system_t_user" {
     type = text
     null = true
   }
-  column "deleted" {
-    type    = boolean
-    null    = true
-    default = false
-  }
-
   column "username" {
     type = varchar(100)
     null = false
@@ -55,9 +49,8 @@ table "system_t_user" {
     null = true
   }
   column "status" {
-    type    = int
-    null    = true
-    default = 1
+    type = varchar(50)
+    null = true
   }
   column "avatar_id" {
     type = varchar(50)
@@ -72,14 +65,19 @@ table "system_t_user" {
     type = varchar(50)
     null = true
   }
-  primary_key { columns = [column.id] }
+  primary_key {
+    columns = [column.id]
+  }
   index "idx_user_create_time" {
     columns = [column.create_time]
-    where = "deleted = false"
   }
   index "uk_user_username" {
     unique = true
     columns = [column.username]
-    where = "deleted = false"
+  }
+  foreign_key "fk_user_department_id" {
+    columns = [column.department_id]
+    ref_columns = [table.system_t_department.column.id]
+    on_delete = RESTRICT # 如果用户正在引用部门，禁止删除部门
   }
 }

@@ -60,4 +60,11 @@ table "system_t_permission" {
     unique = true
     columns = [column.code]
   }
+  
+  // 添加外键约束，实现删除父权限时级联删除子权限
+  foreign_key "fk_permission_parent_id" {
+    columns = [column.parent_id]
+    ref_columns = [column.id]
+    on_delete = CASCADE # 删父权限，子权限级联删除
+  }
 }

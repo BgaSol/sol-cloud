@@ -30,10 +30,6 @@ export type UserEntity = {
      */
     description?: string;
     /**
-     * 是否删除
-     */
-    deleted?: boolean;
-    /**
      * 用户名
      */
     username?: string;
