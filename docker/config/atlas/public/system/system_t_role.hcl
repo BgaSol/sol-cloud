@@ -40,11 +40,11 @@ table "system_t_role" {
   }
 
   column "name" {
-    type = varchar(100)
+    type = varchar(255)
     null = false
   }
   column "code" {
-    type = varchar(100)
+    type = varchar(255)
     null = true
   }
   column "status" {

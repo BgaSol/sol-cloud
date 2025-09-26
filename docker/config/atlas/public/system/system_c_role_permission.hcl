@@ -8,7 +8,7 @@ table "system_c_role_permission" {
     null = false
   }
   column "permission_id" {
-    type = varchar(50)
+    type = varchar(255)
     null = false
   }
   primary_key { columns = [column.role_id, column.permission_id] }

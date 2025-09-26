@@ -4,7 +4,7 @@
 table "system_t_permission" {
   schema = schema.public
   column "id" {
-    type = varchar(50)
+    type = varchar(255)
     null = false
   }
   column "type" {
@@ -30,19 +30,19 @@ table "system_t_permission" {
   }
 
   column "parent_id" {
-    type = varchar(50)
+    type = varchar(255)
     null = true
   }
   column "name" {
-    type = varchar(100)
+    type = varchar(255)
     null = false
   }
   column "code" {
-    type = varchar(100)
+    type = varchar(255)
     null = true
   }
   column "path" {
-    type = varchar(255)
+    type = varchar(1000)
     null = true
   }
   column "micro_service" {
