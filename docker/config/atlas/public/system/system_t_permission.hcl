@@ -7,11 +7,11 @@ table "system_t_permission" {
     type = varchar(50)
     null = false
   }
-  column "type" { 
+  column "type" {
     type = varchar(50)
     null = true
   }
-  column "sort" { 
+  column "sort" {
     type = int
     null = true
   }
@@ -20,16 +20,16 @@ table "system_t_permission" {
     null = true
     default = sql("now()")
   }
-  column "update_time" { 
+  column "update_time" {
     type = timestamp(6)
     null = true
   }
-  column "description" { 
+  column "description" {
     type = text
     null = true
   }
 
-  column "parent_id" { 
+  column "parent_id" {
     type = varchar(50)
     null = true
   }
@@ -37,19 +37,27 @@ table "system_t_permission" {
     type = varchar(100)
     null = false
   }
-  column "code" { 
+  column "code" {
     type = varchar(100)
     null = true
   }
-  column "path" { 
+  column "path" {
     type = varchar(255)
     null = true
   }
-  column "micro_service" { 
+  column "micro_service" {
     type = varchar(100)
     null = true
   }
   primary_key { columns = [column.id] }
-  index "idx_permission_create_time" { columns = [column.create_time] }
-  unique "idx_permission_code" { columns = [column.code] }
+  index "idx_premission_parent_id" {
+    columns = [column.parent_id]
+  }
+  index "idx_permission_create_time" {
+    columns = [column.create_time]
+  }
+  index "uk_permission_code" {
+    unique = true
+    columns = [column.code]
+  }
 }

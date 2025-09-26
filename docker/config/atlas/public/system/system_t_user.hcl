@@ -7,11 +7,11 @@ table "system_t_user" {
     type = varchar(50)
     null = false
   }
-  column "type" { 
+  column "type" {
     type = varchar(50)
     null = true
   }
-  column "sort" { 
+  column "sort" {
     type = int
     null = true
   }
@@ -20,17 +20,17 @@ table "system_t_user" {
     null = true
     default = sql("now()")
   }
-  column "update_time" { 
+  column "update_time" {
     type = timestamp(6)
     null = true
   }
-  column "description" { 
+  column "description" {
     type = text
     null = true
   }
   column "deleted" {
     type    = boolean
-    null = true
+    null    = true
     default = false
   }
 
@@ -42,37 +42,44 @@ table "system_t_user" {
     type = varchar(255)
     null = false
   }
-  column "nickname" { 
+  column "nickname" {
     type = varchar(100)
     null = true
   }
-  column "email" { 
+  column "email" {
     type = varchar(100)
     null = true
   }
-  column "phone" { 
+  column "phone" {
     type = varchar(50)
     null = true
   }
   column "status" {
     type    = int
-    null = true
+    null    = true
     default = 1
   }
-  column "avatar_id" { 
+  column "avatar_id" {
     type = varchar(50)
     null = true
   }
   column "locked" {
     type    = boolean
-    null = true
+    null    = true
     default = false
   }
-  column "department_id" { 
+  column "department_id" {
     type = varchar(50)
     null = true
   }
   primary_key { columns = [column.id] }
-  index "idx_user_create_time" { columns = [column.deleted, column.create_time] }
-  unique "idx_user_username" { columns = [column.username] }
+  index "idx_user_create_time" {
+    columns = [column.create_time]
+    where = "deleted = false"
+  }
+  index "uk_user_username" {
+    unique = true
+    columns = [column.username]
+    where = "deleted = false"
+  }
 }

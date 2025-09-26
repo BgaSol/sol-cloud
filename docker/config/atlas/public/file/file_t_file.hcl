@@ -7,30 +7,30 @@ table "file_t_file" {
     type = varchar(50)
     null = false
   }
-  column "type" { 
+  column "type" {
     type = varchar(50)
     null = true
   }
-  column "sort" { 
+  column "sort" {
     type = int
     null = true
   }
   column "create_time" {
     type = timestamp(6)
-    null = true
+    null = false
     default = sql("now()")
   }
-  column "update_time" { 
+  column "update_time" {
     type = timestamp(6)
     null = true
   }
-  column "description" { 
+  column "description" {
     type = text
     null = true
   }
   column "deleted" {
     type    = boolean
-    null = true
+    null = false
     default = false
   }
 
@@ -38,34 +38,37 @@ table "file_t_file" {
     type = varchar(255)
     null = false
   }
-  column "url" { 
+  column "url" {
     type = varchar(255)
     null = true
   }
-  column "size" { 
+  column "size" {
     type = bigint
     null = true
   }
-  column "hash" { 
+  column "hash" {
     type = varchar(255)
     null = true
   }
-  column "status" { 
+  column "status" {
     type = varchar(50)
     null = true
   }
-  column "suffix" { 
-    type = varchar(50)
+  column "suffix" {
+    type = varchar(20)
     null = true
   }
-  column "source" { 
+  column "source" {
     type = varchar(50)
-    null = true
+    null = false
   }
-  column "bucket" { 
-    type = varchar(100)
-    null = true
+  column "bucket" {
+    type = varchar(50)
+    null = false
   }
   primary_key { columns = [column.id] }
-  index "idx_file_create_time" { columns = [column.deleted, column.create_time] }
+  index "idx_file_create_time" {
+    columns = [column.create_time]
+    where  = "deleted = false"
+  }
 }

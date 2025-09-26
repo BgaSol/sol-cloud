@@ -7,11 +7,11 @@ table "file_t_video" {
     type = varchar(50)
     null = false
   }
-  column "type" { 
+  column "type" {
     type = varchar(50)
     null = true
   }
-  column "sort" { 
+  column "sort" {
     type = int
     null = true
   }
@@ -20,17 +20,17 @@ table "file_t_video" {
     null = true
     default = sql("now()")
   }
-  column "update_time" { 
+  column "update_time" {
     type = timestamp(6)
     null = true
   }
-  column "description" { 
+  column "description" {
     type = text
     null = true
   }
   column "deleted" {
     type    = boolean
-    null = true
+    null    = true
     default = false
   }
 
@@ -38,38 +38,41 @@ table "file_t_video" {
     type = varchar(255)
     null = false
   }
-  column "width" { 
+  column "width" {
     type = int
     null = true
   }
-  column "height" { 
+  column "height" {
     type = int
     null = true
   }
-  column "duration" { 
+  column "duration" {
     type = int
     null = true
   }
-  column "format" { 
+  column "format" {
     type = varchar(50)
     null = true
   }
-  column "bitrate" { 
+  column "bitrate" {
     type = int
     null = true
   }
-  column "fps" { 
+  column "fps" {
     type = int
     null = true
   }
-  column "codec" { 
+  column "codec" {
     type = varchar(50)
     null = true
   }
-  column "file_id" { 
+  column "file_id" {
     type = varchar(50)
     null = true
   }
   primary_key { columns = [column.id] }
-  index "idx_video_create_time" { columns = [column.deleted, column.create_time] }
+  index "idx_video_create_time" {
+    columns = [column.create_time]
+    where = "deleted = false"
+  }
 }
