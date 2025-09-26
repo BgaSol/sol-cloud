@@ -10,12 +10,14 @@ import org.redisson.api.RMapCache;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
-import static com.bgasol.common.core.base.entity.BaseTreeEntity.PARENT_ID;
 
 @Transactional
 @Slf4j
@@ -34,9 +36,9 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
     }
 
     /**
-     * 查询所有树形结构
+     * 查询所有树形结构（一次性查全量 + 内存组装）
      *
-     * @param parentId 父id
+     * @param parentId 父id，可为空；为空时返回所有根节点树
      * @return 树形结构列表
      */
     @Transactional(readOnly = true)
@@ -44,25 +46,52 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
         if (queryWrapper == null) {
             queryWrapper = new QueryWrapper<>();
         }
-        if (parentId == null) {
-            queryWrapper.isNull(PARENT_ID).or().eq(PARENT_ID, "");
-        } else {
-            queryWrapper.eq(PARENT_ID, parentId);
-        }
+
+        // 一次性全量查出
         List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
 
-        // 缓存查询结果
+        if (entities.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 缓存查询结果（整批存）
         if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
             RMapCache<String, ENTITY> mapCache = getRMapCache();
             mapCache.putAll(
-                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
-                    randomizeTtl(), DEFAULT_TIME_UNIT);
+                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, e -> e)),
+                    randomizeTtl(), DEFAULT_TIME_UNIT
+            );
         }
 
         this.findOtherTable(entities);
-        for (ENTITY treeEntity : entities) {
-            treeEntity.setChildren(this.findTreeAll(treeEntity.getId(), null));
+
+        // id -> entity 映射
+        Map<String, ENTITY> entityMap = entities.stream()
+                .collect(Collectors.toMap(BaseEntity::getId, e -> e));
+
+        // 组装树结构
+        List<ENTITY> roots = new ArrayList<>();
+        for (ENTITY entity : entities) {
+            String pid = entity.getParentId();
+            if (pid == null || pid.isEmpty()) {
+                roots.add(entity);
+            } else {
+                ENTITY parent = entityMap.get(pid);
+                if (parent != null) {
+                    if (parent.getChildren() == null) {
+                        parent.setChildren(new ArrayList<>());
+                    }
+                    parent.getChildren().add(entity);
+                }
+            }
         }
-        return entities;
+
+        if (parentId != null && !parentId.isEmpty()) {
+            return entityMap.containsKey(parentId)
+                    ? entityMap.get(parentId).getChildren()
+                    : Collections.emptyList();
+        }
+
+        return roots;
     }
 }
