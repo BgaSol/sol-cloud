@@ -29,7 +29,10 @@ services:
       - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
     volumes:
-      - ./output/server/gateway-9527/:/app/:ro
+      - ./output/server/dependencies/gateway-9527:/app/dependencies:ro
+      - ./output/server/spring-boot-loader/gateway-9527:/app/spring-boot-loader:ro
+      - ./output/server/snapshot-dependencies/gateway-9527:/app/snapshot-dependencies:ro
+      - ./output/server/application/gateway-9527:/app/application:ro
     ports:
       - "9527:9527"
     networks:
@@ -61,7 +64,10 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - ./output/server/web-system-8081/:/app/:ro
+      - ./output/server/dependencies/web-system-8081:/app/dependencies:ro
+      - ./output/server/spring-boot-loader/web-system-8081:/app/spring-boot-loader:ro
+      - ./output/server/snapshot-dependencies/web-system-8081:/app/snapshot-dependencies:ro
+      - ./output/server/application/web-system-8081:/app/application:ro
     environment:
       TZ: ${TZ}
 
@@ -100,7 +106,10 @@ services:
       - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
     volumes:
-      - ./output/server/web-file-8082/:/app/:ro
+      - ./output/server/dependencies/web-file-8082:/app/dependencies:ro
+      - ./output/server/spring-boot-loader/web-file-8082:/app/spring-boot-loader:ro
+      - ./output/server/snapshot-dependencies/web-file-8082:/app/snapshot-dependencies:ro
+      - ./output/server/application/web-file-8082:/app/application:ro
     ports:
       - "8082:8082"
     environment:

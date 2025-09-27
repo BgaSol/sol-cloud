@@ -34,18 +34,16 @@ print_divider() {
 }
 
 print_divider
-print_step "进入 docker 目录 📁"
-cd docker || { print_error "❌ 未找到 docker 目录"; exit 1; }
 
 print_step "关闭现有 Docker Compose 服务 🧹"
-docker compose -f app.docker-compose.yml down || { print_error "❌ docker compose down app.docker-compose.yml 执行失败"; exit 1; }
-docker compose -f infra.docker-compose.yml down || { print_error "❌ docker compose down infra.docker-compose.yml 执行失败"; exit 1; }
-
-print_step "退出 docker 目录 🚪"
+cd docker || { print_error "❌ 未找到 docker 目录"; exit 1; }
+# 停止Docker服务，允许失败
+docker compose -f app.docker-compose.yml down 2>/dev/null || print_info "app服务未运行"
+docker compose -f infra.docker-compose.yml down 2>/dev/null || print_info "infra服务未运行"
 cd ..
 
 # 模块配置
-# 启用 BuildKit 提升构建速度与并发处理
+# 启用Docker BuildKit
 export DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1}
 BACKEND_MODULES=(
   "gateway-9527"
@@ -57,21 +55,28 @@ BACKEND_MODULES=(
 SERVER_OUTPUT_DIR="docker/output/server"
 SERVER_ROOT_DIR="${SERVER_OUTPUT_DIR}"
 
-# 在构建开始前清理所有模块目录
-print_step "🧹 清理所有模块目录..."
+# 清理输出目录
+print_step "🧹 清理输出目录并准备分层结构..."
 rm -rf "${SERVER_OUTPUT_DIR}"
 mkdir -p "${SERVER_OUTPUT_DIR}"
-for module in "${BACKEND_MODULES[@]}"; do
-  mkdir -p "${SERVER_ROOT_DIR}/${module}"
-  print_info "准备模块目录: ${module}"
+
+# 创建分层目录
+LAYERS=("dependencies" "spring-boot-loader" "snapshot-dependencies" "application")
+print_info "创建分层目录结构..."
+for layer in "${LAYERS[@]}"; do
+  mkdir -p "${SERVER_ROOT_DIR}/${layer}"
+  for module in "${BACKEND_MODULES[@]}"; do
+    mkdir -p "${SERVER_ROOT_DIR}/${layer}/${module}"
+  done
 done
+print_success "分层目录结构创建完成"
 
 # 后端构建阶段
 print_divider
 print_step "开始后端构建 🏗️"
 
 cd cloud
-export MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED"
+export MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED -Xmx2g -XX:+UseG1GC"
 print_info "🔨 执行 Maven 构建..."
 mvn clean package \
     -DskipTests \
@@ -88,46 +93,52 @@ copy_backend_module() {
     && module_dir="cloud/${module}" \
     || module_dir="cloud/web/${module}"
 
-  local module_root="${SERVER_ROOT_DIR}/${module}"
-
   print_info "📦 开始分层解压：${module}"
 
-  # 1. 找到唯一 fat-jar
+  # 找到构建的jar文件
   local fat_jar=$(ls "${module_dir}/target/${module}"-*.jar 2>/dev/null | head -n1)
   if [[ ! -f "$fat_jar" ]]; then
     print_error "❌ 未找到 jar：${module_dir}/target/${module}-*.jar"
     exit 1
   fi
 
-  # 2. 临时目录
+  # 创建临时目录
   local tmp=$(mktemp -d)
 
-  # 3. 官方 layertools 一次性解开四层
+  # 使用Spring Boot layertools解压jar
   java -Djarmode=tools -jar "$fat_jar" extract --layers --launcher --destination "$tmp"
 
-  # 4. 整包同步到模块目录（四层 + 索引）
+  # 复制各层到新的目录结构
   for layer in dependencies spring-boot-loader snapshot-dependencies application; do
     [[ -d "$tmp/$layer" ]] || continue
-    mkdir -p "${module_root}/$layer"
-    rsync -a --delete "$tmp/$layer/" "${module_root}/$layer/"
+    local layer_module_dir="${SERVER_ROOT_DIR}/${layer}/${module}"
+    mkdir -p "${layer_module_dir}"
+    # 优化rsync参数以提升性能
+    rsync -a --delete --no-compress --inplace --whole-file "$tmp/$layer/" "${layer_module_dir}/"
   done
 
-  # 5. 保留索引（启动器需要）
-  [[ -f "$tmp/layers.idx" ]] && cp "$tmp/layers.idx" "${module_root}/"
+  # 复制layers.idx到application层
+  if [[ -f "$tmp/layers.idx" ]]; then
+    cp "$tmp/layers.idx" "${SERVER_ROOT_DIR}/application/${module}/"
+  fi
 
-  # 6. 清理临时目录
+  # 清理临时文件
   rm -rf "$tmp"
 
-  print_success "✅ 模块 ${module} 分层完成 → ${module_root}"
+  print_success "✅ 模块 ${module} 分层完成"
 }
 
 
 print_step "📂 开始复制后端构建产物..."
+# 并行处理所有模块
+print_info "并行处理 ${#BACKEND_MODULES[@]} 个模块..."
 for module in "${BACKEND_MODULES[@]}"; do
-  copy_backend_module "${module}"
+  copy_backend_module "${module}" &
 done
+# 等待所有任务完成
+wait
 
-print_success "🏁 后端构建产物整理完毕"
+print_success "后端构建产物整理完毕"
 
 # 前端构建阶段
 print_divider
@@ -137,7 +148,9 @@ cd client
 print_info "📦 安装依赖 (npm install)..."
 npm install
 
-print_info "🧱 执行构建 (npm run build)..."
+print_info "🧱 执行构建..."
+# 设置Node.js内存限制
+export NODE_OPTIONS="--max-old-space-size=4096"
 npm run build
 cd ..
 
@@ -145,14 +158,12 @@ print_success "🎊 前端构建完成"
 
 # 前端构建产物复制
 FRONTEND_OUTPUT_DIR="docker/output/client"
-print_info "🧹 清理前端输出目录..."
+print_info "复制前端构建产物..."
 rm -rf "${FRONTEND_OUTPUT_DIR}"
 mkdir -p "${FRONTEND_OUTPUT_DIR}"
-
-print_info "📂 拷贝前端构建结果..."
-cp -r client/dist/* "${FRONTEND_OUTPUT_DIR}/"
-
-print_success "📁 前端输出完成 → ${FRONTEND_OUTPUT_DIR}"
+# 使用rsync复制文件
+rsync -a --delete --no-compress client/dist/ "${FRONTEND_OUTPUT_DIR}/"
+print_success "前端构建产物复制完成"
 
 # 完整构建成功
 print_divider

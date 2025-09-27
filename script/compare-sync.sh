@@ -47,66 +47,23 @@ print_error()   { echo -e "${RED}❌ $1${RESET}"; }
 print_step()    { echo -e "\n${YELLOW}🚀 $1${RESET}"; }
 print_divider() { echo -e "${YELLOW}----------------------------------------${RESET}"; }
 
-# 如果未提供layers-collection参数，尝试自动解压docker/script/collect/layers-collection.tar.gz
+# 自动查找并解压收集的文件
 if [[ -z "$LAYERS_COLLECTION_DIR" ]]; then
-  print_info "未指定--layers-collection参数，尝试自动解压docker/script/collect/layers-collection.tar.gz"
-  
   AUTO_ARCHIVE="$BASE_DIR/docker/script/collect/layers-collection.tar.gz"
-  print_info "项目根目录: $BASE_DIR"
-  print_info "查找压缩包: $AUTO_ARCHIVE"
+  ALT_ARCHIVE="$(dirname "$0")/../docker/script/collect/layers-collection.tar.gz"
   
-  if [[ ! -f "$AUTO_ARCHIVE" ]]; then
-    print_error "自动解压失败：未找到压缩包 $AUTO_ARCHIVE"
-    print_info "当前工作目录: $(pwd)"
-    print_info "脚本位置: $(dirname "$0")"
-    print_info "请检查以下可能的位置："
-    print_info "  - $BASE_DIR/docker/script/collect/layers-collection.tar.gz"
-    print_info "  - $(dirname "$0")/../docker/script/collect/layers-collection.tar.gz"
-    
-    # 尝试其他可能的路径
-    ALT_ARCHIVE="$(dirname "$0")/../docker/script/collect/layers-collection.tar.gz"
-    if [[ -f "$ALT_ARCHIVE" ]]; then
-      print_success "找到备用路径的压缩包: $ALT_ARCHIVE"
-      AUTO_ARCHIVE="$ALT_ARCHIVE"
-    else
-      print_info "请先运行 docker/script/collect-layers.sh 生成压缩包，或手动指定--layers-collection参数"
-      print_info "Usage: $0 --layers-collection <path> [--spring-boot-upgraded] [--has-snapshot] [--modules module1,module2]"
-      print_info "Example: tar -xzf docker/script/collect/layers-collection.tar.gz -C /tmp/"
-      print_info "         $0 --layers-collection /tmp/layers-collection-xxx/"
-      exit 2
-    fi
-  fi
-  
-  # 直接在docker/script/collect目录下解压
-  COLLECT_DIR="$(dirname "$AUTO_ARCHIVE")"
-  TARGET_EXTRACT_DIR="$COLLECT_DIR/layers-collection"
-  
-  # 如果目标目录已存在，先删除
-  if [[ -d "$TARGET_EXTRACT_DIR" ]]; then
-    rm -rf "$TARGET_EXTRACT_DIR"
-    print_info "清理已存在的解压目录: $TARGET_EXTRACT_DIR"
-  fi
-  
-  print_info "解压压缩包到: $COLLECT_DIR"
-  if tar -xzf "$AUTO_ARCHIVE" -C "$COLLECT_DIR"; then
-    # 查找解压后的目录（通常是layers-collection-*格式）
-    extracted_dir=$(find "$COLLECT_DIR" -maxdepth 1 -type d -name "layers-collection-*" | head -1)
-    if [[ -n "$extracted_dir" && -d "$extracted_dir" ]]; then
-      # 重命名为固定名称，去掉时间戳
-      mv "$extracted_dir" "$TARGET_EXTRACT_DIR"
-      LAYERS_COLLECTION_DIR="$TARGET_EXTRACT_DIR"
-      print_success "自动解压成功，使用目录: $LAYERS_COLLECTION_DIR"
-      # 不设置AUTO_CLEANUP_DIR，保留解压文件
-    else
-      print_error "解压后未找到预期的layers-collection目录"
-      print_info "collect目录内容："
-      ls -la "$COLLECT_DIR"
-      exit 2
-    fi
+  if [[ -f "$AUTO_ARCHIVE" ]]; then
+    ARCHIVE="$AUTO_ARCHIVE"
+  elif [[ -f "$ALT_ARCHIVE" ]]; then
+    ARCHIVE="$ALT_ARCHIVE"
   else
-    print_error "解压失败: $AUTO_ARCHIVE"
+    print_error "未找到压缩包，请先运行 docker/script/collect-layers.sh"
     exit 2
   fi
+  
+  COLLECT_DIR="$(dirname "$ARCHIVE")"
+  tar -xzf "$ARCHIVE" -C "$COLLECT_DIR"
+  LAYERS_COLLECTION_DIR="$COLLECT_DIR/layers-collection"
 fi
 
 if [[ ! -d "$LAYERS_COLLECTION_DIR" ]]; then
@@ -123,55 +80,34 @@ OUTPUT_DIR="$DIFF_DIR/$DIFF_PACKAGE_DIR"
 # 压缩包固定名称
 ARCHIVE_NAME="diff-package.tar.gz"
 
-# 参数与生效路径回显
 print_step "开始生成差异包"
-print_info "收集目录: $LAYERS_COLLECTION_DIR"
-print_info "临时目录: $OUTPUT_DIR"
-print_info "差异包目录: $DIFF_DIR"
-if [[ "$SPRING_BOOT_UPGRADED" == true || "$HAS_SNAPSHOT" == true ]]; then
-  print_info "flags: $( [[ "$SPRING_BOOT_UPGRADED" == true ]] && echo -n "spring-boot-upgraded " )$( [[ "$HAS_SNAPSHOT" == true ]] && echo -n "has-snapshot" )"
-fi
 
-# 清理并创建差异包目录结构
-if [[ -d "$OUTPUT_DIR" ]]; then
-  rm -rf "$OUTPUT_DIR"
-  print_info "清理已存在的临时目录: $OUTPUT_DIR"
-fi
-mkdir -p "$OUTPUT_DIR/modules"
-mkdir -p "$OUTPUT_DIR/client"
-mkdir -p "$DIFF_DIR"
+# 创建工作目录
+rm -rf "$OUTPUT_DIR" 2>/dev/null || true
+mkdir -p "$OUTPUT_DIR/modules" "$OUTPUT_DIR/client" "$DIFF_DIR"
 
-# 发现收集的模块
-print_step "发现收集的模块"
+# 发现模块
+print_step "发现模块"
 collected_modules=()
 
 for module_dir in "$LAYERS_COLLECTION_DIR"/*/; do
-  if [[ -d "$module_dir" ]]; then
-    module_name=$(basename "$module_dir")
-    
-    if [[ -f "$module_dir/layers.idx" ]]; then
-      # 检查是否指定了特定模块
-      if [[ -n "$SPECIFIC_MODULES" ]]; then
-        if [[ ",$SPECIFIC_MODULES," == *",$module_name,"* ]]; then
-          collected_modules+=("$module_name")
-          print_success "将处理模块: $module_name"
-        else
-          print_info "跳过模块: $module_name (未在指定列表中)"
-        fi
-      else
-        collected_modules+=("$module_name")
-        print_success "发现模块: $module_name"
-      fi
-    else
-      print_error "模块 $module_name 缺少 layers.idx 文件"
-    fi
+  [[ -d "$module_dir" ]] || continue
+  module_name=$(basename "$module_dir")
+  
+  # 跳过无效模块
+  [[ "$module_name" =~ ^(BOOT-INF|META-INF|\.|\..)$ ]] && continue
+  [[ -f "$module_dir/layers.idx" ]] || continue
+  
+  # 检查模块过滤
+  if [[ -n "$SPECIFIC_MODULES" && ",$SPECIFIC_MODULES," != *",$module_name,"* ]]; then
+    continue
   fi
+  
+  collected_modules+=("$module_name")
+  print_info "发现模块: $module_name"
 done
 
-if [[ ${#collected_modules[@]} -eq 0 ]]; then
-  print_error "未发现任何有效的模块"
-  exit 1
-fi
+[[ ${#collected_modules[@]} -gt 0 ]] || { print_error "未发现任何模块"; exit 1; }
 
 # === 分类处理函数 ===
 process_dependencies() {
@@ -188,14 +124,9 @@ process_dependencies() {
 
     case "$entry" in
       BOOT-INF/lib/*.jar)
-        # 从本地模块目录查找对应的jar文件
-        local module_dir="$BASE_DIR/docker/output/server/$module_name"
-        # 也尝试client目录
-        if [[ ! -d "$module_dir" ]]; then
-          module_dir="$BASE_DIR/docker/output/client/$module_name"
-        fi
-        
-        local src_path="$module_dir/dependencies/$entry"
+        # 从server的分层结构中查找对应的jar文件
+        local dependencies_dir="$BASE_DIR/docker/output/server/dependencies/$module_name"
+        local src_path="$dependencies_dir/$entry"
         if [[ -f "$src_path" ]]; then
           local rel_name="${entry#BOOT-INF/lib/}"
           local dst_path="$diff_files_dir/$rel_name"
@@ -258,14 +189,9 @@ for module_name in "${collected_modules[@]}"; do
   # 现场收集的layers.idx
   collected_layers_idx="$LAYERS_COLLECTION_DIR/$module_name/layers.idx"
   
-  # 本地模块目录的layers.idx
-  local_module_dir="$BASE_DIR/docker/output/server/$module_name"
-  # 也尝试client目录
-  if [[ ! -d "$local_module_dir" ]]; then
-    local_module_dir="$BASE_DIR/docker/output/client/$module_name"
-  fi
-  
-  local_layers_idx="$local_module_dir/application/BOOT-INF/layers.idx"
+  # 本地模块的layers.idx (新分层结构中在application层的BOOT-INF下)
+  local_application_dir="$BASE_DIR/docker/output/server/application/$module_name"
+  local_layers_idx="$local_application_dir/BOOT-INF/layers.idx"
   
   if [[ ! -f "$local_layers_idx" ]]; then
     print_error "本地缺少 layers.idx: $local_layers_idx"
@@ -284,16 +210,10 @@ for module_name in "${collected_modules[@]}"; do
   sed -e 's/\r$//' -e 's/^\s\+//;s/\s\+$//' -e '/^$/d' "$local_layers_idx" | sort -u > "$tmp_new_sorted"
   sed -e 's/\r$//' -e 's/^\s\+//;s/\s\+$//' -e '/^$/d' "$collected_layers_idx" | sort -u > "$tmp_collected_sorted"
   
-  # 创建模块输出目录
-  module_output_dir="$OUTPUT_DIR/modules/$module_name"
-  mkdir -p "$module_output_dir"
-  
-  # 复制 application 层（业务代码，总是需要更新）
-  local_application_dir="$local_module_dir/application"
+  # 复制application层
   if [[ -d "$local_application_dir" ]]; then
-    print_info "复制 application 层: $module_name"
     mkdir -p "$module_output_dir/application"
-    rsync -a --delete "$local_application_dir/" "$module_output_dir/application/"
+    (cd "$BASE_DIR" && rsync -a --delete "$local_application_dir/" "$module_output_dir/application/")
   else
     print_error "模块 $module_name 缺少 application 目录"
     continue
@@ -359,22 +279,14 @@ fi
 
 print_info "找到项目根目录: \$PROJECT_ROOT"
 
-MODULE_DIR=""
-if [[ -d "\$PROJECT_ROOT/docker/output/server/$module_name" ]]; then
-  MODULE_DIR="\$PROJECT_ROOT/docker/output/server/$module_name"
-  print_info "找到服务端模块: \$MODULE_DIR"
-elif [[ -d "\$PROJECT_ROOT/docker/output/client/$module_name" ]]; then
-  MODULE_DIR="\$PROJECT_ROOT/docker/output/client/$module_name"
-  print_info "找到客户端模块: \$MODULE_DIR"
-else
-  print_error "未找到模块目录: $module_name"
+SERVER_ROOT="\$PROJECT_ROOT/docker/output/server"
+if [[ ! -d "\$SERVER_ROOT" ]]; then
+  print_error "未找到服务端输出目录: \$SERVER_ROOT"
   print_info "项目根目录: \$PROJECT_ROOT"
-  print_info "查找路径: \$PROJECT_ROOT/docker/output/server/$module_name"
-  print_info "查找路径: \$PROJECT_ROOT/docker/output/client/$module_name"
   exit 1
 fi
 
-print_info "模块目录: \$MODULE_DIR"
+print_info "服务端根目录: \$SERVER_ROOT"
 
 EOF
 
@@ -391,8 +303,15 @@ if [[ -f "$SCRIPT_DIR/modules/EOF
     file_path="${file_path#- }"; file_path="${file_path#-}"; file_path="${file_path#\"}"; file_path="${file_path%\"}"
     file_path="${file_path%"${file_path##*[![:space:]]}"}"
     if [[ -n "$file_path" ]]; then
-      rm -f "$MODULE_DIR/$file_path" || true
-      print_info "删除: $file_path"
+      # 根据文件路径确定在哪个分层目录中删除
+      if [[ "\$file_path" == BOOT-INF/lib/* ]]; then
+        if [[ "\$file_path" == *SNAPSHOT* ]]; then
+          rm -f "\$SERVER_ROOT/snapshot-dependencies/$module_name/\$file_path" || true
+        else
+          rm -f "\$SERVER_ROOT/dependencies/$module_name/\$file_path" || true
+        fi
+        print_info "删除: \$file_path"
+      fi
     fi
 EOF
     echo "  done < \"\$SCRIPT_DIR/modules/$module_name/delete-list.txt\"" >> "$apply_script"
@@ -411,11 +330,11 @@ if [[ -d "\$SCRIPT_DIR/modules/$module_name/files" ]]; then
     [[ -f "\$jar_file" ]] || continue
     jar_name=\$(basename "\$jar_file")
     
-    # 根据文件名决定目标目录
+    # 根据文件名决定目标目录（新分层结构）
     if [[ "\$jar_name" == *SNAPSHOT* ]]; then
-      target_dir="\$MODULE_DIR/snapshot-dependencies/BOOT-INF/lib"
+      target_dir="\$SERVER_ROOT/snapshot-dependencies/$module_name/BOOT-INF/lib"
     else
-      target_dir="\$MODULE_DIR/dependencies/BOOT-INF/lib"
+      target_dir="\$SERVER_ROOT/dependencies/$module_name/BOOT-INF/lib"
     fi
     
     mkdir -p "\$target_dir"
@@ -427,8 +346,8 @@ fi
 # 更新 application 层（业务代码）
 if [[ -d "\$SCRIPT_DIR/modules/$module_name/application" ]]; then
   print_info "更新 application 层..."
-  mkdir -p "\$MODULE_DIR/application"
-  rsync -a --delete "\$SCRIPT_DIR/modules/$module_name/application/" "\$MODULE_DIR/application/"
+  mkdir -p "\$SERVER_ROOT/application/$module_name"
+  rsync -a --delete "\$SCRIPT_DIR/modules/$module_name/application/" "\$SERVER_ROOT/application/$module_name/"
   print_success "application 层更新完成"
 fi
 
@@ -441,29 +360,26 @@ EOF
   rm -f "$only_in_new" "$only_in_collected"
 done
 
-# 复制client目录
-print_step "复制client目录"
+# 复制前端代码
+print_step "复制前端代码"
 CLIENT_SOURCE_DIR="$BASE_DIR/docker/output/client"
 if [[ -d "$CLIENT_SOURCE_DIR" ]]; then
-  print_info "复制client目录: $CLIENT_SOURCE_DIR -> $OUTPUT_DIR/client/"
-  rsync -a --delete "$CLIENT_SOURCE_DIR/" "$OUTPUT_DIR/client/"
-  print_success "client目录复制完成"
-else
-  print_info "未找到client目录: $CLIENT_SOURCE_DIR"
+  mkdir -p "$OUTPUT_DIR/client"
+  (cd "$BASE_DIR" && rsync -a --delete "$CLIENT_SOURCE_DIR/" "$OUTPUT_DIR/client/")
 fi
 
 # 完成apply脚本
 cat >> "$apply_script" <<EOF
 
 print_step "=== 所有模块处理完成 ==="
-print_success "共处理 $processed_modules 个模块"
+print_success "共处理 $processed_modules 个服务端模块"
 print_info "如需验证结果，请检查各模块的jar文件是否正确更新"
 
-# === 处理client目录 ===
-print_step "处理client目录"
+# === 处理前端代码 ===
+print_step "处理前端代码"
 
 if [[ -d "\$SCRIPT_DIR/client" ]]; then
-  print_info "发现client目录，开始更新..."
+  print_info "发现前端代码，开始更新..."
   
   # 查找项目根目录中的client目录
   CLIENT_TARGET_DIR=""
@@ -497,31 +413,10 @@ fi
 
 EOF
 
-print_success "差异包生成完成"
-
-
 # 创建压缩包
 print_step "创建压缩包"
 cd "$DIFF_DIR"
 tar -czf "$ARCHIVE_NAME" "$DIFF_PACKAGE_DIR"
-print_success "已创建差异包: $ARCHIVE_NAME"
-
-# 显示文件大小
-file_size=$(du -h "$DIFF_DIR/$ARCHIVE_NAME" | cut -f1)
-print_info "文件大小: $file_size"
-
-# 清理临时目录
 rm -rf "$OUTPUT_DIR"
-print_info "已清理临时目录"
 
-# 保留解压目录供后续使用
-print_info "解压目录已保留: $LAYERS_COLLECTION_DIR"
-
-# 显示结果
-print_divider
-print_step "生成完成"
-print_info "差异包位置: $DIFF_DIR/$ARCHIVE_NAME"
-print_info "处理模块数: $processed_modules"
-print_info "包含模块: ${collected_modules[*]}"
-
-print_success "请将差异包发送给现场执行"
+print_success "差异包已生成: $DIFF_DIR/$ARCHIVE_NAME"
