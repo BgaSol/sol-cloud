@@ -7,7 +7,6 @@ import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
-import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.user.dto.*;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.model.system.user.vo.VerificationVo;
@@ -128,6 +127,14 @@ public class UserController extends BaseController<
     @SaCheckPermission("user:findOnlineUser")
     public BaseVo<List<UserEntity>> findOnlineUser() {
         return BaseVo.success(this.loginService.findOnlineUser());
+    }
+
+    @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询角色", operationId = "findUserByIds")
+    @SaCheckPermission("user:findByIds")
+    public BaseVo<List<UserEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
     }
 
     @GetMapping("/get-my")

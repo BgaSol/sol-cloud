@@ -115,7 +115,10 @@ public class SystemInitData implements ApplicationRunner {
     }
 
     public void initUsers() {
-        UserEntity admin = UserEntity.builder()
+        if (ObjectUtils.isNotEmpty(this.userService.cacheSearch(SystemConfigValues.ADMIN_USER_ID))) {
+            return;
+        }
+        this.userService.save(UserEntity.builder()
                 .id(SystemConfigValues.ADMIN_USER_ID)
                 .username(SystemConfigValues.ADMIN_USER_ID)
                 .password(userService.encodePassword(SystemConfigValues.ADMIN_USER_ID))
@@ -123,10 +126,6 @@ public class SystemInitData implements ApplicationRunner {
                 .locked(false)
                 .description("超级管理员用户,无需配置权限,拥有系统最高权限")
                 .departmentId(SystemConfigValues.DEFAULT_DEPARTMENT_ID)
-                .build();
-
-        if (ObjectUtils.isEmpty(this.userService.cacheSearch(admin.getId()))) {
-            this.userService.save(admin);
-        }
+                .build());
     }
 }

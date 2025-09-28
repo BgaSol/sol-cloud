@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,6 +88,14 @@ public class FileController extends BaseController<
     @SaCheckPermission("file:findById")
     public BaseVo<FileEntity> findById(@PathVariable("id") String id) {
         return super.findById(id);
+    }
+
+    @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询图片", operationId = "findFileByIds")
+    @SaCheckPermission("file:findByIds")
+    public BaseVo<List<FileEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
     }
 
     @SneakyThrows

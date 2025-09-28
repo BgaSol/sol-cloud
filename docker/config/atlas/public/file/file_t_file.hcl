@@ -60,8 +60,25 @@ table "file_t_file" {
     type = varchar(50)
     null = false
   }
-  primary_key { columns = [column.id] }
+
+  primary_key {
+    columns = [column.id]
+  }
+
   index "idx_file_create_time" {
     columns = [column.create_time]
+  }
+
+  index "idx_file_name" {
+    columns = [column.name]
+  }
+  index "idx_file_size" {
+    columns = [column.size]
+  }
+  index "idx_file_hash" {
+    columns = [column.hash]
+  }
+  index "idx_file_source" {
+    columns = [column.source]
   }
 }

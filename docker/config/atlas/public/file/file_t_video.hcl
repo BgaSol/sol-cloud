@@ -64,8 +64,18 @@ table "file_t_video" {
     type = varchar(50)
     null = true
   }
-  primary_key { columns = [column.id] }
+
+  primary_key {
+    columns = [column.id]
+  }
+
   index "idx_video_create_time" {
     columns = [column.create_time]
+  }
+  index "idx_video_name" {
+    columns = [column.name]
+  }
+  index "idx_video_file_id" {
+    columns = [column.file_id]
   }
 }

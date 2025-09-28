@@ -143,14 +143,4 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
             }
         }
     }
-
-    /// 根据角色id查询菜单列表
-    public List<MenuEntity> findListByRoleId(String roleId) {
-        List<String> roleIds = this.menuMapper.findFromTable(
-                "system_c_role_menu",
-                "role_id",
-                roleId,
-                "menu_id");
-        return this.findIds(roleIds.toArray(String[]::new));
-    }
 }

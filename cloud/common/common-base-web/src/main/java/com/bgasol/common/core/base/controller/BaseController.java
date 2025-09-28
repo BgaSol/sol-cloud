@@ -48,6 +48,11 @@ public abstract class BaseController<
         return BaseVo.success(byId);
     }
 
+    public BaseVo<List<ENTITY>> findByIds(@Valid @NotBlank String ids) {
+        String[] idsArr = ids.split(",");
+        return BaseVo.success(commonBaseService().findByIds(idsArr));
+    }
+
     public BaseVo<List<ENTITY>> findAll() {
         List<ENTITY> all = commonBaseService().findAll();
         return BaseVo.success(all);

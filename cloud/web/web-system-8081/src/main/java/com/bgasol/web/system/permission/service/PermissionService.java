@@ -5,13 +5,9 @@ import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.web.system.permission.mapper.PermissionMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,14 +41,5 @@ public class PermissionService extends BaseTreeService<PermissionEntity, BasePag
             }
         }
         return this.findById(parentPermission.getId());
-    }
-
-    public List<PermissionEntity> findPermissionListByRoleId(String roleId) {
-        List<String> permissionIds = this.permissionMapper.findFromTable(
-                "system_c_role_permission",
-                "role_id",
-                roleId,
-                "permission_id");
-        return this.findIds(permissionIds.toArray(String[]::new));
     }
 }

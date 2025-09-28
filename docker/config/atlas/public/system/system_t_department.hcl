@@ -28,6 +28,7 @@ table "system_t_department" {
     type = text
     null = true
   }
+
   column "parent_id" {
     type = varchar(50)
     null = true
@@ -61,17 +62,32 @@ table "system_t_department" {
     type = varchar(50)
     null = true
   }
-  primary_key { columns = [column.id] }
-  index "idx_department_parent_id" {
-    columns = [column.parent_id]
+
+  primary_key {
+    columns = [column.id]
   }
+
   index "idx_department_create_time" {
     columns = [column.create_time]
   }
+  index "idx_department_parent_id" {
+    columns = [column.parent_id]
+  }
+  index "idx_department_name" {
+    columns = [column.name]
+  }
+  index "idx_department_domain" {
+    columns = [column.domain]
+  }
+  index "idx_department_phone" {
+    columns = [column.phone]
+  }
+
   index "uk_department_code" {
     unique = true
     columns = [column.code]
   }
+
   foreign_key "fk_department_parent_id" {
     columns = [column.parent_id]
     ref_columns = [column.id]

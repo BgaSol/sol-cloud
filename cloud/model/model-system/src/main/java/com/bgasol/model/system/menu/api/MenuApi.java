@@ -1,13 +1,17 @@
 package com.bgasol.model.system.menu.api;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.model.system.menu.entity.MenuEntity;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @FeignClient(
         path = "/" + SystemConfigValues.SERVICE_NAME + "/menu",
@@ -20,4 +24,10 @@ public interface MenuApi {
 
     @GetMapping("/{id}")
     BaseVo<MenuEntity> findById(@PathVariable("id") String id);
+
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询菜单", operationId = "findMenuByIds")
+    @SaCheckPermission("menu:findByIds")
+    BaseVo<List<MenuEntity>> findByIds(@PathVariable String ids);
+
 }

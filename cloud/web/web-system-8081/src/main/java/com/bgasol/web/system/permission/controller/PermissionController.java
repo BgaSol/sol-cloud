@@ -54,4 +54,13 @@ public class PermissionController extends BaseController<
         PermissionEntity save = permissionService.init(entity);
         return BaseVo.success(save, "保存成功");
     }
+
+    @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询权限", operationId = "findPermissionByIds")
+    @SaCheckPermission("permission:findByIds")
+    public BaseVo<List<PermissionEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
+    }
+
 }

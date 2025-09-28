@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BaseVoDepartmentEntity } from '../models/BaseVoDepartmentEntity';
-import type { BaseVoImportResult } from '../models/BaseVoImportResult';
 import type { BaseVoInteger } from '../models/BaseVoInteger';
 import type { BaseVoListDepartmentEntity } from '../models/BaseVoListDepartmentEntity';
 import type { BaseVoListMenuEntity } from '../models/BaseVoListMenuEntity';
@@ -306,30 +305,6 @@ export class Service {
         });
     }
     /**
-     * 导入角色
-     * @param formData
-     * @returns BaseVoImportResult OK
-     * @throws ApiError
-     */
-    public static importRole(
-        formData?: {
-            file: Blob;
-        },
-    ): CancelablePromise<BaseVoImportResult> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/role/import',
-            formData: formData,
-            mediaType: 'multipart/form-data',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
      * 批量初始化系统的权限信息
      * @param requestBody
      * @returns BaseVoPermissionEntity OK
@@ -414,6 +389,29 @@ export class Service {
         });
     }
     /**
+     * 根据id批量查询角色
+     * @param ids
+     * @returns BaseVoListUserEntity OK
+     * @throws ApiError
+     */
+    public static findUserByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListUserEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/user/ids/{ids}',
+            path: {
+                'ids': ids,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 获取验证码
      * @returns BaseVoVerificationVo OK
      * @throws ApiError
@@ -488,14 +486,20 @@ export class Service {
         });
     }
     /**
-     * 下载角色导入模板
-     * @returns binary OK
+     * 根据id批量查询角色
+     * @param ids
+     * @returns BaseVoListRoleEntity OK
      * @throws ApiError
      */
-    public static downloadRoleImportTemplate(): CancelablePromise<Blob> {
+    public static findRoleByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListRoleEntity> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/role/template-download',
+            url: '/role/ids/{ids}',
+            path: {
+                'ids': ids,
+            },
             errors: {
                 400: `参数校验异常`,
                 401: `未登录异常`,
@@ -513,6 +517,29 @@ export class Service {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/permission',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据id批量查询权限
+     * @param ids
+     * @returns BaseVoListPermissionEntity OK
+     * @throws ApiError
+     */
+    public static findPermissionByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListPermissionEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/permission/ids/{ids}',
+            path: {
+                'ids': ids,
+            },
             errors: {
                 400: `参数校验异常`,
                 401: `未登录异常`,
@@ -579,6 +606,29 @@ export class Service {
         });
     }
     /**
+     * 根据id批量查询菜单
+     * @param ids
+     * @returns BaseVoListMenuEntity OK
+     * @throws ApiError
+     */
+    public static findMenuByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListMenuEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/menu/ids/{ids}',
+            path: {
+                'ids': ids,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 查询指定菜单组下的菜单
      * @param group
      * @returns BaseVoListMenuEntity OK
@@ -632,6 +682,29 @@ export class Service {
             url: '/department/{id}',
             path: {
                 'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据id批量查询部门
+     * @param ids
+     * @returns BaseVoListDepartmentEntity OK
+     * @throws ApiError
+     */
+    public static findDepartmentByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListDepartmentEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/department/ids/{ids}',
+            path: {
+                'ids': ids,
             },
             errors: {
                 400: `参数校验异常`,

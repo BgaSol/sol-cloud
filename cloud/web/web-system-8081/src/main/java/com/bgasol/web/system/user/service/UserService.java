@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.dto.UserPageDto;
 import com.bgasol.model.system.user.dto.UserPasswordResetDto;
 import com.bgasol.model.system.user.dto.UserPasswordUpdateDto;
@@ -20,6 +21,12 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
 
@@ -125,16 +132,38 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void findOtherTable(UserEntity userEntity) {
-        // 获取关联角色
-        userEntity.setRoles(roleService.findRoleListByUserId(userEntity.getId()));
-        // 获取关联的部门
-        if (ObjectUtils.isNotEmpty(userEntity.getDepartmentId())) {
-            DepartmentEntity departmentEntity = departmentService.findById(userEntity.getDepartmentId());
-            userEntity.setDepartment(departmentEntity);
+    public void findOtherTable(List<UserEntity> list) {
+        List<String> userIds = list.stream().map(UserEntity::getId).toList();
+        Map<String, List<String>> roleIdGroup = this.findFromTableBatch(
+                "system_c_user_role",
+                "user_id",
+                userIds,
+                "role_id");
+
+        Set<String> roleIds = roleIdGroup
+                .values()
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+
+        Map<String, RoleEntity> roleMap = roleService
+                .findByIds(roleIds.toArray(String[]::new))
+                .stream()
+                .collect(Collectors.toMap(RoleEntity::getId, Function.identity()));
+
+        Set<String> departmentIds = list.stream().map(UserEntity::getDepartmentId).collect(Collectors.toSet());
+        Map<String, DepartmentEntity> collect = departmentService.findByIds(departmentIds.toArray(String[]::new)).stream()
+                .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()));
+        for (UserEntity userEntity : list) {
+            userEntity.setRoles(roleIdGroup
+                    .getOrDefault(userEntity.getId(), List.of())
+                    .stream()
+                    .map(roleMap::get)
+                    .toList());
+            if (ObjectUtils.isNotEmpty(userEntity.getDepartmentId())) {
+                userEntity.setDepartment(collect.get(userEntity.getDepartmentId()));
+            }
         }
-        super.findOtherTable(userEntity);
     }
 
     /// 获取当前访问者所属的用户的部门

@@ -91,13 +91,33 @@ table "system_t_menu" {
     type = varchar(100)
     null = true
   }
+
   primary_key { columns = [column.id] }
-  index "idx_menu_parent_id" {
-    columns = [column.parent_id]
-  }
+
   index "idx_menu_create_time" {
     columns = [column.create_time]
   }
+  index "idx_menu_parent_id" {
+    columns = [column.parent_id]
+  }
+  index "idx_menu_name" {
+    columns = [column.name]
+  }
+  index "idx_menu_route_path" {
+    columns = [column.route_path]
+  }
+  index "idx_menu_route_name" {
+    columns = [column.route_name]
+  }
+  index "idx_menu_menu_group" {
+    columns = [column.menu_group]
+  }
+
+  index "uk_menu_button_code" {
+    unique = true
+    columns = [column.button_code]
+  }
+
   foreign_key "fk_menu_parent_id" {
     columns = [column.parent_id]
     ref_columns = [column.id]

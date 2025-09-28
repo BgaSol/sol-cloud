@@ -65,12 +65,30 @@ table "system_t_user" {
     type = varchar(50)
     null = true
   }
+
   primary_key {
     columns = [column.id]
   }
+
   index "idx_user_create_time" {
     columns = [column.create_time]
   }
+  index "idx_user_username" {
+    columns = [column.username]
+  }
+  index "idx_user_nickname" {
+    columns = [column.nickname]
+  }
+  index "idx_user_phone" {
+    columns = [column.phone]
+  }
+  index "idx_user_email" {
+    columns = [column.email]
+  }
+  index "idx_user_department_id" {
+    columns = [column.department_id]
+  }
+
   index "uk_user_username" {
     unique = true
     columns = [column.username]

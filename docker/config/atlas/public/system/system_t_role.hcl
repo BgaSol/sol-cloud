@@ -47,11 +47,21 @@ table "system_t_role" {
     null    = true
     default = 1
   }
+
   primary_key {
     columns = [column.id]
   }
+
   index "idx_role_create_time" {
     columns = [column.create_time]
+  }
+  index "idx_role_parent_id" {
+    columns = [column.parent_id]
+  }
+
+  index "uk_role_name" {
+    unique = true
+    columns = [column.name]
   }
   index "uk_role_code" {
     unique = true

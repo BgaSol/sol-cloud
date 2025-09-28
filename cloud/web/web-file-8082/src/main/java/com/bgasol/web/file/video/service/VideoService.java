@@ -14,7 +14,11 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,19 +44,33 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void findOtherTable(VideoEntity entity) {
-        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
-            entity.setFile(fileService.findById(entity.getFileId()));
-        }
+    public void findOtherTable(List<VideoEntity> list) {
+        Set<String> fileIds = list.stream()
+                .map(VideoEntity::getFileId)
+                .filter(ObjectUtils::isNotEmpty).collect(Collectors.toSet());
+
+        Map<String, FileEntity> fileMap = fileService
+                .findByIds(fileIds.toArray(String[]::new))
+                .stream()
+                .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
+
+        list.forEach(videoEntity -> {
+            if (ObjectUtils.isNotEmpty(videoEntity.getFileId())) {
+                videoEntity.setFile(fileMap.get(videoEntity.getFileId()));
+            }
+        });
     }
 
     /**
-     * 读取视频文件流
+     * 删除视频
      */
-    public InputStream videoStreamFindById(String id) {
-        VideoEntity imageEntity = this.findById(id);
-        FileEntity file = imageEntity.getFile();
-        return ossService.readFileStream(file);
+    @Override
+    public Integer delete(String id) {
+        VideoEntity videoEntity = this.findById(id);
+        FileEntity file = videoEntity.getFile();
+
+        Integer delete = super.delete(id);
+        fileService.delete(file.getId());
+        return delete;
     }
 }

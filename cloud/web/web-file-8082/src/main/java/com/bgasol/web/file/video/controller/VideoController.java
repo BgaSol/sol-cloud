@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -70,6 +71,14 @@ public class VideoController extends BaseController<
     @SaCheckPermission("video:findById")
     public BaseVo<VideoEntity> findById(@PathVariable String id) {
         return super.findById(id);
+    }
+
+    @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询视频", operationId = "findVideoByIds")
+    @SaCheckPermission("video:findByIds")
+    public BaseVo<List<VideoEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
     }
 
     @Override

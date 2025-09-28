@@ -1,34 +1,29 @@
 package com.bgasol.web.system.role.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.entity.BaseEntity;
-import com.bgasol.common.core.base.service.BasePoiService;
+import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
-import com.bgasol.model.system.role.dto.RoleCreateDto;
-import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.web.system.menu.service.MenuService;
 import com.bgasol.web.system.permission.service.PermissionService;
 import com.bgasol.web.system.role.mapper.RoleMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RoleService extends BasePoiService<RoleEntity,
-        BasePageDto<RoleEntity>,
-        RoleCreateDto,
-        RoleUpdateDto> {
+public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>> {
     private final RoleMapper roleMapper;
 
     private final MenuService menuService;
@@ -47,86 +42,51 @@ public class RoleService extends BasePoiService<RoleEntity,
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void findOtherTable(RoleEntity roleEntity) {
-        // 查询关联的角色
-        List<PermissionEntity> permissionEntityList = permissionService.findPermissionListByRoleId(roleEntity.getId());
-        roleEntity.setPermissions(permissionEntityList);
+    public void findOtherTable(List<RoleEntity> list) {
+        List<String> roleIds = list.stream().map(RoleEntity::getId).toList();
 
-        // 查询关联的菜单
-        List<MenuEntity> menuEntityList = menuService.findListByRoleId(roleEntity.getId());
-        roleEntity.setMenus(menuEntityList);
-        super.findOtherTable(roleEntity);
-    }
+        Map<String, List<String>> menuIdGroup = this.findFromTableBatch(
+                "system_c_role_menu", "role_id", roleIds, "menu_id"
+        );
+        Map<String, List<String>> permissionIdGroup = this.findFromTableBatch(
+                "system_c_role_permission", "role_id", roleIds, "permission_id"
+        );
 
-    @Override
-    protected boolean validateImportedEntity(RoleEntity entity, int rowIndex, List<String> errors) {
-        List<String> permissionIds = toIds(entity.getPermissions());
-        List<String> menuIds = toIds(entity.getMenus());
-        return validateDtoFields(entity.getName(), entity.getCode(), permissionIds, menuIds, rowIndex, errors);
-    }
+        Set<String> allMenuIds = menuIdGroup
+                .values()
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+        Set<String> allPermissionIds = permissionIdGroup
+                .values()
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
 
-    private List<String> toIds(List<? extends BaseEntity> list) {
-        if (list == null || list.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return list.stream().map(BaseEntity::getId).collect(Collectors.toList());
-    }
+        Map<String, MenuEntity> menuMap = menuService
+                .findByIds(allMenuIds.toArray(String[]::new))
+                .stream()
+                .collect(Collectors.toMap(MenuEntity::getId, Function.identity()));
+        Map<String, PermissionEntity> permissionMap = permissionService
+                .findByIds(allPermissionIds.toArray(String[]::new))
+                .stream()
+                .collect(Collectors.toMap(PermissionEntity::getId, Function.identity()));
 
-    private boolean addErrorAndFail(List<String> errors, int rowIndex, String message) {
-        errors.add("第" + rowIndex + "行错误: " + message);
-        return false;
-    }
-
-    private boolean validateDtoFields(String name,
-                                      String code,
-                                      List<String> permissionIds,
-                                      List<String> menuIds,
-                                      int rowIndex,
-                                      List<String> errors) {
-        if (StringUtils.isBlank(name)) {
-            return addErrorAndFail(errors, rowIndex, "角色名不能为空");
-        }
-        if (StringUtils.isBlank(code)) {
-            return addErrorAndFail(errors, rowIndex, "角色编码不能为空");
-        }
-
-        // code 唯一校验
-        LambdaQueryWrapper<RoleEntity> qw = new LambdaQueryWrapper<>();
-        qw.eq(RoleEntity::getCode, code);
-        RoleEntity exists = roleMapper.selectOne(qw);
-        if (exists != null) {
-            return addErrorAndFail(errors, rowIndex, "角色编码已存在: " + code);
-        }
-
-        // 关联ID有效性校验（可选，存在即通过）
-        if (permissionIds != null) {
-            for (String pid : permissionIds) {
-                PermissionEntity p = permissionService.findById(pid);
-                if (p == null) {
-                    return addErrorAndFail(errors, rowIndex, "权限ID不存在: " + pid);
-                }
-            }
-        }
-        if (menuIds != null) {
-            for (String mid : menuIds) {
-                MenuEntity m = menuService.findById(mid);
-                if (m == null) {
-                    return addErrorAndFail(errors, rowIndex, "菜单ID不存在: " + mid);
-                }
-            }
-        }
-        return true;
-    }
-
-    /// 根据用户ID查询角色列表
-    public List<RoleEntity> findRoleListByUserId(String userId) {
-        List<String> roleIds = this.roleMapper.findFromTable(
-                "system_c_user_role",
-                "user_id",
-                userId,
-                "role_id");
-        return this.findIds(roleIds.toArray(String[]::new));
+        list.forEach(roleEntity -> {
+            roleEntity.setMenus(menuIdGroup
+                    .getOrDefault(roleEntity.getId(), List.of())
+                    .stream()
+                    .map(menuMap::get)
+                    .filter(ObjectUtils::isNotEmpty)
+                    .toList());
+            roleEntity.setPermissions(permissionIdGroup
+                    .getOrDefault(roleEntity.getId(), List.of())
+                    .stream()
+                    .map(permissionMap::get)
+                    .filter(ObjectUtils::isNotEmpty)
+                    .toList()
+            );
+        });
     }
 
 }

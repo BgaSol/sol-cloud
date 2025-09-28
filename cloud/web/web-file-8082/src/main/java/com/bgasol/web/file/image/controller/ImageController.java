@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,6 +88,14 @@ public class ImageController extends BaseController<
     @SaCheckPermission("image:delete")
     public BaseVo<Integer[]> delete(@PathVariable String ids) {
         return super.delete(ids);
+    }
+
+    @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询图片", operationId = "findImageByIds")
+    @SaCheckPermission("image:findByIds")
+    public BaseVo<List<ImageEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
     }
 
     @SneakyThrows

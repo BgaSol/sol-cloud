@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 
-@Transactional
 @Slf4j
 @Service
 public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends BasePageDto<ENTITY>> {
@@ -54,12 +53,22 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
+     * 获取缓存对象
+     */
+    public RMapCache<String, ENTITY> getRMapCache() {
+        String className = commonBaseEntityClass().getName();
+        String key = serviceName + ":" + className;
+        return commonBaseRedissonClient().getMapCache(key);
+    }
+
+    /**
      * 保存实体
      * 如果实体有中间表，也会保存中间表
      *
      * @param entity 实体
      * @return 实体
      */
+    @Transactional
     public ENTITY save(ENTITY entity) {
         // 反射获取entity的所有字段
         Class<? extends BaseEntity> entityClass = entity.getClass();
@@ -132,6 +141,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param entity 实体
      * @return 实体
      */
+    @Transactional
     public ENTITY update(ENTITY entity) {
         ENTITY queryEntity = cacheSearch(entity.getId());
         if (queryEntity == null) {
@@ -209,14 +219,14 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 插入中间表
      */
+    @Transactional
     private void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
-        for (BaseEntity childrenEntity : value) {
-            // 获取中间表字段的值
-            String masterValue = entity.getId();
-            String slaveValue = childrenEntity.getId();
-            // 插入中间表
-            commonBaseMapper().insertIntoTable(tableName, masterName, masterValue, slaveName, slaveValue);
-        }
+        List<Map.Entry<String, String>> insertList = value
+                .stream()
+                .map(childrenEntity -> new AbstractMap.SimpleEntry<>(childrenEntity.getId(), entity.getId()))
+                .collect(Collectors.toList());
+
+        insertIntoTableBatch(tableName, masterName, slaveName, insertList);
     }
 
     /**
@@ -225,10 +235,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param ids 实体id
      * @return 删除数量
      */
+    @Transactional
     public Integer[] delete(String... ids) {
         return Arrays.stream(ids).map(this::delete).toArray(Integer[]::new);
     }
 
+    @Transactional
     public Integer delete(String id) {
         ENTITY entity = this.cacheSearch(id);
         if (entity == null) {
@@ -250,17 +262,19 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param id 实体id
      * @return 实体
      */
-    @Transactional(readOnly = true)
     public ENTITY findById(String id) {
-        ENTITY entity = this.cacheSearch(id);
-        if (ObjectUtils.isNotEmpty(entity)) {
-            this.findOtherTable(entity);
-        }
-        return entity;
+//        ENTITY entity = this.cacheSearch(id);
+//        if (ObjectUtils.isNotEmpty(entity)) {
+//            this.findOtherTable(entity);
+//        }
+//        return entity;
+        return this.findByIds(id).get(0);
     }
 
     @Transactional(readOnly = true)
-    public List<ENTITY> findIds(String... ids) {
+    public List<ENTITY> findByIds(String... idArray) {
+        // ids去重
+        String[] ids = Arrays.stream(idArray).distinct().toArray(String[]::new);
         // 优先从缓存查询结果
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
             if (ObjectUtils.isEmpty(ids)) {
@@ -276,7 +290,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         Map<String, ENTITY> cacheList = mapCache.getAll(Set.of(ids));
 
         // 缓存中没有的查询数据库
-        List<String> noneCacheIds = Arrays.stream(ids).filter(id -> !cacheList.containsKey(id)).toList();
+        List<String> noneCacheIds = Arrays.stream(ids)
+                .filter(id -> !cacheList.containsKey(id))
+                .toList();
+
         List<ENTITY> entities;
         if (ObjectUtils.isEmpty(noneCacheIds)) {
             entities = new ArrayList<>();
@@ -284,15 +301,13 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             entities = commonBaseMapper().selectByIds(noneCacheIds);
         }
         // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
-        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(
-                Collectors.toMap(
-                        id -> id,
-                        id -> entities.stream()
-                                .filter(entity -> entity.getId().equals(id))
-                                .findFirst()
-                                .orElse(NULL_PLACEHOLDER_OBJECT)
-                )
-        );
+        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(
+                id -> id,
+                id -> entities.stream()
+                        .filter(entity -> entity.getId().equals(id))
+                        .findFirst()
+                        .orElse(NULL_PLACEHOLDER_OBJECT)
+        ));
         // 将数据库查询的结果，缓存到redis中
         mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
 
@@ -304,6 +319,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
         this.findOtherTable(result);
         return result;
+    }
+
+    public List<ENTITY> findIds(String... ids) {
+        return this.findByIds(ids);
     }
 
     /**
@@ -356,7 +375,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
     /**
      * 查询所有实体
-     * 如果实体是树形结构，查询所有根节点
      *
      * @return 实体列表
      */
@@ -398,12 +416,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     public void findOtherTable(ENTITY entity) {
         // 暂时什么也不用做
-    }
-
-    public RMapCache<String, ENTITY> getRMapCache() {
-        String className = commonBaseEntityClass().getName();
-        String key = serviceName + ":" + className;
-        return commonBaseRedissonClient().getMapCache(key);
     }
 
     public static final String NULL_PLACEHOLDER = "null";
@@ -450,4 +462,49 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             mapCache.remove(id);
         }
     }
+
+    /**
+     * 获取中间表 被查询主键值 列表（支持多个 masterValue）
+     * <p>
+     *
+     * @param tableName    中间表名
+     * @param masterName   查询主键名
+     * @param masterValues 查询主键值列表
+     * @param slaveName    被查询主键名
+     */
+    public Map<String, List<String>> findFromTableBatch(String tableName, String masterName, List<String> masterValues, String slaveName) {
+        // 检查 masterValues 空值
+        if (ObjectUtils.isEmpty(masterValues)) {
+            return new HashMap<>();
+        }
+        List<Map<String, String>> fromTableBatch = this.commonBaseMapper().findFromTableBatch(tableName, masterName, masterValues, slaveName);
+        // 根据主键值分组
+        return fromTableBatch.stream().collect(
+                Collectors.groupingBy(
+                        map -> map.get(masterName),
+                        Collectors.mapping(
+                                map -> map.get(slaveName), Collectors.toList()
+                        )
+                )
+        );
+    }
+
+    /**
+     * 批量插入中间表数据
+     *
+     * @param tableName  中间表名
+     * @param masterName 主表主键名
+     * @param slaveName  从表主键名
+     */
+    void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<Map.Entry<String, String>> values) {
+        if (ObjectUtils.isEmpty(values)) {
+            return;
+        }
+        List<Map<String, String>> inserList = values.stream().map(entry ->
+                Map.of("masterValue", entry.getKey(),
+                        "slaveValue", entry.getValue())
+        ).toList();
+        this.commonBaseMapper().insertIntoTableBatch(tableName, masterName, slaveName, inserList);
+    }
+
 }

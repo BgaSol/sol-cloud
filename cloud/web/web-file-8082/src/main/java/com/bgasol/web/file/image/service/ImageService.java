@@ -5,8 +5,8 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
-import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.plugin.minio.service.OssService;
+import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +93,24 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
         return ossService.readFileStream(file);
     }
 
+    @Override
+    public void findOtherTable(List<ImageEntity> list) {
+        Set<String> fileIds = list.stream()
+                .map(ImageEntity::getFileId)
+                .filter(ObjectUtils::isNotEmpty).collect(Collectors.toSet());
+
+        Map<String, FileEntity> fileMap = fileService
+                .findByIds(fileIds.toArray(String[]::new))
+                .stream()
+                .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
+
+        list.forEach(imageEntity -> {
+            if (ObjectUtils.isNotEmpty(imageEntity.getFileId())) {
+                imageEntity.setFile(fileMap.get(imageEntity.getFileId()));
+            }
+        });
+    }
+
     /**
      * 删除图片
      */
@@ -99,13 +122,5 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
         Integer delete = super.delete(id);
         fileService.delete(file.getId());
         return delete;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public void findOtherTable(ImageEntity entity) {
-        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
-            entity.setFile(fileService.findById(entity.getFileId()));
-        }
     }
 }

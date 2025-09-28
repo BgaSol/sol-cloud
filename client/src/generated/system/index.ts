@@ -47,3 +47,4 @@ export type { VerificationResult } from './models/VerificationResult';
 export type { VerificationVo } from './models/VerificationVo';
 
 export { Service } from './services/Service';
+export { PoiService } from './services/PoiService';

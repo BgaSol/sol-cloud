@@ -22,7 +22,7 @@ public abstract class BasePoiController<
         PAGE_DTO extends BasePageDto<ENTITY>,
         CREATE_DTO extends BaseCreateDto<ENTITY>,
         UPDATE_DTO extends BaseUpdateDto<ENTITY>
-        > extends BaseController<ENTITY, PAGE_DTO, CREATE_DTO, UPDATE_DTO> {
+        > {
     abstract public BasePoiService<ENTITY, PAGE_DTO, CREATE_DTO, UPDATE_DTO> commonBaseService();
 
     /**

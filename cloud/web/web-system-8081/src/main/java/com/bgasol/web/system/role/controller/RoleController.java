@@ -1,10 +1,9 @@
 package com.bgasol.web.system.role.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import com.bgasol.common.core.base.controller.BasePoiController;
+import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
-import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
@@ -13,13 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,7 +22,7 @@ import java.util.List;
 @Tag(name = "角色管理")
 @RequestMapping("/role")
 @Validated
-public class RoleController extends BasePoiController<
+public class RoleController extends BaseController<
         RoleEntity,
         BasePageDto<RoleEntity>,
         RoleCreateDto,
@@ -72,24 +67,18 @@ public class RoleController extends BasePoiController<
     }
 
     @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询角色", operationId = "findRoleByIds")
+    @SaCheckPermission("role:findByIds")
+    public BaseVo<List<RoleEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
+    }
+
+    @Override
     @GetMapping()
     @Operation(summary = "查询所有角色", operationId = "findAllRole")
     @SaCheckPermission("role:findAll")
     public BaseVo<List<RoleEntity>> findAll() {
         return super.findAll();
-    }
-
-    @GetMapping("/template-download")
-    @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
-    @SaCheckPermission("role:downloadImportTemplate")
-    public ResponseEntity<InputStreamResource> downloadImportTemplate() {
-        return super.downloadImportTemplate();
-    }
-
-    @PostMapping(value = "/import", consumes = {"multipart/form-data"})
-    @Operation(summary = "导入角色", operationId = "importRole")
-    @SaCheckPermission("role:importExcel")
-    public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) throws IOException {
-        return super.importFromExcel(file);
     }
 }

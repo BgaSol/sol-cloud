@@ -33,6 +33,7 @@ table "system_t_permission" {
     type = varchar(255)
     null = true
   }
+
   column "name" {
     type = varchar(255)
     null = false
@@ -49,18 +50,35 @@ table "system_t_permission" {
     type = varchar(100)
     null = true
   }
-  primary_key { columns = [column.id] }
-  index "idx_premission_parent_id" {
-    columns = [column.parent_id]
+
+  primary_key {
+    columns = [column.id]
   }
+
   index "idx_permission_create_time" {
     columns = [column.create_time]
   }
+  index "idx_premission_parent_id" {
+    columns = [column.parent_id]
+  }
+  index "idx_permission_name" {
+    columns = [column.name]
+  }
+  index "idx_permission_code" {
+    columns = [column.code]
+  }
+  index "idx_permission_path" {
+    columns = [column.path]
+  }
+  index "idx_permission_micro_service" {
+    columns = [column.micro_service]
+  }
+
   index "uk_permission_code" {
     unique = true
     columns = [column.code]
   }
-  
+
   // 添加外键约束，实现删除父权限时级联删除子权限
   foreign_key "fk_permission_parent_id" {
     columns = [column.parent_id]

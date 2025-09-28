@@ -5,6 +5,9 @@
 import type { BaseVoFileEntity } from '../models/BaseVoFileEntity';
 import type { BaseVoImageEntity } from '../models/BaseVoImageEntity';
 import type { BaseVoInteger } from '../models/BaseVoInteger';
+import type { BaseVoListFileEntity } from '../models/BaseVoListFileEntity';
+import type { BaseVoListImageEntity } from '../models/BaseVoListImageEntity';
+import type { BaseVoListVideoEntity } from '../models/BaseVoListVideoEntity';
 import type { BaseVoPageVoFileEntity } from '../models/BaseVoPageVoFileEntity';
 import type { BaseVoPageVoImageEntity } from '../models/BaseVoPageVoImageEntity';
 import type { BaseVoPageVoVideoEntity } from '../models/BaseVoPageVoVideoEntity';
@@ -272,6 +275,29 @@ export class Service {
         });
     }
     /**
+     * 根据id批量查询视频
+     * @param ids
+     * @returns BaseVoListVideoEntity OK
+     * @throws ApiError
+     */
+    public static findVideoByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/video/ids/{ids}',
+            path: {
+                'ids': ids,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
      * 查询图片
      * @param id
      * @returns BaseVoImageEntity OK
@@ -285,6 +311,29 @@ export class Service {
             url: '/image/{id}',
             path: {
                 'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据id批量查询图片
+     * @param ids
+     * @returns BaseVoListImageEntity OK
+     * @throws ApiError
+     */
+    public static findImageByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListImageEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/image/ids/{ids}',
+            path: {
+                'ids': ids,
             },
             errors: {
                 400: `参数校验异常`,
@@ -331,6 +380,29 @@ export class Service {
             url: '/file/{id}',
             path: {
                 'id': id,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据id批量查询图片
+     * @param ids
+     * @returns BaseVoListFileEntity OK
+     * @throws ApiError
+     */
+    public static findFileByIds(
+        ids: string,
+    ): CancelablePromise<BaseVoListFileEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/file/ids/{ids}',
+            path: {
+                'ids': ids,
             },
             errors: {
                 400: `参数校验异常`,

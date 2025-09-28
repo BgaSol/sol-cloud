@@ -70,6 +70,14 @@ public class DepartmentController extends BaseController<
     }
 
     @Override
+    @GetMapping("/ids/{ids}")
+    @Operation(summary = "根据id批量查询部门", operationId = "findDepartmentByIds")
+    @SaCheckPermission("department:findByIds")
+    public BaseVo<List<DepartmentEntity>> findByIds(@PathVariable String ids) {
+        return super.findByIds(ids);
+    }
+
+    @Override
     @GetMapping()
     @SaCheckPermission("department:findAll")
     @Operation(summary = "查询所有部门", operationId = "findAllDepartment")

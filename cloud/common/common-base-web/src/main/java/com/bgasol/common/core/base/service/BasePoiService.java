@@ -40,7 +40,9 @@ public abstract class BasePoiService<
         ENTITY extends BaseEntity,
         PAGE_DTO extends BasePageDto<ENTITY>,
         CREATE_DTO extends BaseCreateDto<ENTITY>,
-        UPDATE_DTO extends BaseUpdateDto<ENTITY>> extends BaseService<ENTITY, PAGE_DTO> {
+        UPDATE_DTO extends BaseUpdateDto<ENTITY>> {
+    protected abstract BaseService<ENTITY, PAGE_DTO> getService();
+
     /**
      * 获取创建DTO的Class对象
      *
@@ -82,11 +84,11 @@ public abstract class BasePoiService<
      * @return 模板名称
      */
     protected String getTemplateName() {
-        Schema classSchema = commonBaseEntityClass().getAnnotation(Schema.class);
+        Schema classSchema = getService().commonBaseEntityClass().getAnnotation(Schema.class);
         if (classSchema != null && StringUtils.isNotBlank(classSchema.description())) {
             return classSchema.description().replace("实体", "");
         }
-        return commonBaseEntityClass().getSimpleName().replace("Entity", "");
+        return getService().commonBaseEntityClass().getSimpleName().replace("Entity", "");
     }
 
     /**
@@ -98,10 +100,7 @@ public abstract class BasePoiService<
      */
     private byte[] generateExcelBytes(List<List<String>> headers) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            EasyExcel.write(outputStream)
-                    .head(headers)
-                    .sheet("导入模板")
-                    .doWrite(new ArrayList<>());
+            EasyExcel.write(outputStream).head(headers).sheet("导入模板").doWrite(new ArrayList<>());
             return outputStream.toByteArray();
         }
     }
@@ -117,21 +116,14 @@ public abstract class BasePoiService<
         Class<CREATE_DTO> createDtoClass = getCreateDtoClass();
         List<Field> fields = FieldUtils.getAllFieldsList(createDtoClass);
 
-        List<String> columnTitles = fields.stream()
-                .map(field -> field.getAnnotation(Schema.class))
-                .filter(Objects::nonNull)
-                .map(Schema::description)
-                .filter(StringUtils::isNotBlank)
-                .toList();
+        List<String> columnTitles = fields.stream().map(field -> field.getAnnotation(Schema.class)).filter(Objects::nonNull).map(Schema::description).filter(StringUtils::isNotBlank).toList();
 
         if (columnTitles.isEmpty()) {
             throw new BaseException("未能从DTO类生成任何列，请检查DTO字段的@Schema(description)注解配置");
         }
 
         // 转换为EasyExcel需要的格式（每个标题包装在List中）
-        return columnTitles.stream()
-                .map(Collections::singletonList)
-                .toList();
+        return columnTitles.stream().map(Collections::singletonList).toList();
     }
 
     /**
@@ -149,17 +141,9 @@ public abstract class BasePoiService<
         BaseExcelImportListener<CREATE_DTO, ENTITY> listener = createImportListener();
 
         try {
-            EasyExcel.read(file.getInputStream(), dtoClass, listener)
-                    .headRowNumber(1)
-                    .sheet()
-                    .doRead();
+            EasyExcel.read(file.getInputStream(), dtoClass, listener).headRowNumber(1).sheet().doRead();
 
-            return ImportResult.builder()
-                    .totalRows(listener.getCurrentRowIndex())
-                    .successRows(listener.getSuccessRows())
-                    .errorRows(listener.getErrors().size())
-                    .errors(listener.getErrors())
-                    .build();
+            return ImportResult.builder().totalRows(listener.getCurrentRowIndex()).successRows(listener.getSuccessRows()).errorRows(listener.getErrors().size()).errors(listener.getErrors()).build();
         } catch (Exception e) {
             log.error("Excel导入失败", e);
             throw new BaseException("Excel导入失败: " + e.getMessage());
@@ -172,12 +156,7 @@ public abstract class BasePoiService<
      * @return 导入监听器
      */
     private BaseExcelImportListener<CREATE_DTO, ENTITY> createImportListener() {
-        return BaseExcelImportListener.ofDto(
-                getImportBatchSize(),
-                this::saveBatch,
-                this::validateImportedEntity,
-                (e, rowIndex) -> log.warn("导入第{}行异常: {}", rowIndex, e.getMessage())
-        );
+        return BaseExcelImportListener.ofDto(getImportBatchSize(), this::saveBatch, this::validateImportedEntity, (e, rowIndex) -> log.warn("导入第{}行异常: {}", rowIndex, e.getMessage()));
     }
 
     /**
@@ -187,7 +166,7 @@ public abstract class BasePoiService<
      * @param entities 实体列表
      */
     protected void saveBatch(List<ENTITY> entities) {
-        entities.forEach(this::save);
+        entities.forEach(this.getService()::save);
     }
 
     /**
