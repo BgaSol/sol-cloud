@@ -36,7 +36,7 @@ public class RolePoiController extends BasePoiController<
 
     @Override
     public BasePoiService<RoleEntity, BasePageDto<RoleEntity>, RoleCreateDto, RoleUpdateDto> commonBaseService() {
-        return null;
+        return rolePoiService;
     }
 
     @GetMapping("/template-download")
