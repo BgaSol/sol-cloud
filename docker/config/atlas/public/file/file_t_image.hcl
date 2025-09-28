@@ -52,10 +52,10 @@ table "file_t_image" {
   index "idx_image_create_time" {
     columns = [column.create_time]
   }
-  index "idx_video_name" {
+  index "idx_image_name" {
     columns = [column.name]
   }
-  index "idx_video_file_id" {
+  index "idx_image_file_id" {
     columns = [column.file_id]
   }
 }
