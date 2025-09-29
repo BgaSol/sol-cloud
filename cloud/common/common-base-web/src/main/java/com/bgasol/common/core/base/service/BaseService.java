@@ -263,12 +263,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @return 实体
      */
     public ENTITY findById(String id) {
-//        ENTITY entity = this.cacheSearch(id);
-//        if (ObjectUtils.isNotEmpty(entity)) {
-//            this.findOtherTable(entity);
-//        }
-//        return entity;
-        return this.findByIds(id).get(0);
+        List<ENTITY> entities = this.findByIds(id);
+        if (ObjectUtils.isEmpty(entities)) {
+            return null;
+        }
+        return entities.get(0);
     }
 
     @Transactional(readOnly = true)
