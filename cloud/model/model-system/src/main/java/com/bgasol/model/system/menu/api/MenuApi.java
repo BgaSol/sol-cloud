@@ -1,15 +1,10 @@
 package com.bgasol.model.system.menu.api;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.model.system.menu.entity.MenuEntity;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,15 +14,21 @@ import java.util.List;
         contextId = SystemConfigValues.SERVICE_NAME + "-MenuApi"
 )
 public interface MenuApi {
-    @PostMapping("/init")
-    BaseVo<MenuEntity> init(@RequestBody MenuEntity entity);
+    @DeleteMapping("/{ids}")
+    BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
 
     @GetMapping("/{id}")
     BaseVo<MenuEntity> findById(@PathVariable("id") String id);
 
+    @GetMapping()
+    BaseVo<List<MenuEntity>> findAll();
+
     @GetMapping("/ids/{ids}")
-    @Operation(summary = "根据id批量查询菜单", operationId = "findMenuByIds")
-    @SaCheckPermission("menu:findByIds")
     BaseVo<List<MenuEntity>> findByIds(@PathVariable String ids);
 
+    @GetMapping("/find-by-menu-group/{group}")
+    BaseVo<List<MenuEntity>> findByMenuGroup(@PathVariable("group") String group);
+
+    @PostMapping("/init")
+    BaseVo<MenuEntity> init(@RequestBody() MenuEntity entity);
 }

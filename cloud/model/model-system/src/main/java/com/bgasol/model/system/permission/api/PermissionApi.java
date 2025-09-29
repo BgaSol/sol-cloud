@@ -4,10 +4,9 @@ import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient(
         path = "/" + SystemConfigValues.SERVICE_NAME + "/permission",
@@ -15,9 +14,17 @@ import org.springframework.web.bind.annotation.RequestBody;
         contextId = SystemConfigValues.SERVICE_NAME + "-PermissionApi"
 )
 public interface PermissionApi {
-    @PostMapping("/init")
-    BaseVo<PermissionEntity> init(@RequestBody PermissionEntity entity);
 
-    @GetMapping("/{id}")
-    BaseVo<PermissionEntity> findById(@PathVariable("id") String id);
+    @GetMapping()
+    BaseVo<List<PermissionEntity>> findAll();
+
+    @DeleteMapping("/{ids}")
+    BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
+
+    @PostMapping("/init")
+    BaseVo<PermissionEntity> init(@RequestBody() PermissionEntity entity);
+
+    @GetMapping("/ids/{ids}")
+    BaseVo<List<PermissionEntity>> findByIds(@PathVariable String ids);
+
 }

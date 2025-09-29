@@ -54,9 +54,9 @@ public class UserController extends BaseController<
 
     @PostMapping("/logout")
     @Operation(summary = "用户登出", operationId = "logout")
-    public BaseVo<?> logout() {
+    public BaseVo<String> logout() {
         this.loginService.logout();
-        return BaseVo.success("登出成功");
+        return BaseVo.success("登出成功", "登出成功");
     }
 
     @GetMapping("/user-info")
