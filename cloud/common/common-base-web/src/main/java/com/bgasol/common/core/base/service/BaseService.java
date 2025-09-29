@@ -223,7 +223,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     private void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
         List<Map.Entry<String, String>> insertList = value
                 .stream()
-                .map(childrenEntity -> new AbstractMap.SimpleEntry<>(childrenEntity.getId(), entity.getId()))
+                .map(childrenEntity -> new AbstractMap.SimpleEntry<>(entity.getId(), childrenEntity.getId()))
                 .collect(Collectors.toList());
 
         insertIntoTableBatch(tableName, masterName, slaveName, insertList);
