@@ -37,6 +37,10 @@
             <artifactId>plugin-openfeign</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
