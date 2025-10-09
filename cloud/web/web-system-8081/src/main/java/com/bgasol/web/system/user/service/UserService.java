@@ -89,7 +89,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
     public UserEntity updatePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
         String userid = StpUtil.getLoginIdAsString();
-        UserEntity userEntity = this.cacheSearch(userid);
+        UserEntity userEntity = this.findDirectById(userid);
         String userInputOldPassword = userPasswordUpdateDto.getOldPassword();
         // 对比新旧密码
         if (!userEntity.getPassword().equals(this.encodePassword(userInputOldPassword))) {

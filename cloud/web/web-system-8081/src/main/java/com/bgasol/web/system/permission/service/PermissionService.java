@@ -28,13 +28,13 @@ public class PermissionService extends BaseTreeService<PermissionEntity, BasePag
     }
 
     public PermissionEntity init(PermissionEntity parentPermission) {
-        if (this.cacheSearch(parentPermission.getId()) == null) {
+        if (this.findDirectById(parentPermission.getId()) == null) {
             this.save(parentPermission);
         } else {
             this.update(parentPermission);
         }
         for (PermissionEntity permission : parentPermission.getChildren()) {
-            if (this.cacheSearch(permission.getId()) == null) {
+            if (this.findDirectById(permission.getId()) == null) {
                 this.save(permission);
             } else {
                 this.update(permission);

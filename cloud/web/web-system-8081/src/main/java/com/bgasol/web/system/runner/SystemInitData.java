@@ -109,13 +109,13 @@ public class SystemInitData implements ApplicationRunner {
                 .id(SystemConfigValues.DEFAULT_DEPARTMENT_ID)
                 .build();
 
-        if (ObjectUtils.isEmpty(this.departService.cacheSearch(department.getId()))) {
+        if (ObjectUtils.isEmpty(this.departService.findDirectById(department.getId()))) {
             this.departService.save(department);
         }
     }
 
     public void initUsers() {
-        if (ObjectUtils.isNotEmpty(this.userService.cacheSearch(SystemConfigValues.ADMIN_USER_ID))) {
+        if (ObjectUtils.isNotEmpty(this.userService.findDirectById(SystemConfigValues.ADMIN_USER_ID))) {
             return;
         }
         this.userService.save(UserEntity.builder()

@@ -33,10 +33,10 @@ import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 @Service
 public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends BasePageDto<ENTITY>> {
 
-    abstract public MyBaseMapper<ENTITY> commonBaseMapper();
-
     @Value("${spring.application.name}")
     private String serviceName;
+
+    abstract public MyBaseMapper<ENTITY> commonBaseMapper();
 
     public RedissonClient commonBaseRedissonClient() {
         return null;
@@ -143,7 +143,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     @Transactional
     public ENTITY update(ENTITY entity) {
-        ENTITY queryEntity = cacheSearch(entity.getId());
+        ENTITY queryEntity = findDirectById(entity.getId());
         if (queryEntity == null) {
             throw new BaseException("更新失败，更新数据不存在");
         }
@@ -242,7 +242,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
     @Transactional
     public Integer delete(String id) {
-        ENTITY entity = this.cacheSearch(id);
+        ENTITY entity = this.findDirectById(id);
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
@@ -258,75 +258,32 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
     /**
      * 根据id查询实体
-     *
-     * @param id 实体id
-     * @return 实体
+     * 有关联查询
      */
     public ENTITY findById(String id) {
         List<ENTITY> entities = this.findByIds(id);
-        if (ObjectUtils.isEmpty(entities)) {
-            return null;
-        }
-        return entities.get(0);
+        return ObjectUtils.isEmpty(entities) ? null : entities.get(0);
     }
 
+    /**
+     * 根据id查询实体
+     * 有关联查询
+     */
     @Transactional(readOnly = true)
     public List<ENTITY> findByIds(String... idArray) {
-        // ids去重
-        String[] ids = Arrays.stream(idArray).distinct().toArray(String[]::new);
-        // 优先从缓存查询结果
-        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
-            if (ObjectUtils.isEmpty(ids)) {
-                return new ArrayList<>();
-            }
-            List<ENTITY> entities = commonBaseMapper().selectByIds(Arrays.asList(ids));
-            this.findOtherTable(entities);
-            return entities;
-        }
-
-        // 先获取缓存中的结果
-        RMapCache<String, ENTITY> mapCache = getRMapCache();
-        Map<String, ENTITY> cacheList = mapCache.getAll(Set.of(ids));
-
-        // 缓存中没有的查询数据库
-        List<String> noneCacheIds = Arrays.stream(ids)
-                .filter(id -> !cacheList.containsKey(id))
-                .toList();
-
-        List<ENTITY> entities;
-        if (ObjectUtils.isEmpty(noneCacheIds)) {
-            entities = new ArrayList<>();
-        } else {
-            entities = commonBaseMapper().selectByIds(noneCacheIds);
-        }
-        // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
-        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(
-                id -> id,
-                id -> entities.stream()
-                        .filter(entity -> entity.getId().equals(id))
-                        .findFirst()
-                        .orElse(NULL_PLACEHOLDER_OBJECT)
-        ));
-        // 将数据库查询的结果，缓存到redis中
-        mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
-
-        // 合并缓存和数据库的结果 （将防止缓存穿透的空对象扔掉）
-        List<ENTITY> result = new ArrayList<>(cacheList.values().stream()
-                .filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER))
-                .toList());
-        result.addAll(entities);
-
-        this.findOtherTable(result);
-        return result;
+        List<ENTITY> entities = this.findDirectByIds(idArray);
+        this.findOtherTable(entities);
+        return entities;
     }
 
+    /// 改为调用 findByIds
+    @Deprecated
     public List<ENTITY> findIds(String... ids) {
         return this.findByIds(ids);
     }
 
     /**
-     * PAGE_DTO
-     * 分页查询
+     * 分页查询 (有关联查询)
      */
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(PAGE_DTO pageDto) {
@@ -336,7 +293,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 分页查询
+     * 分页查询 (有关联查询)
      */
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(Page<ENTITY> page,
@@ -363,9 +320,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 查询所有实体
-     *
-     * @return 实体列表
+     * 查询所有实体 (有关联查询)
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll() {
@@ -373,9 +328,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 查询所有实体
-     *
-     * @return 实体列表
+     * 根据条件查询所有实体 (有关联查询)
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll(Wrapper<ENTITY> wrapper) {
@@ -421,9 +374,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @SuppressWarnings("unchecked")
     public final ENTITY NULL_PLACEHOLDER_OBJECT = (ENTITY) ENTITY.builder().id(NULL_PLACEHOLDER).build();
 
-    /**
-     * 缓存查询
-     */
+    /// 改为调用 findDirectById
+    @Deprecated
     public ENTITY cacheSearch(String id) {
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
             // 如果没有开启缓存 则直接查询数据库
@@ -450,6 +402,66 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             mapCache.put(id, entity, randomizeTtl(), DEFAULT_TIME_UNIT);
         }
         return entity;
+    }
+
+    /**
+     * 根据id查询实体
+     * 无关联查询
+     */
+    public ENTITY findDirectById(String id) {
+        List<ENTITY> directByIds = this.findDirectByIds(id);
+        return ObjectUtils.isEmpty(directByIds) ? null : directByIds.get(0);
+    }
+
+    /**
+     * 根据id查询实体
+     * 无关联查询
+     */
+    public List<ENTITY> findDirectByIds(String... idArray) {
+        // ids去重
+        String[] ids = Arrays.stream(idArray).distinct().toArray(String[]::new);
+        // 如果缓存没开启，直接查询数据库
+        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            if (ObjectUtils.isEmpty(ids)) {
+                return new ArrayList<>();
+            }
+            List<ENTITY> entities = commonBaseMapper().selectByIds(Arrays.asList(ids));
+            this.findOtherTable(entities);
+            return entities;
+        }
+
+        // 先获取缓存中的结果
+        RMapCache<String, ENTITY> mapCache = getRMapCache();
+        Map<String, ENTITY> cacheList = mapCache.getAll(Set.of(ids));
+
+        // 缓存中没有的查询数据库
+        List<String> noneCacheIds = Arrays.stream(ids)
+                .filter(id -> !cacheList.containsKey(id))
+                .toList();
+
+        List<ENTITY> entities;
+        if (ObjectUtils.isEmpty(noneCacheIds)) {
+            entities = new ArrayList<>();
+        } else {
+            entities = commonBaseMapper().selectByIds(noneCacheIds);
+        }
+        // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
+        Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(
+                id -> id,
+                id -> entities.stream()
+                        .filter(entity -> entity.getId().equals(id))
+                        .findFirst()
+                        .orElse(NULL_PLACEHOLDER_OBJECT)
+        ));
+        // 将数据库查询的结果，缓存到redis中
+        mapCache.putAll(toCacheDate, randomizeTtl(), DEFAULT_TIME_UNIT);
+
+        // 合并缓存和数据库的结果 （将防止缓存穿透的空对象扔掉）
+        List<ENTITY> result = new ArrayList<>(cacheList.values().stream()
+                .filter(entity -> !entity.getId().equals(NULL_PLACEHOLDER))
+                .toList());
+        result.addAll(entities);
+        return result;
     }
 
     /**

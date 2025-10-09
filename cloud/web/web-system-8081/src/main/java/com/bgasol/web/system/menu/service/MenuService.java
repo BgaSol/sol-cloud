@@ -83,7 +83,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      * @param menuEntity 菜单实体
      */
     private void initChildren(MenuEntity menuEntity) {
-        if (ObjectUtils.isEmpty(cacheSearch(menuEntity.getId()))) {
+        if (ObjectUtils.isEmpty(findDirectById(menuEntity.getId()))) {
             this.save(menuEntity);
         } else {
             this.update(menuEntity);
