@@ -419,23 +419,21 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      */
     public List<ENTITY> findDirectByIds(String... idArray) {
         // ids去重
-        String[] ids = Arrays.stream(idArray).distinct().toArray(String[]::new);
+        Set<String> ids = Arrays.stream(idArray).collect(Collectors.toSet());
         // 如果缓存没开启，直接查询数据库
         if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
             if (ObjectUtils.isEmpty(ids)) {
                 return new ArrayList<>();
             }
-            List<ENTITY> entities = commonBaseMapper().selectByIds(Arrays.asList(ids));
-            this.findOtherTable(entities);
-            return entities;
+            return commonBaseMapper().selectByIds(ids.stream().toList());
         }
 
         // 先获取缓存中的结果
         RMapCache<String, ENTITY> mapCache = getRMapCache();
-        Map<String, ENTITY> cacheList = mapCache.getAll(Set.of(ids));
+        Map<String, ENTITY> cacheList = mapCache.getAll(ids);
 
         // 缓存中没有的查询数据库
-        List<String> noneCacheIds = Arrays.stream(ids)
+        List<String> noneCacheIds = ids.stream()
                 .filter(id -> !cacheList.containsKey(id))
                 .toList();
 
