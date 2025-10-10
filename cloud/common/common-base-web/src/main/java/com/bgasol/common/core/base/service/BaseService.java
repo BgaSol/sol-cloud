@@ -60,11 +60,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
     /**
      * 保存实体
-     * 有关联查询
      * 如果实体有中间表，也会保存中间表
      */
     @Transactional
-    public ENTITY save(ENTITY entity) {
+    public void insert(ENTITY entity) {
         // 反射获取entity的所有字段
         Class<? extends BaseEntity> entityClass = entity.getClass();
         // Field[] fields = entityClass.getDeclaredFields();
@@ -122,12 +121,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
-        return this.findById(entity.getId());
     }
 
     /**
      * 更新实体
-     * 有关联查询
      * 如果实体有中间表，也会更新中间表
      * <p>
      * 后端默认不更新 undefined 和 null 的值
@@ -135,9 +132,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 将 dto 中的 undefined 和 null 值去掉 替换为默认值 默认值一般为空字符串空数组等
      */
     @Transactional
-    public ENTITY update(ENTITY entity) {
-        ENTITY queryEntity = findDirectById(entity.getId());
-        if (queryEntity == null) {
+    public void apply(ENTITY entity) {
+        if (ObjectUtils.isEmpty(entity.getId())) {
             throw new BaseException("更新失败，更新数据不存在");
         }
         // 反射获取entity的所有字段
@@ -175,7 +171,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             }
         }
         // 更新实体
-        commonBaseMapper().update(entity, updateWrapper);
+        if (commonBaseMapper().update(entity, updateWrapper) == 0) {
+            throw new BaseException("更新失败，更新数据不存在");
+        }
         // 删除缓存
         this.cacheDelete(entity.getId());
         // 反射获取entity的所有字段
@@ -207,7 +205,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
             }
         }
-        return this.findById(entity.getId());
     }
 
     /**
@@ -491,5 +488,31 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Deprecated
     public List<ENTITY> findIds(String... ids) {
         return this.findByIds(ids);
+    }
+
+    /**
+     * 建议使用 insert
+     * 保存实体
+     * 有关联查询
+     * 如果实体有中间表，也会保存中间表
+     */
+    @Deprecated
+    @Transactional
+    public ENTITY save(ENTITY entity) {
+        this.insert(entity);
+        return this.findById(entity.getId());
+    }
+
+    /**
+     * 建议使用 apply
+     * 更新实体
+     * 有关联查询
+     * 如果实体有中间表，也会保存中间表
+     */
+    @Deprecated
+    @Transactional
+    public ENTITY update(ENTITY entity) {
+        this.apply(entity);
+        return this.findById(entity.getId());
     }
 }

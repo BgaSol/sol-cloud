@@ -37,6 +37,16 @@ public class BaseVo<T> {
 
     /**
      * 成功响应
+     */
+    static public BaseVo<Void> success() {
+        return BaseVo.<Void>builder()
+                .code(200)
+                .time(new Date())
+                .build();
+    }
+
+    /**
+     * 成功响应
      *
      * @param data 响应数据
      */
@@ -68,8 +78,8 @@ public class BaseVo<T> {
      *
      * @param message 响应消息
      */
-    static public <T> BaseVo<T> error(String message) {
-        return BaseVo.<T>builder()
+    static public BaseVo<Void> error(String message) {
+        return BaseVo.<Void>builder()
                 .code(500)
                 .time(new Date())
                 .message(message)
@@ -97,7 +107,7 @@ public class BaseVo<T> {
      * 错误响应
      *
      * @param message 响应消息
-     * @param type    响应类型
+     * @param type    响应类型 前端可以根据这个类型进行不同的颜色展示
      */
     static public <T> BaseVo<T> error(String message, ResponseType type) {
         return BaseVo.<T>builder()

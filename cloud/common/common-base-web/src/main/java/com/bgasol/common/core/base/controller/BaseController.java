@@ -27,15 +27,36 @@ public abstract class BaseController<
         return BaseVo.success(byPage);
     }
 
-    public BaseVo<ENTITY> save(@Valid CREATE_DTO createDto) {
-        ENTITY save = commonBaseService().save(createDto.toEntity());
-        return BaseVo.success(save, "保存成功");
+    public BaseVo<Void> insert(@Valid CREATE_DTO createDto) {
+        ENTITY entity = createDto.toEntity();
+        commonBaseService().insert(entity);
+        return BaseVo.success();
     }
 
-    public BaseVo<ENTITY> update(@Valid UPDATE_DTO updateDto) {
-        ENTITY update = commonBaseService().update(updateDto.toEntity());
-        return BaseVo.success(update, "更新成功");
+    public BaseVo<Void> apply(@Valid UPDATE_DTO updateDto) {
+        ENTITY entity = updateDto.toEntity();
+        commonBaseService().apply(entity);
+        return BaseVo.success();
     }
+
+    @Deprecated
+    public BaseVo<ENTITY> save(@Valid CREATE_DTO createDto) {
+        ENTITY entity = createDto.toEntity();
+        commonBaseService().insert(entity);
+
+        ENTITY newEntity = commonBaseService().findById(entity.getId());
+        return BaseVo.success(newEntity, "保存成功");
+    }
+
+    @Deprecated
+    public BaseVo<ENTITY> update(@Valid UPDATE_DTO updateDto) {
+        ENTITY entity = updateDto.toEntity();
+        commonBaseService().apply(entity);
+
+        ENTITY newEntity = commonBaseService().findById(entity.getId());
+        return BaseVo.success(newEntity, "更新成功");
+    }
+
 
     public BaseVo<Integer[]> delete(@Valid @NotBlank String ids) {
         String[] idsArr = ids.split(",");
