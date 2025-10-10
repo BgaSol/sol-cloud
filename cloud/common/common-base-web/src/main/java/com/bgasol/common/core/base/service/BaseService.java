@@ -36,21 +36,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Value("${spring.application.name}")
     private String serviceName;
 
-    abstract public MyBaseMapper<ENTITY> commonBaseMapper();
-
     public RedissonClient commonBaseRedissonClient() {
         return null;
     }
 
-    /**
-     * 获取ENTITY实体类的Class对象
-     *
-     * @return ENTITY实体类的Class对象
-     */
-    @SuppressWarnings("unchecked")
-    public Class<ENTITY> commonBaseEntityClass() {
-        return (Class<ENTITY>) ResolvableType.forClass(getClass()).as(BaseService.class).getGeneric(0).resolve();
-    }
+    abstract public MyBaseMapper<ENTITY> commonBaseMapper();
 
     /**
      * 获取缓存对象
@@ -62,11 +52,17 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
+     * 获取ENTITY实体类的Class对象
+     */
+    @SuppressWarnings("unchecked")
+    public Class<ENTITY> commonBaseEntityClass() {
+        return (Class<ENTITY>) ResolvableType.forClass(getClass()).as(BaseService.class).getGeneric(0).resolve();
+    }
+
+    /**
      * 保存实体
+     * 有关联查询
      * 如果实体有中间表，也会保存中间表
-     *
-     * @param entity 实体
-     * @return 实体
      */
     @Transactional
     public ENTITY save(ENTITY entity) {
@@ -132,14 +128,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
 
     /**
      * 更新实体
+     * 有关联查询
      * 如果实体有中间表，也会更新中间表
      * <p>
      * 后端默认不更新 undefined 和 null 的值
      * 使用默认更新时使用应在前端调用 buildDto
      * 将 dto 中的 undefined 和 null 值去掉 替换为默认值 默认值一般为空字符串空数组等
-     *
-     * @param entity 实体
-     * @return 实体
      */
     @Transactional
     public ENTITY update(ENTITY entity) {
@@ -209,6 +203,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                     // 删除中间表的数据
                     commonBaseMapper().deleteFromTable(tableName, masterName, entity.getId());
                     @SuppressWarnings("unchecked") List<BaseEntity> entities = (List<BaseEntity>) value;
+                    // 重新插入中间表数据
                     insertIntoTable(entity, tableName, masterName, slaveName, entities);
                 }
             }
@@ -217,29 +212,18 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 插入中间表
-     */
-    @Transactional
-    private void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
-        List<Map.Entry<String, String>> insertList = value
-                .stream()
-                .map(childrenEntity -> new AbstractMap.SimpleEntry<>(entity.getId(), childrenEntity.getId()))
-                .collect(Collectors.toList());
-
-        insertIntoTableBatch(tableName, masterName, slaveName, insertList);
-    }
-
-    /**
      * 删除实体
-     *
-     * @param ids 实体id
-     * @return 删除数量
+     * 有关联查询
      */
     @Transactional
     public Integer[] delete(String... ids) {
         return Arrays.stream(ids).map(this::delete).toArray(Integer[]::new);
     }
 
+    /**
+     * 删除实体
+     * 有关联查询
+     */
     @Transactional
     public Integer delete(String id) {
         ENTITY entity = this.findDirectById(id);
@@ -276,14 +260,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         return entities;
     }
 
-    /// 改为调用 findByIds
-    @Deprecated
-    public List<ENTITY> findIds(String... ids) {
-        return this.findByIds(ids);
-    }
-
     /**
-     * 分页查询 (有关联查询)
+     * 分页查询
+     * 有关联查询
      */
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(PAGE_DTO pageDto) {
@@ -293,7 +272,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 分页查询 (有关联查询)
+     * 分页查询
+     * 有关联查询
      */
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(Page<ENTITY> page,
@@ -320,7 +300,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 查询所有实体 (有关联查询)
+     * 查询所有实体
+     * 有关联查询
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll() {
@@ -328,7 +309,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 根据条件查询所有实体 (有关联查询)
+     * 根据条件查询所有实体
+     * 有关联查询
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll(Wrapper<ENTITY> wrapper) {
@@ -350,12 +332,10 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 子类如果有性能需求，可以重写该方法
      * 不然直接重写 单条记录查询的方法
      */
-    @Transactional(readOnly = true)
     public void findOtherTable(List<ENTITY> list) {
         if (ObjectUtils.isEmpty(list)) {
             return;
         }
-
         list.parallelStream().forEach(this::findOtherTable);
     }
 
@@ -363,21 +343,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * Service需要做关联查询的，重写它就可以。
      * 子类如果有关联查询需求，可以继承重写该方法
      * 重写这个方法要注意性能问题
-     *
-     * @param entity 实体
      */
     public void findOtherTable(ENTITY entity) {
         // 暂时什么也不用做
-    }
-
-    public static final String NULL_PLACEHOLDER = "null";
-    @SuppressWarnings("unchecked")
-    public final ENTITY NULL_PLACEHOLDER_OBJECT = (ENTITY) ENTITY.builder().id(NULL_PLACEHOLDER).build();
-
-    /// 改为调用 findDirectById
-    @Deprecated
-    public ENTITY cacheSearch(String id) {
-        return this.findDirectById(id);
     }
 
     /**
@@ -393,6 +361,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 根据id查询实体
      * 无关联查询
      */
+    @Transactional(readOnly = true)
     public List<ENTITY> findDirectByIds(String... idArray) {
         // ids去重
         Set<String> ids = Arrays.stream(idArray).collect(Collectors.toSet());
@@ -419,6 +388,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         } else {
             entities = commonBaseMapper().selectByIds(noneCacheIds);
         }
+
         // 准备缓存的新数据 数据库中也没有查到的数据制作为NULL_PLACEHOLDER实体
         Map<String, ENTITY> toCacheDate = noneCacheIds.stream().collect(Collectors.toMap(
                 id -> id,
@@ -448,15 +418,19 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         }
     }
 
+    public static final String NULL_PLACEHOLDER = "null";
+    @SuppressWarnings("unchecked")
+    public final ENTITY NULL_PLACEHOLDER_OBJECT = (ENTITY) ENTITY.builder().id(NULL_PLACEHOLDER).build();
+
     /**
-     * 获取中间表 被查询主键值 列表（支持多个 masterValue）
-     * <p>
+     * 批量查询中间表数据
      *
      * @param tableName    中间表名
      * @param masterName   查询主键名
      * @param masterValues 查询主键值列表
      * @param slaveName    被查询主键名
      */
+    @Transactional
     public Map<String, List<String>> findFromTableBatch(String tableName, String masterName, List<String> masterValues, String slaveName) {
         // 检查 masterValues 空值
         if (ObjectUtils.isEmpty(masterValues)) {
@@ -480,7 +454,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param tableName  中间表名
      * @param masterName 主表主键名
      * @param slaveName  从表主键名
+     * @param values     插入的中间表数据 {主表主键:从表主键}
      */
+    @Transactional
     void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<Map.Entry<String, String>> values) {
         if (ObjectUtils.isEmpty(values)) {
             return;
@@ -492,4 +468,34 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         this.commonBaseMapper().insertIntoTableBatch(tableName, masterName, slaveName, inserList);
     }
 
+    /**
+     * 插入中间表数据
+     *
+     * @param entity     主表实体
+     * @param tableName  中间表名
+     * @param masterName 主表主键名
+     * @param slaveName  从表主键名
+     * @param value      从表实体列表
+     */
+    @Transactional
+    private void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
+        List<Map.Entry<String, String>> insertList = value
+                .stream()
+                .map(childrenEntity -> new AbstractMap.SimpleEntry<>(entity.getId(), childrenEntity.getId()))
+                .collect(Collectors.toList());
+
+        insertIntoTableBatch(tableName, masterName, slaveName, insertList);
+    }
+
+    /// 改为调用 findDirectById
+    @Deprecated
+    public ENTITY cacheSearch(String id) {
+        return this.findDirectById(id);
+    }
+
+    /// 改为调用 findByIds
+    @Deprecated
+    public List<ENTITY> findIds(String... ids) {
+        return this.findByIds(ids);
+    }
 }
