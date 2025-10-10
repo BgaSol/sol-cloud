@@ -18,7 +18,6 @@ import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ResolvableType;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -230,12 +229,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         if (entity == null) {
             throw new BaseException("删除失败，删除数据不存在");
         }
-        int i;
-        try {
-            i = commonBaseMapper().deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new BaseException("删除失败 数据已被引用");
-        }
+        int i = commonBaseMapper().deleteById(id);
         this.cacheDelete(id);
         return i;
     }
@@ -303,7 +297,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 查询所有实体
      * 有关联查询
      */
-    @Transactional(readOnly = true)
     public List<ENTITY> findAll() {
         return this.findAll(null);
     }
@@ -412,10 +405,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 删除缓存
      */
     public void cacheDelete(String id) {
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
-            RMapCache<String, ENTITY> mapCache = getRMapCache();
-            mapCache.remove(id);
+        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+            return;
         }
+        RMapCache<String, ENTITY> mapCache = getRMapCache();
+        mapCache.remove(id);
     }
 
     public static final String NULL_PLACEHOLDER = "null";
@@ -430,7 +424,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param masterValues 查询主键值列表
      * @param slaveName    被查询主键名
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public Map<String, List<String>> findFromTableBatch(String tableName, String masterName, List<String> masterValues, String slaveName) {
         // 检查 masterValues 空值
         if (ObjectUtils.isEmpty(masterValues)) {
