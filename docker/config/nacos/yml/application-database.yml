@@ -1,0 +1,24 @@
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    local-cache-scope: STATEMENT
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+logging:
+  level:
+    com.bgasol.plugin.mybatisPlus: INFO
+# ========== 添加数据源配置 ==========
+spring:
+  datasource:
+    dynamic:
+      enabled: true
+      primary: postgresMaster_1
+      strict: true
+      grace-destroy: false
+      datasource:
+        postgresMaster_1:
+          driver-class-name: org.postgresql.Driver
+          url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/cloud
+          username: ${POSTGRES_USER:postgres}
+          password: ${POSTGRES_PASSWORD:postgrespwd}

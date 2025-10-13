@@ -1,9 +1,0 @@
-server:
-  port: 9527
-spring:
-  profiles:
-    active:
-      - logger
-      - nacos
-      - redis
-      - sa-token

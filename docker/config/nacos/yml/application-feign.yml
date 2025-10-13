@@ -1,0 +1,4 @@
+logging:
+  level:
+    feign: INFO
+    org.springframework.cloud.openfeign: INFO

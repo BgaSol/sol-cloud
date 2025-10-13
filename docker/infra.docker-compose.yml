@@ -7,67 +7,6 @@ volumes:
   redis-data:
     external: true
 services:
-  # Nacos
-  cloud-app-nacos:
-    image: nacos/nacos-server:v2.5.1
-    container_name: cloud-app-nacos
-    restart: unless-stopped
-    ports:
-      - "8848:8848"
-      - "9848:9848"
-      - "9849:9849"
-    environment:
-      TZ: ${TZ}
-      MODE: standalone
-      NACOS_APPLICATION_PORT: 8848
-      DB_SERVICE_NAME: postgresql
-      DB_SERVICE_HOST: cloud-app-postgres
-      DB_SERVICE_PORT: 5432
-      DB_SERVICE_DB_NAME: nacos
-      DB_SERVICE_USER: ${POSTGRES_USER}
-      DB_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
-      NACOS_AUTH_ENABLE: true
-      NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
-      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
-      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_SECRET}
-    networks:
-      - cloud-app
-    volumes:
-      - ./data/nacos/logs:/home/nacos/logs
-      - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
-      - ./config/nacos/plugins/:/home/nacos/plugins/
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-  # Minio 服务
-  cloud-app-minio:
-    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
-    container_name: cloud-app-minio
-    restart: unless-stopped
-    command:
-      - server
-      - /data
-      - --console-address
-      - :9001
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      TZ: ${TZ}
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - ./data/minio/data:/data
-      - ./data/minio/root/.minio:/root/.minio
-    networks:
-      - cloud-app
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
   # PostgreSQL 数据库服务
   cloud-app-postgres:
     image: postgres:17.2
@@ -115,3 +54,93 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  
+  # MinIO 对象存储服务
+  cloud-app-minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    container_name: cloud-app-minio
+    restart: unless-stopped
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9001
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      TZ: ${TZ}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./data/minio/data:/data
+      - ./data/minio/root/.minio:/root/.minio
+    networks:
+      - cloud-app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # Nacos 配置中心与服务注册中心
+  cloud-app-nacos:
+    image: nacos/nacos-server:v2.5.1
+    container_name: cloud-app-nacos
+    restart: unless-stopped
+    depends_on:
+      cloud-app-postgres:
+        condition: service_healthy
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      TZ: ${TZ}
+      MODE: standalone
+      NACOS_APPLICATION_PORT: 8848
+      DB_SERVICE_NAME: postgresql
+      DB_SERVICE_HOST: cloud-app-postgres
+      DB_SERVICE_PORT: 5432
+      DB_SERVICE_DB_NAME: nacos
+      DB_SERVICE_USER: ${POSTGRES_USER}
+      DB_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
+      NACOS_AUTH_ENABLE: true
+      NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
+      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
+      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_SECRET}
+    networks:
+      - cloud-app
+    volumes:
+      - ./data/nacos/logs:/home/nacos/logs
+      - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
+      - ./config/nacos/plugins/:/home/nacos/plugins/
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  # Nacos 配置初始化
+  cloud-app-nacos-init:
+    image: alpine:3.21
+    container_name: cloud-app-nacos-init
+    restart: "no"
+    depends_on:
+      cloud-app-nacos:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ}
+      NACOS_ADDR: http://cloud-app-nacos:8848
+      NACOS_USER: ${NACOS_USER}
+      NACOS_PASSWORD: ${NACOS_PASSWORD}
+    networks:
+      - cloud-app
+    volumes:
+      - ./config/nacos/init-configs.sh:/init-configs.sh:ro
+      - ./config/nacos/yml:/home/nacos/plugins/yml:ro
+    command:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache wget curl
+        chmod +x /init-configs.sh
+        /init-configs.sh

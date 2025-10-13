@@ -1,6 +1,4 @@
 management:
-  server:
-    port:
   endpoints:
     web:
       exposure:

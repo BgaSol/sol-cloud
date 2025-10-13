@@ -1,0 +1,36 @@
+server:
+  port: 9527
+spring:
+  application:
+    name: gateway
+  cloud:
+    nacos:
+      server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+      username: ${NACOS_USER:nacos}
+      password: ${NACOS_PASSWORD:nacospwd}
+      discovery:
+        enabled: true
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        cluster-name: ${CLUSTER_NAME:default}
+      config:
+        enabled: true
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yml
+        timeout: 3000
+        refresh-enabled: true
+        shared-configs:
+          - data-id: application-logger.yml
+            group: SHARED_CONFIG
+            refresh: false
+          - data-id: application-redis.yml
+            group: SHARED_CONFIG
+            refresh: true
+          - data-id: application-sa-token.yml
+            group: SHARED_CONFIG
+            refresh: true
+        extension-configs:
+          - data-id: gateway.yml
+            group: ${NACOS_GROUP:DEFAULT_GROUP}
+            refresh: true

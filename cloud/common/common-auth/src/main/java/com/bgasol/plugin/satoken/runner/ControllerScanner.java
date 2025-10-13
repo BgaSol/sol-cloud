@@ -42,6 +42,11 @@ public class ControllerScanner {
 
     /// 扫描controller类和方法，将权限信息存入数据库
     public void scanController(Class<?> controllerClass) {
+        scanController(controllerClass, 3); // 默认重试3次
+    }
+
+    /// 扫描controller类和方法，将权限信息存入数据库（带重试机制）
+    private void scanController(Class<?> controllerClass, int retryCount) {
         // 只扫描controller的类
         PermissionEntity parentPermissionEntity = new PermissionEntity();
         // 获取当前服务名
@@ -117,8 +122,22 @@ public class ControllerScanner {
         parentPermissionEntity.setChildren(children);
         try {
             permissionApi.init(parentPermissionEntity);
+            log.info("Successfully initialized permissions for controller: {}", controllerName);
         } catch (FeignException e) {
-            System.exit(1);
+            if (retryCount > 0) {
+                log.warn("Failed to init permission for controller: {}, retrying... (remaining attempts: {})", 
+                        controllerName, retryCount - 1);
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(3)); // 等待3秒后重试
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+                scanController(controllerClass, retryCount - 1); // 递归重试
+            } else {
+                log.error("Failed to init permission for controller: {} after all retries, error: {}", 
+                        controllerName, e.getMessage());
+                // 不要强制退出应用，只记录错误
+            }
         }
     }
 
@@ -126,7 +145,8 @@ public class ControllerScanner {
     @EventListener(InstanceRegisteredEvent.class)
     @Async()
     public void scanControllers() throws ClassNotFoundException, InterruptedException {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+        // 延迟10秒，确保服务完全启动并且 Feign 客户端已就绪
+        Thread.sleep(TimeUnit.SECONDS.toMillis(10));
         log.info("Scanning-controllers");
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(RequestMapping.class));
