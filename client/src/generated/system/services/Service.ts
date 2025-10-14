@@ -10,11 +10,11 @@ import type { BaseVoListPermissionEntity } from '../models/BaseVoListPermissionE
 import type { BaseVoListRoleEntity } from '../models/BaseVoListRoleEntity';
 import type { BaseVoListUserEntity } from '../models/BaseVoListUserEntity';
 import type { BaseVoMenuEntity } from '../models/BaseVoMenuEntity';
-import type { BaseVoObject } from '../models/BaseVoObject';
 import type { BaseVoPageVoUserEntity } from '../models/BaseVoPageVoUserEntity';
 import type { BaseVoPermissionEntity } from '../models/BaseVoPermissionEntity';
 import type { BaseVoRoleEntity } from '../models/BaseVoRoleEntity';
 import type { BaseVoSaTokenInfo } from '../models/BaseVoSaTokenInfo';
+import type { BaseVoString } from '../models/BaseVoString';
 import type { BaseVoUserEntity } from '../models/BaseVoUserEntity';
 import type { BaseVoVerificationVo } from '../models/BaseVoVerificationVo';
 import type { DepartmentCreateDto } from '../models/DepartmentCreateDto';
@@ -267,10 +267,10 @@ export class Service {
     }
     /**
      * 用户登出
-     * @returns BaseVoObject OK
+     * @returns BaseVoString OK
      * @throws ApiError
      */
-    public static logout(): CancelablePromise<BaseVoObject> {
+    public static logout(): CancelablePromise<BaseVoString> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/user/logout',

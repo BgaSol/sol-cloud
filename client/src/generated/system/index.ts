@@ -22,6 +22,7 @@ export { BaseVoPageVoUserEntity } from './models/BaseVoPageVoUserEntity';
 export { BaseVoPermissionEntity } from './models/BaseVoPermissionEntity';
 export { BaseVoRoleEntity } from './models/BaseVoRoleEntity';
 export { BaseVoSaTokenInfo } from './models/BaseVoSaTokenInfo';
+export { BaseVoString } from './models/BaseVoString';
 export { BaseVoUserEntity } from './models/BaseVoUserEntity';
 export { BaseVoVerificationVo } from './models/BaseVoVerificationVo';
 export { BaseVoVoid } from './models/BaseVoVoid';
