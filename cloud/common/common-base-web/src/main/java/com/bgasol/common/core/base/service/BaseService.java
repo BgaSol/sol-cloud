@@ -32,11 +32,18 @@ import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 @Service
 public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends BasePageDto<ENTITY>> {
 
+    @Value("${system.redis-l3}")
+    private Boolean redisL3;
+
     @Value("${spring.application.name}")
     private String serviceName;
 
     public RedissonClient commonBaseRedissonClient() {
         return null;
+    }
+
+    public RedissonClient getCommonRedissonClient() {
+        return redisL3 ? commonBaseRedissonClient() : null;
     }
 
     abstract public MyBaseMapper<ENTITY> commonBaseMapper();
@@ -47,7 +54,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public RMapCache<String, ENTITY> getRMapCache() {
         String className = commonBaseEntityClass().getName();
         String key = serviceName + ":" + className;
-        return commonBaseRedissonClient().getMapCache(key);
+        return getCommonRedissonClient().getMapCache(key);
     }
 
     /**
@@ -273,7 +280,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, queryWrapper);
 
         // 缓存查询结果
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+        if (getCommonRedissonClient() == null) {
             RMapCache<String, ENTITY> mapCache = getRMapCache();
             mapCache.putAll(
                     entityPage.getRecords().stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
@@ -307,7 +314,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         List<ENTITY> entities = commonBaseMapper().selectList(wrapper);
 
         // 缓存查询结果
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
+        if (getCommonRedissonClient() == null) {
             RMapCache<String, ENTITY> mapCache = getRMapCache();
             mapCache.putAll(
                     entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
@@ -356,7 +363,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // ids去重
         Set<String> ids = Arrays.stream(idArray).collect(Collectors.toSet());
         // 如果缓存没开启，直接查询数据库
-        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+        if (getCommonRedissonClient() == null) {
             if (ObjectUtils.isEmpty(ids)) {
                 return new ArrayList<>();
             }
@@ -402,7 +409,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 删除缓存
      */
     public void cacheDelete(String id) {
-        if (ObjectUtils.isEmpty(commonBaseRedissonClient())) {
+        if (getCommonRedissonClient() == null) {
             return;
         }
         RMapCache<String, ENTITY> mapCache = getRMapCache();

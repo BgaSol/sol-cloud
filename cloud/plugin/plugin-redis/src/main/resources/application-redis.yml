@@ -1,3 +1,5 @@
+system:
+  redis-l3: false
 spring:
   data:
     redis:
