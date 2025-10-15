@@ -30,7 +30,7 @@ table "file_t_image" {
   }
   column "name" {
     type = varchar(255)
-    null = false
+    null = true
   }
   column "width" {
     type = int

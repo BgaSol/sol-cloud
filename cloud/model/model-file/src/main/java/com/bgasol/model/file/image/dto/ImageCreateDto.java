@@ -20,7 +20,6 @@ public class ImageCreateDto extends BaseCreateDto<ImageEntity> {
     @Schema(description = "图片名称")
     private String name;
 
-    @NotBlank(message = "图片不能为空")
     @Schema(description = "图片文件id")
     private String fileId;
 
