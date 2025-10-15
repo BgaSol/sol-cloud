@@ -14,5 +14,9 @@ export type VerificationVo = {
      * 验证码id
      */
     verificationId?: string;
+    /**
+     * 验证码值
+     */
+    captcha?: string;
 };
 

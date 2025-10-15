@@ -6,6 +6,7 @@ import {useUser} from "~/pinia/modules/user";
 import {ElButton, ElCol, ElForm, ElFormItem, ElImage, ElInput, ElMessage, ElRow, FormInstance} from "element-plus";
 import {useFormValidation} from "~/composables/FormValidationHook";
 import AppHeader from "~/views/app/layout/AppHeader.vue";
+import {set} from "@vueuse/core";
 
 const loginDto = ref<UserLoginDto>({
   username: '',
@@ -13,13 +14,20 @@ const loginDto = ref<UserLoginDto>({
   verificationCode: '',
   verificationCodeKey: ''
 });
-
+const needCaptcha = ref<boolean>(true);
 const imageBase64 = ref<string>();
 const getCaptcha = () => {
   // 获取验证码
   Service.getVerificationCode().then((res) => {
+    if (res.data?.captcha){
+      loginDto.value.verificationCode = res.data?.captcha
+      needCaptcha.value = false;
+    }else{
+      needCaptcha.value = true;
+    }
     loginDto.value.verificationCodeKey = res.data?.verificationId as string
     imageBase64.value = res.data?.verificationCode as string;
+    setTimeout(getCaptcha,30 * 1000)
   });
 };
 onMounted(() => {
@@ -93,7 +101,7 @@ onMounted(() => {
           <el-form-item :error="loginDtoErr.verificationCode">
             <el-input v-model="loginDto.verificationCode" placeholder="请输入验证码" @keyup.enter.native='login'>
               <template #append>
-                <el-image fit="fill" :src="imageBase64" class="el-image-block cursor-pointer"
+                <el-image v-show="needCaptcha" fit="fill" :src="imageBase64" class="el-image-block cursor-pointer"
                           @click="getCaptcha"></el-image>
               </template>
             </el-input>
