@@ -98,10 +98,10 @@ onMounted(() => {
                       @keyup.enter.native='login'>
             </el-input>
           </el-form-item>
-          <el-form-item :error="loginDtoErr.verificationCode">
+          <el-form-item v-if="needCaptcha" :error="loginDtoErr.verificationCode">
             <el-input v-model="loginDto.verificationCode" placeholder="请输入验证码" @keyup.enter.native='login'>
               <template #append>
-                <el-image v-show="needCaptcha" fit="fill" :src="imageBase64" class="el-image-block cursor-pointer"
+                <el-image fit="fill" :src="imageBase64" class="el-image-block cursor-pointer"
                           @click="getCaptcha"></el-image>
               </template>
             </el-input>
