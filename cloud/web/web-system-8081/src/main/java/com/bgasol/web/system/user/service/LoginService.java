@@ -35,6 +35,9 @@ public class LoginService {
 
     private final UserService userService;
 
+    @Value("${system.captcha.is-open}")
+    private Boolean captchaIsOpen;
+
     @Value("${system.captcha.length}")
     private Integer captchaLength;
 
@@ -47,13 +50,15 @@ public class LoginService {
         captcha.supportAlgorithmSign(4); // 可设置支持的算法：2 表示只生成带加减法的公式
         captcha.setDifficulty(captchaMaxNumber); // 设置计算难度，参与计算的每一个整数的最大值
         String text = captcha.text(); // 获取运算结果
-
         String key = UUID.randomUUID().toString(); // 生成验证码的key
+
         captchaCache.save(key, text); // 保存到缓存
 
         return VerificationVo.builder()
                 .verificationCode(captcha.toBase64())
-                .verificationId(key).build();
+                .verificationId(key)
+                .captcha(captchaIsOpen ? null : text)
+                .build();
     }
 
     public void logout() {

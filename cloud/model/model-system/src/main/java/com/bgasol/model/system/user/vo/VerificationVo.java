@@ -18,4 +18,7 @@ public class VerificationVo {
 
     @Schema(description = "验证码id")
     private String verificationId;
+
+    @Schema(description = "验证码值")
+    private String captcha;
 }

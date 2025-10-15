@@ -8,6 +8,7 @@ system:
   password:
     plaintext: true # 是否明文存储密码
   captcha:
+    is-open: ${SYSTEM_CAPTCHA_IS_OPEN:true}
     max: ${SYSTEM_CAPTCHA_MAX:11}
     length: ${SYSTEM_CAPTCHA_LENGTH:2}
 spring:
