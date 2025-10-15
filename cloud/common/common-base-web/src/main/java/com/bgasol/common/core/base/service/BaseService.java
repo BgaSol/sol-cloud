@@ -54,7 +54,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public RMapCache<String, ENTITY> getRMapCache() {
         String className = commonBaseEntityClass().getName();
         String key = serviceName + ":" + className;
-        return getCommonRedissonClient().getMapCache(key);
+        return commonBaseRedissonClient().getMapCache(key);
     }
 
     /**
@@ -280,7 +280,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, queryWrapper);
 
         // 缓存查询结果
-        if (getCommonRedissonClient() == null) {
+        if (getCommonRedissonClient() != null) {
             RMapCache<String, ENTITY> mapCache = getRMapCache();
             mapCache.putAll(
                     entityPage.getRecords().stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
@@ -314,7 +314,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         List<ENTITY> entities = commonBaseMapper().selectList(wrapper);
 
         // 缓存查询结果
-        if (getCommonRedissonClient() == null) {
+        if (getCommonRedissonClient() != null) {
             RMapCache<String, ENTITY> mapCache = getRMapCache();
             mapCache.putAll(
                     entities.stream().collect(Collectors.toMap(BaseEntity::getId, entity -> entity)),
