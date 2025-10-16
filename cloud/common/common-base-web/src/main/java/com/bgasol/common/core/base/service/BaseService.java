@@ -42,7 +42,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         return null;
     }
 
-    public RedissonClient getCommonRedissonClient() {
+    private RedissonClient getCommonRedissonClient() {
         return redisL3 ? commonBaseRedissonClient() : null;
     }
 
