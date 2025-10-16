@@ -13,3 +13,4 @@ system:
   captcha:
     length: ${SYSTEM_CAPTCHA_LENGTH:2}
     max: ${SYSTEM_CAPTCHA_MAX:11}
+is-open: ${SYSTEM_CAPTCHA_IS_OPEN:true}
