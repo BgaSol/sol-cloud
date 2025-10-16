@@ -1,0 +1,53 @@
+version: '3.8'
+networks:
+  cloud-app:
+    driver: overlay
+    attachable: true
+
+services:
+  nacos:
+    image: nacos/nacos-server:v2.5.1
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      TZ: ${TZ}
+      MODE: cluster
+      NACOS_APPLICATION_PORT: 8848
+      # 连接外部 PostgreSQL
+      DB_SERVICE_NAME: postgresql
+      DB_SERVICE_HOST: ${POSTGRES_HOST}
+      DB_SERVICE_PORT: 5432
+      DB_SERVICE_DB_NAME: nacos
+      DB_SERVICE_USER: ${POSTGRES_USER}
+      DB_SERVICE_PASSWORD: ${POSTGRES_PASSWORD}
+      # Nacos 认证配置（与外部配置保持一致）
+      NACOS_AUTH_ENABLE: "true"
+      NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
+      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
+      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_SECRET}
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "*"
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
+      SPRING_DATASOURCE_PLATFORM: "derby"
+      NACOS_SERVER_RELOAD_EMPTY: "false"
+    networks:
+      - cloud-app
+    volumes:
+      - /home/dwst/swarm/logs/nacos:/home/nacos/logs
+      - /home/dwst/swarm/config/nacos/conf/application.properties:/home/nacos/conf/application.properties
+      - /home/dwst/swarm/config/nacos/conf/cluster-swarm.conf:/home/nacos/conf/cluster.conf:ro
+      - /home/dwst/swarm/config/nacos/plugins/:/home/nacos/plugins/
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+

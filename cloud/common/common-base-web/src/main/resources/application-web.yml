@@ -1,5 +1,0 @@
-server:
-  tomcat:
-    min-spare-threads: 500
-    threads:
-      max: 1000

@@ -1,9 +1,0 @@
-spring:
-  cloud:
-    loadbalancer:
-      retry:
-        enabled: false
-logging:
-  level:
-    org.springframework.cloud.loadbalancer: INFO
-    org.springframework.cloud.client.loadbalancer: INFO

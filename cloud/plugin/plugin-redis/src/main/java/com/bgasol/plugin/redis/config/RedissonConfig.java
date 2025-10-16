@@ -1,5 +1,10 @@
 package com.bgasol.plugin.redis.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
@@ -9,6 +14,7 @@ import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 import org.redisson.config.SingleServerConfig;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +26,9 @@ import org.springframework.context.annotation.Primary;
  */
 @Slf4j
 @Configuration
-public class RedissonConfig {
+public class RedissonConfig implements DisposableBean {
+
+    private RedissonClient redissonClientInstance;
 
     @Value("${spring.data.redis.mode:single}")
     private String mode;
@@ -71,11 +79,30 @@ public class RedissonConfig {
     @Value("${spring.data.redis.pool.timeout:3000}")
     private int timeout;
 
-    @Bean(destroyMethod = "shutdown")
+    @Bean
     @Primary
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.setCodec(new JsonJacksonCodec());
+
+        // 创建自定义 ObjectMapper 配置
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfBaseType(Object.class)
+                .build();
+
+        // 启用默认类型处理，但仅针对 Object 和 非具体类型（接口/抽象类）
+        objectMapper.activateDefaultTyping(
+                ptv,
+                ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS,
+                JsonTypeInfo.As.PROPERTY
+        );
+
+        // 配置宽松的反序列化选项，避免因为类型不匹配导致异常
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+
+        config.setCodec(new JsonJacksonCodec(objectMapper));
 
         switch (mode.toLowerCase()) {
             case "cluster":
@@ -90,8 +117,18 @@ public class RedissonConfig {
                 break;
         }
 
-        log.info("Redisson 配置完成: 模式={}, 编解码器=JsonJacksonCodec", mode);
-        return Redisson.create(config);
+        log.info("Redisson 配置完成: 模式={}, 编解码器=JsonJacksonCodec(混合类型处理)", mode);
+        redissonClientInstance = Redisson.create(config);
+        return redissonClientInstance;
+    }
+
+    @Override
+    public void destroy() {
+        if (redissonClientInstance != null && !redissonClientInstance.isShutdown()) {
+            log.info("正在关闭 Redisson 客户端...");
+            redissonClientInstance.shutdown();
+            log.info("Redisson 客户端已关闭");
+        }
     }
 
     /**

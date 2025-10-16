@@ -2,12 +2,14 @@ server:
   port: 8082
   servlet:
     context-path: /${spring.application.name}
+
 spring:
   application:
     name: file
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:cluster}  # 默认本地环境
   cloud:
     nacos:
-      server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
       username: ${NACOS_USER:nacos}
       password: ${NACOS_PASSWORD:nacospwd}
       discovery:
@@ -50,9 +52,6 @@ spring:
           - data-id: application-sa-token.yml
             group: SHARED_CONFIG
             refresh: true
-          - data-id: application-feign.yml
-            group: SHARED_CONFIG
-            refresh: false
           - data-id: application-swagger.yml
             group: SHARED_CONFIG
             refresh: false
@@ -60,6 +59,26 @@ spring:
           - data-id: file.yml
             group: ${NACOS_GROUP:DEFAULT_GROUP}
             refresh: true
+
+---
+# 本地开发环境（默认）
+spring:
+  config:
+    activate:
+      on-profile: local
+  cloud:
+    nacos:
+      server-addr: ${NACOS_HOST:localhost}:${NACOS_PORT:8848}
+
+---
+# 集群环境（生产/测试）
+spring:
+  config:
+    activate:
+      on-profile: cluster
+  cloud:
+    nacos:
+      server-addr: ${NACOS_CLUSTER_ADDR:192.168.1.25:8848,192.168.1.26:8848,192.168.1.28:8848}
 
 # 启动阶段日志配置
 logging:
