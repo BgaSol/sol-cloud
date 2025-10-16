@@ -136,5 +136,4 @@ services:
       - cloud-app
     volumes:
       - ./config/nacos/init-configs.sh:/init-configs.sh:ro
-      - ./config/nacos/yml:/home/nacos/plugins/yml:ro
     command: ["/bin/sh", "/init-configs.sh"]
