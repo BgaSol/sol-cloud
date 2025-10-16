@@ -123,7 +123,7 @@ services:
   cloud-app-nacos-init:
     image: busybox:latest
     container_name: cloud-app-nacos-init
-    restart: "no"
+    restart: on-failure:3
     depends_on:
       cloud-app-nacos:
         condition: service_healthy
@@ -137,9 +137,4 @@ services:
     volumes:
       - ./config/nacos/init-configs.sh:/init-configs.sh:ro
       - ./config/nacos/yml:/home/nacos/plugins/yml:ro
-    command:
-      - /bin/sh
-      - -c
-      - |
-        chmod +x /init-configs.sh
-        /init-configs.sh
+    command: ["/bin/sh", "/init-configs.sh"]

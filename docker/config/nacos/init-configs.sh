@@ -9,9 +9,6 @@ echo "Nacos地址: ${NACOS_ADDR}"
 echo "用户名: ${NACOS_USER}"
 echo ""
 
-## 等待Nacos完全启动
-#echo "等待Nacos完全启动..."
-#sleep 15
 
 # 测试Nacos健康状态
 MAX_RETRIES=10
