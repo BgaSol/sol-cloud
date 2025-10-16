@@ -7,7 +7,7 @@ spring:
   application:
     name: file
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:cluster}  # 默认本地环境
+    active: ${SPRING_PROFILES_ACTIVE:local}  # 默认本地环境
   cloud:
     nacos:
       username: ${NACOS_USER:nacos}
