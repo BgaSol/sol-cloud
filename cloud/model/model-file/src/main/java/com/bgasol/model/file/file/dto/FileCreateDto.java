@@ -17,7 +17,7 @@ import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "创建文件")
-public class FileCreateDto extends BaseCreateDto<FileEntity> {
+public class FileCreateDto {
     @Schema(description = "要上传的文件块")
     private MultipartFile uploadFile;
 
@@ -36,10 +36,15 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "文件来源")
     private String source;
 
-    @Override
+    @Schema(description = "排序")
+    private Integer sort;
+
+    @Schema(description = "描述")
+    private String description;
+
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
-        return super.toEntity(FILE_MAPSTRUCT_IMPL.toEntity(this));
+        return FILE_MAPSTRUCT_IMPL.toEntity(this);
     }
 }
