@@ -50,7 +50,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     @Override
     public ImageEntity save(ImageEntity entity) {
         // 获取图片文件详情
-        if (ObjectUtils.isEmpty(entity.getFileId())) {
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
             FileEntity file = fileService.findById(entity.getFileId());
             try {
                 getImageWidthAndHeight(file, entity);
@@ -74,7 +74,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     @Override
     public ImageEntity update(ImageEntity entity) {
         // 获取图片文件详情
-        if (ObjectUtils.isEmpty(entity.getFileId())) {
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
             FileEntity file = fileService.findById(entity.getFileId());
             try {
                 getImageWidthAndHeight(file, entity);
