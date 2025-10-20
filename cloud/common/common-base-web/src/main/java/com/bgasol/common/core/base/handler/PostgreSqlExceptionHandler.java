@@ -14,15 +14,6 @@ import java.util.function.Function;
 @Slf4j
 @RestControllerAdvice
 public class PostgreSqlExceptionHandler {
-
-    @ExceptionHandler(value = DataIntegrityViolationException.class)
-    @ApiResponse(description = "数据操作异常", responseCode = "500")
-    public BaseVo<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        String message = "操作失败 数据已被引用";
-        log.error(message, ex);
-        return BaseVo.error(message, ResponseType.ERROR);
-    }
-
     /**
      * 处理PostgreSQL异常
      */
