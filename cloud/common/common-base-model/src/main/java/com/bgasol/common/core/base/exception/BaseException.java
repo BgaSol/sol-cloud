@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 public class BaseException extends RuntimeException {
+    private Throwable throwable;
 
     private final BaseVo<?> baseVo;
 
@@ -20,6 +21,12 @@ public class BaseException extends RuntimeException {
     public BaseException(String message) {
         super(message);
         this.baseVo = BaseVo.error(message);
+    }
+
+    public BaseException(String message, Throwable throwable) {
+        super(message);
+        this.baseVo = BaseVo.error(message);
+        this.throwable = throwable;
     }
 
     public BaseException(String message, ResponseType type) {
