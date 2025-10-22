@@ -1,8 +1,6 @@
 package com.bgasol.model.system.department.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
