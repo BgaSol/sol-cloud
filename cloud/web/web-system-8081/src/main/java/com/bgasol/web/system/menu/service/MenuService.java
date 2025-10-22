@@ -84,9 +84,9 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      */
     private void initChildren(MenuEntity menuEntity) {
         if (ObjectUtils.isEmpty(findDirectById(menuEntity.getId()))) {
-            this.save(menuEntity);
+            this.insert(menuEntity);
         } else {
-            this.update(menuEntity);
+            this.apply(menuEntity);
         }
         List<MenuEntity> children = menuEntity.getChildren();
         if (ObjectUtils.isEmpty(children)) {

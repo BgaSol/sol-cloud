@@ -1,5 +1,6 @@
 package com.bgasol.plugin.websocket.handler;
 
+import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.plugin.websocket.dto.SendMessageChunkDto;
 import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -94,55 +95,57 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
     private void onMessage(CharSequence channel, WsSendMessageDto msg) {
-        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-            String sessionId = entry.getKey();
-            WebSocketSession session = entry.getValue();
-            boolean send = true;
-            if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
-                String userId = (String) session.getAttributes().get(USER_ID);
-                // 筛选用户
-                if (!msg.getUserIds().contains(userId)) {
-                    send = false;
-                }
-            } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
-                // 筛选会话
-                if (!msg.getSessionIds().contains(sessionId)) {
-                    send = false;
-                }
+        sessions.entrySet().forEach(entry -> onMessage(entry, msg));
+    }
+
+    private void onMessage(Map.Entry<String, WebSocketSession> entry, WsSendMessageDto msg) {
+        String sessionId = entry.getKey();
+        WebSocketSession session = entry.getValue();
+        boolean send = true;
+        if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
+            String userId = (String) session.getAttributes().get(USER_ID);
+            // 筛选用户
+            if (!msg.getUserIds().contains(userId)) {
+                send = false;
             }
-            if (!send) {
-                continue;
+        } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
+            // 筛选会话
+            if (!msg.getSessionIds().contains(sessionId)) {
+                send = false;
             }
-            String uuid = UUID.randomUUID().toString();
-            String sendData;
+        }
+        if (!send) {
+            return;
+        }
+        String uuid = UUID.randomUUID().toString();
+        String sendData;
+        try {
+            sendData = objectMapper.writeValueAsString(msg);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        // 计算分块数
+        int chunkSize = 10000;
+        int size = sendData.length() / chunkSize + (sendData.length() % chunkSize == 0 ? 0 : 1);
+        // 分块发送消息
+        for (int index = 0; index < size; index++) {
+            int start = index * chunkSize;
+            int end = Math.min(start + chunkSize, sendData.length());
+            String chunk = sendData.substring(start, end);
+            String json = null;
             try {
-                sendData = objectMapper.writeValueAsString(msg);
+                json = objectMapper.writeValueAsString(SendMessageChunkDto.builder()
+                        .uuid(uuid)
+                        .size(size)
+                        .index(index)
+                        .data(chunk).build());
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new BaseException("序列化发送消息分块失败");
             }
-            // 计算分块数
-            int chunkSize = 10000;
-            int size = sendData.length() / chunkSize + (sendData.length() % chunkSize == 0 ? 0 : 1);
-            // 分块发送消息
-            for (int index = 0; index < size; index++) {
-                int start = index * chunkSize;
-                int end = Math.min(start + chunkSize, sendData.length());
-                String chunk = sendData.substring(start, end);
-                TextMessage textMessage;
-                try {
-                    textMessage = new TextMessage(objectMapper.writeValueAsString(SendMessageChunkDto.builder()
-                            .uuid(uuid)
-                            .size(size)
-                            .index(index)
-                            .data(chunk).build()));
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    session.sendMessage(textMessage);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                session.sendMessage(new TextMessage(json));
+            } catch (IOException e) {
+                throw new BaseException("发送WebSocket消息失败", e);
             }
         }
     }

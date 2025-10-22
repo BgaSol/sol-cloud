@@ -42,19 +42,13 @@ public abstract class BaseController<
     @Deprecated
     public BaseVo<ENTITY> save(@Valid CREATE_DTO createDto) {
         ENTITY entity = createDto.toEntity();
-        commonBaseService().insert(entity);
-
-        ENTITY newEntity = commonBaseService().findById(entity.getId());
-        return BaseVo.success(newEntity, "保存成功");
+        return BaseVo.success(commonBaseService().save(entity), "保存成功");
     }
 
     @Deprecated
     public BaseVo<ENTITY> update(@Valid UPDATE_DTO updateDto) {
         ENTITY entity = updateDto.toEntity();
-        commonBaseService().apply(entity);
-
-        ENTITY newEntity = commonBaseService().findById(entity.getId());
-        return BaseVo.success(newEntity, "更新成功");
+        return BaseVo.success(commonBaseService().update(entity), "更新成功");
     }
 
 

@@ -2,7 +2,7 @@ package com.bgasol.web.file.file.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
-import com.bgasol.common.core.base.dto.BaseUpdateDto;
+import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.model.file.file.dto.FileCreateDto;
@@ -38,8 +38,8 @@ import java.util.List;
 public class FileController extends BaseController<
         FileEntity,
         FilePageDto,
-        FileCreateDto,
-        BaseUpdateDto<FileEntity>> {
+        BaseCreateDto<FileEntity>,
+        FileUpdateDto> {
     private final FileService fileService;
 
     private final OssService ossService;
@@ -58,7 +58,6 @@ public class FileController extends BaseController<
         return super.findByPage(pageDto);
     }
 
-    @Override
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "保存|上传文件", operationId = "saveFile")
     @SaCheckPermission("file:save")

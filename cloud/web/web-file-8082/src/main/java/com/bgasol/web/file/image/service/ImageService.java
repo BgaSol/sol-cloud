@@ -1,6 +1,5 @@
 package com.bgasol.web.file.image.service;
 
-import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
@@ -51,37 +50,39 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     @Override
     public ImageEntity save(ImageEntity entity) {
         // 获取图片文件详情
-        FileEntity file = fileService.findById(entity.getFileId());
-        // 获取图片文件流
-        int[] imageWidthAndHeight = getImageWidthAndHeight(fileService.fileStreamFindById(file.getId()));
-        entity.setWidth(imageWidthAndHeight[0]);
-        entity.setHeight(imageWidthAndHeight[1]);
-
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+            FileEntity file = fileService.findById(entity.getFileId());
+            try {
+                getImageWidthAndHeight(file, entity);
+            } catch (IOException e) {
+                entity.setDescription(e.getMessage());
+            }
+        }
         return super.save(entity);
     }
 
     /// 获取图片宽高
-    public static int[] getImageWidthAndHeight(InputStream imageStream) {
-        BufferedImage image;
-        try {
-            image = ImageIO.read(imageStream);
-            imageStream.close();
-        } catch (IOException e) {
-            throw new BaseException("图片读取错误");
-        }
-        // 设置图片宽高
-        return new int[]{image.getWidth(), image.getHeight()};
+    public void getImageWidthAndHeight(FileEntity fileEntity, ImageEntity imageEntity) throws IOException {
+        // 获取图片文件流
+        InputStream imageStream = ossService.readFileStream(fileEntity);
+        BufferedImage image = ImageIO.read(imageStream);
+        imageStream.close();
+        imageEntity.setWidth(image.getWidth());
+        imageEntity.setHeight(image.getHeight());
     }
 
     @Override
-    public ImageEntity update(ImageEntity imageEntity) {
+    public ImageEntity update(ImageEntity entity) {
         // 获取图片文件详情
-        FileEntity file = fileService.findById(imageEntity.getFileId());
-        // 获取图片宽高度
-        int[] imageWidthAndHeight = getImageWidthAndHeight(fileService.fileStreamFindById(file.getId()));
-        imageEntity.setWidth(imageWidthAndHeight[0]);
-        imageEntity.setHeight(imageWidthAndHeight[1]);
-        return super.update(imageEntity);
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+            FileEntity file = fileService.findById(entity.getFileId());
+            try {
+                getImageWidthAndHeight(file, entity);
+            } catch (IOException e) {
+                entity.setDescription(e.getMessage());
+            }
+        }
+        return super.update(entity);
     }
 
     /**
