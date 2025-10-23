@@ -1,5 +1,7 @@
 server:
-  tomcat:
-    min-spare-threads: 500
+  undertow:
     threads:
-      max: 1000
+      io: 4
+      worker: 128
+    buffer-size: 16384
+    direct-buffers: true
