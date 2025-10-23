@@ -3,5 +3,3 @@ server:
     threads:
       io: 4
       worker: 128
-    buffer-size: 16384
-    direct-buffers: true
