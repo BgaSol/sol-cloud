@@ -1,5 +1,5 @@
-#server:
-#  undertow:
-#    threads:
-#      io: 4
-#      worker: 128
+server:
+  undertow:
+    threads:
+      io: 4
+      worker: 128
