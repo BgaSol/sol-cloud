@@ -46,6 +46,7 @@ import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.InWebRequ
 @RequiredArgsConstructor
 public class DataScopeHandler implements MultiDataPermissionHandler {
 
+    private final EntityFieldCache entityFieldCache;
     private final UserApi userApi;
 
     private static final List<String> MyBaseMapperMethodNameList = Arrays.stream(MyBaseMapper.class.getDeclaredMethods()).map(Method::getName).toList();
@@ -60,7 +61,7 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
         }
         ScopeOptionsBo scopeOption;
         try {
-            Class<? extends BaseEntity> entityClass = getEntityClassByMapper(mappedStatementId);
+            Class<? extends BaseEntity> entityClass = (Class<? extends BaseEntity>) entityFieldCache.tableClassCache.get(table.getName());
             scopeOption = getScopeOption(entityClass);
         } catch (RuntimeException e) {
             log.warn(e.getMessage(), e);
@@ -164,29 +165,6 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             finalExpression = finalExpression == null ? existsExpression : new AndExpression(finalExpression, existsExpression);
         }
         return finalExpression;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends BaseEntity> getEntityClassByMapper(String mappedStatementId) {
-        int lastDot = mappedStatementId.lastIndexOf('.');
-        String className = mappedStatementId.substring(0, lastDot);
-        Class<?> mapperClass;
-        try {
-            mapperClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("无法解析实体类: " + mappedStatementId, e);
-        }
-        // 判断是否继承于MyBaseMapper
-        if (!MyBaseMapper.class.isAssignableFrom(mapperClass)) {
-            throw new BaseException("忽略" + mappedStatementId + " 不是 MyBaseMapper");
-        }
-        // 直接获取 BaseMapper<T> 的泛型映射
-        Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(mapperClass, BaseMapper.class);
-        Type entityType = typeArguments.values().stream().findFirst().orElse(null);
-        if (!(entityType instanceof Class<?>)) {
-            throw new IllegalArgumentException("无法解析实体类: " + mappedStatementId);
-        }
-        return (Class<? extends BaseEntity>) entityType;
     }
 
     private ScopeOptionsBo getScopeOption(Class<? extends BaseEntity> entityClass) {

@@ -24,6 +24,7 @@ public class EntityFieldCache {
     
     private final Map<String, Map<String, FieldInfo>> tableFieldCache = new ConcurrentHashMap<>();
     private final Map<String, String> tableNameCache = new ConcurrentHashMap<>();
+    public final Map<String, Class<?>> tableClassCache = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -70,6 +71,7 @@ public class EntityFieldCache {
         }
 
         tableFieldCache.put(tableName, fieldMap);
+        tableClassCache.put(tableName, entityClass);
         log.debug("缓存表: {} ({} 个字段)", tableName, fieldMap.size());
     }
 
