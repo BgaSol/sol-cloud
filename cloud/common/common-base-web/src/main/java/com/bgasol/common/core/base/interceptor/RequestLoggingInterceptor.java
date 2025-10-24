@@ -1,24 +1,36 @@
-package com.bgasol.plugin.satoken.config;
+package com.bgasol.common.core.base.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RMapCache;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Date;
 
 /**
  * 请求日志拦截器
  * 记录每个请求的开始时间、结束时间、耗时等信息
  */
 @Slf4j
+@Configuration
+@RequiredArgsConstructor
 public class RequestLoggingInterceptor implements HandlerInterceptor {
 
     private static final String START_TIME_ATTRIBUTE = "REQUEST_START_TIME";
     private static final String REQUEST_HANDLER_ATTRIBUTE = "REQUEST_HANDLER";
+    @Value("${server.servlet.context-path}")
+    private String serverName;
+    private final RedissonClient redissonClient;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         long startTime = System.currentTimeMillis();
         String handlerInfo = getHandlerInfo(handler);
 
@@ -28,12 +40,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler, Exception ex) {
         Long startTime = (Long) request.getAttribute(START_TIME_ATTRIBUTE);
         if (startTime == null) {
             return;
@@ -66,12 +73,10 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         if (ex != null) {
             logBuilder.append(" ").append(ex.getClass().getSimpleName()).append(": ").append(ex.getMessage());
         }
-
-        if (ex != null) {
-            log.error(logBuilder.toString());
-        } else {
-            log.info(logBuilder.toString());
-        }
+        // 获取当前线程id
+        long threadId = Thread.currentThread().getId();
+        RMapCache<String, String> mapCache = redissonClient.getMapCache("log:" + serverName + ":" + (ex == null ? "info" : "error"));
+        mapCache.putAsync(new Date(endTime).toString() + threadId, logBuilder.toString());
     }
 
     private String getHandlerInfo(Object handler) {
@@ -82,7 +87,5 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         }
         return null;
     }
-
-
 }
 
