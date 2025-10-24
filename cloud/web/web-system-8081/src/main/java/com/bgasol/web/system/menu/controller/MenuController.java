@@ -36,7 +36,7 @@ public class MenuController extends BaseController<
     @Override
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除菜单", operationId = "deleteMenu")
-    @SaCheckPermission("menu:delete")
+    @SaCheckPermission(value = "menu:delete", orRole = "admin")
     public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
         return super.delete(ids);
     }
@@ -44,7 +44,7 @@ public class MenuController extends BaseController<
     @Override
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询菜单", operationId = "findMenuById")
-    @SaCheckPermission("menu:findById")
+    @SaCheckPermission(value = "menu:findById", orRole = "admin")
     public BaseVo<MenuEntity> findById(@PathVariable("id") String id) {
         return super.findById(id);
     }
@@ -58,14 +58,14 @@ public class MenuController extends BaseController<
     @Override
     @GetMapping()
     @Operation(summary = "查询所有菜单", operationId = "findAllMenu")
-    @SaCheckPermission("menu:findAll")
+    @SaCheckPermission(value = "menu:findAll", orRole = "admin")
     public BaseVo<List<MenuEntity>> findAll() {
         return super.findAll();
     }
 
     @GetMapping("/find-admin-menu-group")
     @Operation(summary = "查询管理员菜单组", operationId = "findAdminMenuGroup")
-    @SaCheckPermission("menu:findAdminMenuGroup")
+    @SaCheckPermission(value = "menu:findAdminMenuGroup", orRole = "admin")
     public BaseVo<List<MenuEntity>> findAdminMenuGroup() {
         return BaseVo.success(this.menuService.findAdminMenuGroup());
     }
@@ -73,21 +73,21 @@ public class MenuController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询菜单", operationId = "findMenuByIds")
-    @SaCheckPermission("menu:findByIds")
+    @SaCheckPermission(value = "menu:findByIds", orRole = "admin")
     public BaseVo<List<MenuEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }
 
     @GetMapping("/find-by-menu-group/{group}")
     @Operation(summary = "查询指定菜单组下的菜单", operationId = "findByMenuGroup")
-    @SaCheckPermission("menu:findByMenuGroup")
+    @SaCheckPermission(value = "menu:findByMenuGroup", orRole = "admin")
     public BaseVo<List<MenuEntity>> findByMenuGroup(@PathVariable("group") String group) {
         return BaseVo.success(this.menuService.findByMenuGroup(group));
     }
 
     @PostMapping("/init")
     @Operation(summary = "批量初始化系统的菜单信息", operationId = "initMenu")
-    @SaCheckPermission("menu:init")
+    @SaCheckPermission(value = "menu:init", orRole = "admin")
     public BaseVo<MenuEntity> init(@RequestBody() MenuEntity entity) {
         MenuEntity save = menuService.init(entity);
         return BaseVo.success(save, "保存成功");

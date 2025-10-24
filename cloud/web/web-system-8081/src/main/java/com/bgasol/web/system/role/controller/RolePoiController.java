@@ -19,8 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "角色管理-poi")
@@ -41,15 +39,15 @@ public class RolePoiController extends BasePoiController<
 
     @GetMapping("/template-download")
     @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
-    @SaCheckPermission("role:downloadImportTemplate")
+    @SaCheckPermission(value = "role:downloadImportTemplate", orRole = "admin")
     public ResponseEntity<InputStreamResource> downloadImportTemplate() {
         return super.downloadImportTemplate();
     }
 
     @PostMapping(value = "/import", consumes = {"multipart/form-data"})
     @Operation(summary = "导入角色", operationId = "importRole")
-    @SaCheckPermission("role:importExcel")
-    public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) throws IOException {
+    @SaCheckPermission(value = "role:importExcel", orRole = "admin")
+    public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) {
         return super.importFromExcel(file);
     }
 

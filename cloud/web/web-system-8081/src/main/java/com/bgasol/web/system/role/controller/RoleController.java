@@ -37,7 +37,7 @@ public class RoleController extends BaseController<
     @Override
     @PostMapping
     @Operation(summary = "新增角色", operationId = "saveRole")
-    @SaCheckPermission("role:save")
+    @SaCheckPermission(value = "role:save", orRole = "admin")
     public BaseVo<RoleEntity> save(@RequestBody @Valid RoleCreateDto createDto) {
         return super.save(createDto);
     }
@@ -45,7 +45,7 @@ public class RoleController extends BaseController<
     @Override
     @PutMapping
     @Operation(summary = "更新角色", operationId = "updateRole")
-    @SaCheckPermission("role:update")
+    @SaCheckPermission(value = "role:update", orRole = "admin")
     public BaseVo<RoleEntity> update(@RequestBody @Valid RoleUpdateDto updateDto) {
         return super.update(updateDto);
     }
@@ -53,7 +53,7 @@ public class RoleController extends BaseController<
     @Override
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除角色", operationId = "deleteRole")
-    @SaCheckPermission("role:delete")
+    @SaCheckPermission(value = "role:delete", orRole = "admin")
     public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
         return super.delete(ids);
     }
@@ -61,7 +61,7 @@ public class RoleController extends BaseController<
     @Override
     @GetMapping("/{id}")
     @Operation(summary = "根据ID查询角色", operationId = "findRoleById")
-    @SaCheckPermission("role:findById")
+    @SaCheckPermission(value = "role:findById", orRole = "admin")
     public BaseVo<RoleEntity> findById(@PathVariable("id") String id) {
         return super.findById(id);
     }
@@ -69,7 +69,7 @@ public class RoleController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询角色", operationId = "findRoleByIds")
-    @SaCheckPermission("role:findByIds")
+    @SaCheckPermission(value = "role:findByIds", orRole = "admin")
     public BaseVo<List<RoleEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }
@@ -77,7 +77,7 @@ public class RoleController extends BaseController<
     @Override
     @GetMapping()
     @Operation(summary = "查询所有角色", operationId = "findAllRole")
-    @SaCheckPermission("role:findAll")
+    @SaCheckPermission(value = "role:findAll", orRole = "admin")
     public BaseVo<List<RoleEntity>> findAll() {
         return super.findAll();
     }

@@ -52,7 +52,7 @@ public class VideoController extends BaseController<
     @Override
     @PostMapping
     @Operation(summary = "新增视频", operationId = "saveVideo")
-    @SaCheckPermission("video:save")
+    @SaCheckPermission(value = "video:save", orRole = "admin")
     public BaseVo<VideoEntity> save(@RequestBody @Valid VideoCreateDto createDto) {
         return super.save(createDto);
     }
@@ -60,7 +60,7 @@ public class VideoController extends BaseController<
     @Override
     @PutMapping
     @Operation(summary = "更新视频", operationId = "updateVideo")
-    @SaCheckPermission("video:update")
+    @SaCheckPermission(value = "video:update", orRole = "admin")
     public BaseVo<VideoEntity> update(@RequestBody @Valid VideoUpdateDto updateDto) {
         return super.update(updateDto);
     }
@@ -68,7 +68,7 @@ public class VideoController extends BaseController<
     @Override
     @GetMapping("/{id}")
     @Operation(summary = "查询视频", operationId = "findVideoById")
-    @SaCheckPermission("video:findById")
+    @SaCheckPermission(value = "video:findById", orRole = "admin")
     public BaseVo<VideoEntity> findById(@PathVariable String id) {
         return super.findById(id);
     }
@@ -76,7 +76,7 @@ public class VideoController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询视频", operationId = "findVideoByIds")
-    @SaCheckPermission("video:findByIds")
+    @SaCheckPermission(value = "video:findByIds", orRole = "admin")
     public BaseVo<List<VideoEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }
@@ -84,7 +84,7 @@ public class VideoController extends BaseController<
     @Override
     @PostMapping("/page")
     @Operation(summary = "分页查询视频", operationId = "findPageVideo")
-    @SaCheckPermission("video:findByPage")
+    @SaCheckPermission(value = "video:findByPage", orRole = "admin")
     public BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody @Valid VideoPageDto pageDto) {
         return super.findByPage(pageDto);
     }
@@ -92,7 +92,7 @@ public class VideoController extends BaseController<
     @Override
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除视频", operationId = "deleteVideo")
-    @SaCheckPermission("video:delete")
+    @SaCheckPermission(value = "video:delete", orRole = "admin")
     public BaseVo<Integer[]> delete(@PathVariable String ids) {
         return super.delete(ids);
     }
@@ -101,7 +101,7 @@ public class VideoController extends BaseController<
     @SneakyThrows
     @GetMapping("/play/{id}")
     @Operation(summary = "在线播放文件", operationId = "playVideo")
-    @SaCheckPermission("video:playVideo")
+    @SaCheckPermission(value = "video:playVideo", orRole = "admin")
     public ResponseEntity<Resource> playVideo(
             @PathVariable("id") String id,
             @RequestHeader(value = "Range", required = false) String rangeHeader) {

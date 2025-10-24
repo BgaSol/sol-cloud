@@ -53,14 +53,14 @@ public class FileController extends BaseController<
     @Override
     @PostMapping("/page")
     @Operation(summary = "分页查询文件", operationId = "findPageFile")
-    @SaCheckPermission("file:findByPage")
+    @SaCheckPermission(value = "file:findByPage", orRole = "admin")
     public BaseVo<PageVo<FileEntity>> findByPage(@RequestBody @Valid FilePageDto pageDto) {
         return super.findByPage(pageDto);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "保存|上传文件", operationId = "saveFile")
-    @SaCheckPermission("file:save")
+    @SaCheckPermission(value = "file:save", orRole = "admin")
     public BaseVo<FileEntity> save(FileCreateDto fileCreateDto) {
         FileEntity save = fileService.save(fileCreateDto.getUploadFile(), fileCreateDto.toEntity());
         return BaseVo.success(save, "文件上传成功");
@@ -68,7 +68,7 @@ public class FileController extends BaseController<
 
     @PutMapping
     @Operation(summary = "更新文件状态", operationId = "updateFile")
-    @SaCheckPermission("file:update")
+    @SaCheckPermission(value = "file:update", orRole = "admin")
     public BaseVo<FileEntity> update(@RequestBody FileUpdateDto fileUpdateDto) {
         return super.update(fileUpdateDto);
     }
@@ -76,7 +76,7 @@ public class FileController extends BaseController<
     @Override
     @Operation(summary = "删除文件", operationId = "deleteFile")
     @DeleteMapping("/{ids}")
-    @SaCheckPermission("file:delete")
+    @SaCheckPermission(value = "file:delete", orRole = "admin")
     public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
         return super.delete(ids);
     }
@@ -84,7 +84,7 @@ public class FileController extends BaseController<
     @Override
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询文件", operationId = "findFileById")
-    @SaCheckPermission("file:findById")
+    @SaCheckPermission(value = "file:findById", orRole = "admin")
     public BaseVo<FileEntity> findById(@PathVariable("id") String id) {
         return super.findById(id);
     }
@@ -92,7 +92,7 @@ public class FileController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询图片", operationId = "findFileByIds")
-    @SaCheckPermission("file:findByIds")
+    @SaCheckPermission(value = "file:findByIds", orRole = "admin")
     public BaseVo<List<FileEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }
@@ -100,7 +100,7 @@ public class FileController extends BaseController<
     @SneakyThrows
     @GetMapping("/download/{id}")
     @Operation(summary = "下载文件", operationId = "downloadFile")
-    @SaCheckPermission("file:download")
+    @SaCheckPermission(value = "file:download", orRole = "admin")
     public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
         FileEntity file = fileService.findById(id);
         String bucket = file.getBucket();

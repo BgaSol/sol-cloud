@@ -34,7 +34,7 @@ public class PermissionController extends BaseController<
     @Override
     @GetMapping()
     @Operation(summary = "查询所有权限", operationId = "findAllPermission")
-    @SaCheckPermission("permission:findAll")
+    @SaCheckPermission(value = "permission:findAll", orRole = "admin")
     public BaseVo<List<PermissionEntity>> findAll() {
         return super.findAll();
     }
@@ -42,14 +42,14 @@ public class PermissionController extends BaseController<
     @Override
     @DeleteMapping("/{ids}")
     @Operation(summary = "删除权限", operationId = "deletePermission")
-    @SaCheckPermission("permission:delete")
+    @SaCheckPermission(value = "permission:delete", orRole = "admin")
     public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
         return super.delete(ids);
     }
 
     @PostMapping("/init")
     @Operation(summary = "批量初始化系统的权限信息", operationId = "initPermission")
-    @SaCheckPermission("permission:init")
+    @SaCheckPermission(value = "permission:init", orRole = "admin")
     public BaseVo<PermissionEntity> init(@RequestBody() PermissionEntity entity) {
         PermissionEntity save = permissionService.init(entity);
         return BaseVo.success(save, "保存成功");
@@ -58,7 +58,7 @@ public class PermissionController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询权限", operationId = "findPermissionByIds")
-    @SaCheckPermission("permission:findByIds")
+    @SaCheckPermission(value = "permission:findByIds", orRole = "admin")
     public BaseVo<List<PermissionEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }

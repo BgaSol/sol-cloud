@@ -39,7 +39,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PostMapping
-    @SaCheckPermission("department:save")
+    @SaCheckPermission(value = "department:save", orRole = "admin")
     @Operation(summary = "新增部门", operationId = "saveDepartment")
     public BaseVo<DepartmentEntity> save(@RequestBody @Valid DepartmentCreateDto createDto) {
         return super.save(createDto);
@@ -47,7 +47,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PutMapping
-    @SaCheckPermission("department:update")
+    @SaCheckPermission(value = "department:update", orRole = "admin")
     @Operation(summary = "更新部门", operationId = "updateDepartment")
     public BaseVo<DepartmentEntity> update(@RequestBody @Valid DepartmentUpdateDto updateDto) {
         return super.update(updateDto);
@@ -55,7 +55,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @DeleteMapping("/{ids}")
-    @SaCheckPermission("department:delete")
+    @SaCheckPermission(value = "department:delete", orRole = "admin")
     @Operation(summary = "删除部门", operationId = "deleteDepartment")
     public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
         return super.delete(ids);
@@ -63,7 +63,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @GetMapping("/{id}")
-    @SaCheckPermission("department:findById")
+    @SaCheckPermission(value = "department:findById", orRole = "admin")
     @Operation(summary = "根据ID查询部门", operationId = "findDepartmentById")
     public BaseVo<DepartmentEntity> findById(@PathVariable("id") String id) {
         return super.findById(id);
@@ -72,14 +72,14 @@ public class DepartmentController extends BaseController<
     @Override
     @GetMapping("/ids/{ids}")
     @Operation(summary = "根据id批量查询部门", operationId = "findDepartmentByIds")
-    @SaCheckPermission("department:findByIds")
+    @SaCheckPermission(value = "department:findByIds", orRole = "admin")
     public BaseVo<List<DepartmentEntity>> findByIds(@PathVariable String ids) {
         return super.findByIds(ids);
     }
 
     @Override
     @GetMapping()
-    @SaCheckPermission("department:findAll")
+    @SaCheckPermission(value = "department:findAll", orRole = "admin")
     @Operation(summary = "查询所有部门", operationId = "findAllDepartment")
     public BaseVo<List<DepartmentEntity>> findAll() {
         return super.findAll();
