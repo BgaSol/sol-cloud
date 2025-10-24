@@ -24,8 +24,8 @@
 
     <properties>
         <java.version>17</java.version>
-        <spring-cloud.version>2023.0.4</spring-cloud.version>
-        <spring-cloud-alibaba.version>2023.0.3.4</spring-cloud-alibaba.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <postgresql.version>42.7.3</postgresql.version>
         <springdoc.version>2.6.0</springdoc.version>
         <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
