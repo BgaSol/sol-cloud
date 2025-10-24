@@ -5,6 +5,7 @@ import cn.dev33.satoken.context.model.SaRequest;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.same.SaSameUtil;
 import com.bgasol.common.core.base.exception.BaseException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /// Sa-Token 权限认证 配置类
 @Configuration
 @Slf4j
+@RequiredArgsConstructor
 public class SaTokenConfigure implements WebMvcConfigurer {
 
     @Value("${system.auth.enabled}")
@@ -45,6 +47,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
+        registry.addInterceptor(new RequestLoggingInterceptor())
+                .addPathPatterns("/**");
+
         // 注册 Sa-Token 拦截器，
         if (!systemAuthEnabled) {
             log.warn("未启用权限认证");
