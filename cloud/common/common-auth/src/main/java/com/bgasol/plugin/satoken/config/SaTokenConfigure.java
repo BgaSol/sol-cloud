@@ -47,8 +47,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
-        registry.addInterceptor(new RequestLoggingInterceptor())
-                .addPathPatterns("/**");
 
         // 注册 Sa-Token 拦截器，
         if (!systemAuthEnabled) {
