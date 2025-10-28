@@ -41,6 +41,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.bgasol</groupId>
+            <artifactId>plugin-websocket</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 
 </project>

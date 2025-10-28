@@ -28,7 +28,7 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     private static final String START_TIME_ATTRIBUTE = "REQUEST_START_TIME";
     private static final String REQUEST_HANDLER_ATTRIBUTE = "REQUEST_HANDLER";
     private static final String REQUEST_LOG = "REQUEST_LOG";
-    @Value("${server.servlet.context-path}")
+    @Value("${spring.application.name}")
     private String serviceName;
     private final RedissonClient redissonClient;
     private final ObjectMapper objectMapper;
