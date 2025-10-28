@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -24,9 +25,12 @@ import java.util.List;
 /**
  * 全局异常处理
  */
-@RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
+@RestControllerAdvice
 public class BaseExceptionHandler {
+
+    private final ObjectMapper objectMapper;
 
     /**
      * 处理业务异常
@@ -42,7 +46,7 @@ public class BaseExceptionHandler {
     @ApiResponse(description = "参数校验异常", responseCode = "400")
     public BaseVo<List<VerificationResult>> verificationExceptionHandler(VerificationException e) throws JsonProcessingException {
         List<VerificationResult> verificationResults = e.getVerificationResults();
-        log.error(new ObjectMapper().writeValueAsString(verificationResults));
+        log.error(objectMapper.writeValueAsString(verificationResults));
         return BaseVo.code400(verificationResults);
     }
 
@@ -64,7 +68,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
-        log.error(new ObjectMapper().writeValueAsString(verificationResults));
+        log.error(objectMapper.writeValueAsString(verificationResults));
         return BaseVo.code400(verificationResults);
     }
 
@@ -89,7 +93,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
-        log.error(new ObjectMapper().writeValueAsString(verificationResults));
+        log.error(objectMapper.writeValueAsString(verificationResults));
         return BaseVo.code400(verificationResults);
     }
 }
