@@ -1,10 +1,12 @@
 package com.bgasol.common.core.base.interceptor;
 
+import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RMapCache;
+import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +14,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.Date;
+import static com.bgasol.common.util.WSUtils.GetWSTopic;
 
 /**
  * 请求日志拦截器
@@ -25,9 +27,13 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
 
     private static final String START_TIME_ATTRIBUTE = "REQUEST_START_TIME";
     private static final String REQUEST_HANDLER_ATTRIBUTE = "REQUEST_HANDLER";
+    private static final String REQUEST_LOG = "REQUEST_LOG";
     @Value("${server.servlet.context-path}")
-    private String serverName;
+    private String serviceName;
     private final RedissonClient redissonClient;
+    private final ObjectMapper objectMapper;
+    @Value("${system.ws.open-request-log}")
+    private Boolean openWsRequestLog;
 
     @Override
     public boolean preHandle(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
@@ -52,31 +58,43 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
         String handlerInfo = (String) request.getAttribute(REQUEST_HANDLER_ATTRIBUTE);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
         int status = response.getStatus();
 
-        StringBuilder logBuilder = new StringBuilder();
-        logBuilder.append("[请求] ");
-        logBuilder.append(method).append(" ").append(uri);
-
-        if (queryString != null && !queryString.isEmpty()) {
-            logBuilder.append("?").append(queryString);
-        }
-
-        if (handlerInfo != null && !handlerInfo.isEmpty()) {
-            logBuilder.append(" | ").append(handlerInfo);
-        }
-
-        logBuilder.append(" | 状态:").append(status);
-        logBuilder.append(" | 耗时:").append(duration).append("ms");
-
-        if (ex != null) {
-            logBuilder.append(" ").append(ex.getClass().getSimpleName()).append(": ").append(ex.getMessage());
-        }
         // 获取当前线程id
         long threadId = Thread.currentThread().getId();
-        RMapCache<String, String> mapCache = redissonClient.getMapCache("log:" + serverName + ":" + (ex == null ? "info" : "error"));
-        mapCache.putAsync(new Date(endTime).toString() + threadId, logBuilder.toString());
+        if (!openWsRequestLog) {
+            return;
+        }
+        try {
+            RTopic ws = redissonClient.getTopic(GetWSTopic(serviceName));
+            String logString = objectMapper.writeValueAsString(new RequestLog(threadId,
+                    serviceName,
+                    method,
+                    uri,
+                    startTime,
+                    endTime,
+                    queryString,
+                    handlerInfo,
+                    status,
+                    ex != null ? ex.getMessage() : ""));
+            ws.publish(WsSendMessageDto.builder()
+                    .json(logString)
+                    .type(REQUEST_LOG).build());
+        } catch (Exception e) {
+            log.error("日志消息广播异常", e);
+        }
+    }
+
+    private record RequestLog(Long threadId,
+                              String serviceName,
+                              String method,
+                              String uri,
+                              Long startTime,
+                              Long endTime,
+                              String queryString,
+                              String handlerInfo,
+                              Integer status,
+                              String errorMessage) {
     }
 
     private String getHandlerInfo(Object handler) {

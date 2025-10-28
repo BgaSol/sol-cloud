@@ -3,3 +3,6 @@ server:
     threads:
       io: 4
       worker: 128
+system:
+  ws:
+    open-request-log: true
