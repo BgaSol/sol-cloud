@@ -4,6 +4,7 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
+import com.bgasol.model.file.video.entity.VideoEntity;
 import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
@@ -26,7 +27,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     private final ImageMapper imageMapper;
@@ -48,6 +48,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     @Override
+    @Transactional
     public ImageEntity save(ImageEntity entity) {
         // 获取图片文件详情
         if (ObjectUtils.isNotEmpty(entity.getFileId())) {
@@ -72,6 +73,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     @Override
+    @Transactional
     public ImageEntity update(ImageEntity entity) {
         // 获取图片文件详情
         if (ObjectUtils.isNotEmpty(entity.getFileId())) {
@@ -95,6 +97,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void findOtherTable(List<ImageEntity> list) {
         Set<String> fileIds = list.stream()
                 .map(ImageEntity::getFileId)
@@ -116,12 +119,13 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
      * 删除图片
      */
     @Override
+    @Transactional()
     public Integer delete(String id) {
         ImageEntity imageEntity = this.findById(id);
-        FileEntity file = imageEntity.getFile();
-
-        Integer delete = super.delete(id);
-        fileService.delete(file.getId());
-        return delete;
+        if (ObjectUtils.isNotEmpty(imageEntity.getFile())) {
+            FileEntity file = imageEntity.getFile();
+            fileService.delete(file.getId());
+        }
+        return super.delete(id);
     }
 }

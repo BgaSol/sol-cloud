@@ -25,7 +25,6 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class FileService extends BaseService<FileEntity, FilePageDto> {
     private final FileMapper fileMapper;
@@ -49,6 +48,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
     /**
      * 通过文件流保存文件
      */
+    @Transactional
     public FileEntity save(MultipartFile multipartFile, FileEntity fileEntity) {
         fileEntity.setCreateTime(new Date());
         fileEntity.setBucket(minioConfig.getBucket());
@@ -136,10 +136,11 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
      * @return 删除数量
      */
     @Override
+    @Transactional
     public Integer delete(String id) {
         FileEntity fileEntity = this.findById(id);
         if (fileEntity == null) {
-            throw new BaseException("文件不存在");
+            return 0;
         }
         ossService.removeFile(fileEntity);
         return super.delete(id);

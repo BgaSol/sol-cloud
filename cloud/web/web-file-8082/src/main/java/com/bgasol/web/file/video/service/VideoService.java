@@ -4,7 +4,6 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.video.dto.VideoPageDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
-import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.video.mapper.VideoMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     private final VideoMapper videoMapper;
@@ -30,8 +28,6 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     private final FileService fileService;
 
     private final RedissonClient redissonClient;
-
-    private final OssService ossService;
 
     @Override
     public RedissonClient commonBaseRedissonClient() {
@@ -44,6 +40,7 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void findOtherTable(List<VideoEntity> list) {
         Set<String> fileIds = list.stream()
                 .map(VideoEntity::getFileId)
@@ -65,12 +62,13 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
      * 删除视频
      */
     @Override
+    @Transactional()
     public Integer delete(String id) {
         VideoEntity videoEntity = this.findById(id);
-        FileEntity file = videoEntity.getFile();
-
-        Integer delete = super.delete(id);
-        fileService.delete(file.getId());
-        return delete;
+        if (ObjectUtils.isNotEmpty(videoEntity.getFile())) {
+            FileEntity file = videoEntity.getFile();
+            fileService.delete(file.getId());
+        }
+        return super.delete(id);
     }
 }
