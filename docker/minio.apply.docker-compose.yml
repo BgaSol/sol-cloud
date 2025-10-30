@@ -1,0 +1,18 @@
+networks:
+  cloud-app:
+    external: true
+services:
+  minio-init:
+    image: minio/mc
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+      "/init-buckets.sh"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_HOST: cloud-app-minio
+      MINIO_PORT: 9000
+    volumes:
+      - ./config/minio/init-buckets.sh:/init-buckets.sh:ro
+    networks:
+      - cloud-app

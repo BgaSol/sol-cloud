@@ -1,27 +1,14 @@
 management:
-  server:
-    port:
+  tracing:
+    sampling:
+      probability: 1.0  # 开发 1.0，生产建议 0.1~0.3
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,loggers,env,threaddump,heapdump,scheduledtasks,beans  # 开启常用端点
-  endpoint:
-    health:
-      enabled: true
-      show-details: always  # 展示详细健康信息（dev 环境建议 always，prod 环境建议 when-authorized）
-    prometheus:
-      enabled: true
-    metrics:
-      enabled: true
-    loggers:
-      enabled: true
-    env:
-      enabled: true
-    threaddump:
-      enabled: true
-    heapdump:
-      enabled: true
-    scheduledtasks:
-      enabled: true
-    beans:
-      enabled: true
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  otlp:
+    tracing:
+      endpoint: http://${TEMPO_HOST:127.0.0.1}:4318/v1/traces

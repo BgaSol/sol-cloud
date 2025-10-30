@@ -1,0 +1,10 @@
+# 接入普罗米修斯数据源
+apiVersion: 1
+
+datasources:
+  - name: cloud-monitor-prometheus
+    type: prometheus
+    access: proxy
+    url: http://cloud-monitor-prometheus:9090
+    proxy:  true
+    editable: true

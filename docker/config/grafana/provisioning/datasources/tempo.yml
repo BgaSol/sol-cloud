@@ -1,0 +1,10 @@
+# 接入链路跟踪数据源
+apiVersion: 1
+
+datasources:
+  - name: tempo
+    type: tempo
+    access: proxy
+    url: http://cloud-monitor-grafana-tempo:3200
+    isDefault: true
+    editable: true

@@ -1,0 +1,63 @@
+networks:
+  cloud-app:
+    external: true
+services:
+  # 收集postgresql信息
+  cloud-monitor-postgres:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_URI: cloud-app-postgres:5432/cloud?sslmode=disable
+      DATA_SOURCE_USER: ${POSTGRES_USER}
+      DATA_SOURCE_PASS : ${POSTGRES_PASSWORD}
+    ports:
+      - "9187:9187"
+    networks:
+      - cloud-app
+  # 收集redis信息
+  cloud-monitor-redis:
+    image: oliver006/redis_exporter:latest
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: cloud-app-redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - cloud-app
+  # 收集后端链路信息
+  cloud-monitor-grafana-tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo/tempo.yml" ]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./config/grafana/tempo.yml:/etc/tempo/tempo.yml:ro
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    restart: unless-stopped
+    networks:
+      - cloud-app
+  cloud-monitor-prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - cloud-app
+  cloud-monitor-grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_USERS_DEFAULT_LANGUAGE=zh-Hans
+      - GF_SECURITY_ADMIN_PASSWORD=grafanapwd
+      - GF_SECURITY_ADMIN_USER=grafana
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - cloud-app

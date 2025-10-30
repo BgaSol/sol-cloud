@@ -49,6 +49,8 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
 
+      TEMPO_HOST: cloud-monitor-grafana-tempo
+
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
   cloud-server-web-system:
     image: amazoncorretto:17.0.15
@@ -89,6 +91,8 @@ services:
       REDIS_HOST: cloud-app-redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      TEMPO_HOST: cloud-monitor-grafana-tempo
 
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
 
@@ -136,6 +140,8 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_HOST: cloud-app-minio
       MINIO_PORT: 9000
+
+      TEMPO_HOST: cloud-monitor-grafana-tempo
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
     networks:
