@@ -61,8 +61,6 @@ storage:
     s3:
       endpoint: cloud-app-minio:9000
       bucket: tempo
-      access_key: minio
-      secret_key: miniopwd
       insecure: true
       forcepathstyle: true
       region: tempo-0

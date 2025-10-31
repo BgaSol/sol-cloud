@@ -10,6 +10,7 @@ MINIO_ALIAS=${MINIO_ALIAS:-local}
 # === 定义需要创建的桶列表 ===
 BUCKETS=(
   "tempo"
+  "loki"
 )
 
 echo "🔗 Connecting to MinIO at: $MINIO_ENDPOINT"
