@@ -4,7 +4,4 @@ mybatis-plus:
   configuration:
     local-cache-scope: STATEMENT
     cache-enabled: false
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-logging:
-  level:
-    com.bgasol.plugin.mybatisPlus: INFO
+    log-impl: org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl

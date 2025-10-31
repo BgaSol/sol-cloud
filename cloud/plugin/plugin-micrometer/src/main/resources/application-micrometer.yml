@@ -1,14 +1,19 @@
 management:
-  tracing:
-    sampling:
-      probability: 1.0  # 开发 1.0，生产建议 0.1~0.3
-  endpoints:
-    web:
-      exposure:
-        include: ["*"]
   metrics:
     tags:
       application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: [ "*" ]
+  logging:
+    endpoint: http://${TEMPO_HOST:127.0.0.1}:3100/loki/api/v1/push
+  tracing:
+    sampling:
+      probability: 1.0  # 开发 1.0，生产建议 0.1~0.3
   otlp:
     tracing:
       endpoint: http://${TEMPO_HOST:127.0.0.1}:4318/v1/traces
+logging:
+  level:
+    com.github.loki4j: DEBUG

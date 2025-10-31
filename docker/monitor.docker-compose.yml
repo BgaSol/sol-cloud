@@ -23,6 +23,17 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
       - cloud-app
+  # 收集后端日志信息
+  cloud-monitor-grafana-loki:
+    image: grafana/loki:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    networks:
+      - cloud-app
   # 收集后端链路信息
   cloud-monitor-grafana-tempo:
     image: grafana/tempo:latest

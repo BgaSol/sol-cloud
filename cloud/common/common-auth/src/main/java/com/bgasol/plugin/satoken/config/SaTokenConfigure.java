@@ -27,8 +27,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Bean
     public SaServletFilter getSaServletFilter() {
         return new SaServletFilter()
-                // 放行普罗米修斯
-                .addExclude("/actuator/**")
                 .addExclude("/ws/**")
                 .addExclude("/ws")
                 .addInclude("/**")
