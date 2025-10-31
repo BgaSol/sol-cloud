@@ -3,6 +3,7 @@ package com.bgasol.plugin.micrometer.config;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.core.CoreConstants;
 import com.github.loki4j.logback.Loki4jAppender;
 import com.github.loki4j.logback.PipelineConfigAppenderBase;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,9 @@ public class LokiAppenderConfig implements ApplicationListener<ApplicationStarte
     @Value("${management.logging.endpoint}")
     private String logEndpoint;
 
+    @Value("${spring.application.name}")
+    private String serviceName;
+
     @Override
     public void onApplicationEvent(@NonNull ApplicationStartedEvent event) {
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -24,11 +28,20 @@ public class LokiAppenderConfig implements ApplicationListener<ApplicationStarte
         Loki4jAppender lokiAppender = new Loki4jAppender();
         lokiAppender.setName("LOKI");
         lokiAppender.setContext(context);
+        lokiAppender.setMetricsEnabled(true);
+        lokiAppender.setReadMarkers(true);
+        lokiAppender.setStructuredMetadata("level=%level\nthread=%thread\nlogger=%logger\n*=%%mdc\n*=%%kvp");
+        lokiAppender.setLabels(String.format(
+                "app=%s\nhost=%s",
+                serviceName,
+                context.getProperty(CoreConstants.HOSTNAME_KEY)
+        ));
         {
             // 使用 PatternLayout 设置日志格式
             PatternLayout layout = new PatternLayout();
             layout.setContext(context);
             layout.setPattern("%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{traceId:-}] - %msg%n%throwable");
+            layout.setOutputPatternAsHeader(true);
             layout.start();
             lokiAppender.setMessage(layout);
         }
