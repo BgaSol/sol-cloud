@@ -2945,9 +2945,7 @@
   "schemaVersion": 19,
   "style": "dark",
   "tags": [
-    "postgres",
-    "db",
-    "stats"
+    "postgres"
   ],
   "templating": {
     "list": [

@@ -2,9 +2,15 @@
 apiVersion: 1
 
 providers:
-  - name: 'default'
+  - name: 'en'
     orgId: 1
     folder: ''
     type: file
     options:
-      path: /var/lib/grafana/dashboards
+      path: /var/lib/grafana/dashboards/en
+  - name: 'zh'
+    orgId: 1
+    folder: ''
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards/zh
