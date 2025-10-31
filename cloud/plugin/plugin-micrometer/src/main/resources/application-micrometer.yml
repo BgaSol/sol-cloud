@@ -7,7 +7,7 @@ management:
       exposure:
         include: [ "*" ]
   logging:
-    endpoint: http://${TEMPO_HOST:127.0.0.1}:3100/loki/api/v1/push
+    endpoint: http://${LOKI_HOST:127.0.0.1}:3100/loki/api/v1/push
   tracing:
     sampling:
       probability: 1.0  # 开发 1.0，生产建议 0.1~0.3

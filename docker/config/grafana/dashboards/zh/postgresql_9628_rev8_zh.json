@@ -78,7 +78,7 @@
         "#7eb26d",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -161,7 +161,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "description": "进程启动时间",
       "format": "dateTimeFromNow",
       "gauge": {
@@ -244,7 +244,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "decbytes",
       "gauge": {
         "maxValue": 100,
@@ -327,7 +327,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -410,7 +410,7 @@
         "rgba(237, 129, 40, 0.89)",
         "rgba(50, 172, 45, 0.97)"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -493,7 +493,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -570,7 +570,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "description": "以秒为单位的平均用户和系统CPU时间。",
       "fill": 1,
       "fillGradient": 0,
@@ -661,7 +661,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "description": "以字节为单位的虚拟和常驻内存大小，5分钟间隔的平均值",
       "fill": 1,
       "fillGradient": 0,
@@ -760,7 +760,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "description": "打开的文件描述符数量",
       "fill": 1,
       "fillGradient": 0,
@@ -869,7 +869,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -950,7 +950,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1031,7 +1031,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1112,7 +1112,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -1194,7 +1194,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "decimals": 1,
       "format": "bytes",
       "gauge": {
@@ -1276,7 +1276,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1357,7 +1357,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1438,7 +1438,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1519,7 +1519,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -1609,7 +1609,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1705,7 +1705,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1803,7 +1803,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1898,7 +1898,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1992,7 +1992,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2086,7 +2086,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 0,
@@ -2183,7 +2183,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2277,7 +2277,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2371,7 +2371,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2465,7 +2465,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "decimals": 2,
       "fill": 1,
       "gridPos": {
@@ -2554,7 +2554,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -2669,7 +2669,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "decimals": 0,
       "fill": 1,
       "gridPos": {
@@ -2764,7 +2764,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "description": "数据库中查询写入临时文件的总数据量。所有临时文件都会被计数，无论创建临时文件的原因以及log_temp_files设置如何。",
       "fill": 1,
       "gridPos": {
@@ -2852,7 +2852,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -3020,7 +3020,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3042,7 +3042,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3064,7 +3064,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -3086,7 +3086,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -3108,7 +3108,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,

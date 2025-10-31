@@ -46,10 +46,7 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
-        },
+        "datasource": "prometheus",
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -68,7 +65,7 @@
   "liveNow": false,
   "panels": [
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -133,7 +130,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "max(max_over_time(redis_uptime_in_seconds{instance=~\"$instance\"}[$__interval]))",
           "format": "time_series",
           "interval": "",
@@ -148,7 +145,7 @@
       "type": "stat"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -214,7 +211,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(redis_connected_clients{instance=~\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 2,
@@ -229,7 +226,7 @@
       "type": "stat"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -299,7 +296,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(100 * (redis_memory_used_bytes{instance=~\"$instance\"}  / redis_memory_max_bytes{instance=~\"$instance\"}))",
           "format": "time_series",
           "intervalFactor": 2,
@@ -314,7 +311,7 @@
       "type": "gauge"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -395,7 +392,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(rate(redis_commands_total{instance=~\"$instance\"} [1m])) by (cmd)",
           "format": "time_series",
           "interval": "",
@@ -410,7 +407,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -492,7 +489,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "irate(redis_keyspace_hits_total{instance=~\"$instance\"}[5m])",
           "format": "time_series",
           "hide": false,
@@ -505,7 +502,7 @@
           "target": ""
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "irate(redis_keyspace_misses_total{instance=~\"$instance\"}[5m])",
           "format": "time_series",
           "hide": false,
@@ -522,7 +519,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -620,7 +617,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "redis_memory_used_bytes{instance=~\"$instance\"}",
           "format": "time_series",
           "intervalFactor": 2,
@@ -631,7 +628,7 @@
           "target": ""
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "redis_memory_max_bytes{instance=~\"$instance\"}",
           "format": "time_series",
           "hide": false,
@@ -645,7 +642,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -726,7 +723,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(rate(redis_net_input_bytes_total{instance=~\"$instance\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
@@ -735,7 +732,7 @@
           "step": 240
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(rate(redis_net_output_bytes_total{instance=~\"$instance\"}[5m]))",
           "format": "time_series",
           "interval": "",
@@ -749,7 +746,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -853,7 +850,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum (redis_db_keys{instance=~\"$instance\"}) by (db, instance)",
           "format": "time_series",
           "interval": "",
@@ -868,7 +865,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -949,7 +946,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum (redis_db_keys{instance=~\"$instance\"}) by (instance) - sum (redis_db_keys_expiring{instance=~\"$instance\"}) by (instance)",
           "format": "time_series",
           "interval": "",
@@ -960,7 +957,7 @@
           "target": ""
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum (redis_db_keys_expiring{instance=~\"$instance\"}) by (instance)",
           "format": "time_series",
           "interval": "",
@@ -975,7 +972,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1101,7 +1098,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(rate(redis_expired_keys_total{instance=~\"$instance\"}[5m])) by (instance)",
           "format": "time_series",
           "hide": false,
@@ -1114,7 +1111,7 @@
           "target": ""
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(rate(redis_evicted_keys_total{instance=~\"$instance\"}[5m])) by (instance)",
           "format": "time_series",
           "interval": "",
@@ -1128,7 +1125,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1208,7 +1205,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(redis_connected_clients{instance=~\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1216,7 +1213,7 @@
           "refId": "A"
         },
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(redis_blocked_clients{instance=~\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1228,7 +1225,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1329,7 +1326,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(irate(redis_commands_duration_seconds_total{instance =~ \"$instance\"}[1m])) by (cmd)\n  /\nsum(irate(redis_commands_total{instance =~ \"$instance\"}[1m])) by (cmd)\n",
           "format": "time_series",
           "interval": "",
@@ -1344,7 +1341,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": "cloud-monitor-prometheus",
+      "datasource": "prometheus",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1424,7 +1421,7 @@
       "pluginVersion": "10.3.3",
       "targets": [
         {
-          "datasource": "cloud-monitor-prometheus",
+          "datasource": "prometheus",
           "expr": "sum(irate(redis_commands_duration_seconds_total{instance=~\"$instance\"}[1m])) by (cmd) != 0",
           "format": "time_series",
           "interval": "",
@@ -1448,7 +1445,7 @@
     "list": [
       {
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "label_values(redis_up, namespace)",
         "hide": 0,
         "includeAll": false,
@@ -1467,7 +1464,7 @@
       },
       {
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "label_values(redis_up{namespace=~\"$namespace\"}, instance)",
         "hide": 0,
         "includeAll": false,

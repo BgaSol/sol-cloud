@@ -47,7 +47,7 @@
         "type": "dashboard"
       },
       {
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "enable": true,
         "expr": "resets(process_uptime_seconds{application=\"$application\", region=\"$region\", instance=\"$instance\"}[1m]) > 0",
         "hide": false,
@@ -798,7 +798,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": false,
@@ -820,7 +820,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,
@@ -842,7 +842,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "label_values(jdbc_connections_min{application=\"$application\", region=~\"$region\"}, instance)",
         "hide": 0,
         "includeAll": true,
@@ -864,7 +864,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "label_values(jdbc_connections_min{application=\"$application\", region=~\"$region\", instance=~\"$instance\"}, name)",
         "hide": 0,
         "includeAll": false,
@@ -886,7 +886,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "cloud-monitor-prometheus",
+        "datasource": "prometheus",
         "definition": "label_values(hikaricp_connections_min{application=\"$application\", region=~\"$region\", instance=~\"$instance\"}, pool)",
         "hide": 0,
         "includeAll": false,

@@ -1,0 +1,7 @@
+apiVersion: 1
+
+datasources:
+  - name: loki
+    type: loki
+    access: proxy
+    url: http://cloud-monitor-grafana-loki:3100

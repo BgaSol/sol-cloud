@@ -50,6 +50,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       TEMPO_HOST: cloud-monitor-grafana-tempo
+      LOKI_HOST: cloud-monitor-grafana-loki
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
   cloud-server-web-system:
@@ -93,6 +94,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
 
       TEMPO_HOST: cloud-monitor-grafana-tempo
+      LOKI_HOST: cloud-monitor-grafana-loki
 
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
 
@@ -142,6 +144,7 @@ services:
       MINIO_PORT: 9000
 
       TEMPO_HOST: cloud-monitor-grafana-tempo
+      LOKI_HOST: cloud-monitor-grafana-loki
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
     networks:
