@@ -6,7 +6,7 @@ services:
   cloud-monitor-postgres:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
     environment:
-      DATA_SOURCE_URI: cloud-app-postgres:5432/cloud?sslmode=disable
+      DATA_SOURCE_URI: cloud-app-postgres:5432?sslmode=disable
       DATA_SOURCE_USER: ${POSTGRES_USER}
       DATA_SOURCE_PASS : ${POSTGRES_PASSWORD}
     ports:

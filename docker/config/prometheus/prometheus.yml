@@ -1,23 +1,26 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 5s
 
 scrape_configs:
   - job_name: 'cloud-server-web-file'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'cloud-server-web-file:8182' ]
+
   - job_name: 'cloud-server-web-system'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'cloud-server-web-system:8181' ]
+
   - job_name: 'cloud-server-gateway'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: [ 'cloud-server-gateway:9627' ]
+
   - job_name: 'cloud-app-redis'
     static_configs:
       - targets: [ 'cloud-monitor-redis:9121' ]
+
   - job_name: 'cloud-app-postgres'
-    metrics_path: /probe
     static_configs:
       - targets: [ 'cloud-monitor-postgres:9187' ]
