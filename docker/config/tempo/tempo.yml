@@ -1,0 +1,79 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+        grpc:
+          endpoint: 0.0.0.0:4317
+
+ingester:
+  max_block_duration: 5m
+  trace_idle_period: 10s
+  max_block_bytes: 1000000
+  complete_block_timeout: 30s
+  flush_check_period: 10s
+
+compactor:
+  compaction:
+    block_retention: 120h
+
+# ⚠️ Querier 配置
+querier:
+  frontend_worker:
+    frontend_address: localhost:9095  # 查询前端地址
+  max_concurrent_queries: 20
+  search:
+    query_timeout: 30s
+
+# ⚠️ Query Frontend 配置
+query_frontend:
+  search:
+    max_duration: 0  # 不限制查询时间范围
+
+# ⚠️ Metrics Generator 配置
+metrics_generator:
+  storage:
+    path: /tmp/tempo/generator/wal
+    remote_write: []
+  # ⚠️ 关键：local-blocks 需要指定 traces 存储路径
+  traces_storage:
+    path: /tmp/tempo/blocks
+  registry:
+    collection_interval: 15s  # 指标收集间隔
+    external_labels: {}
+  processor:
+    # span-metrics: Span 指标
+    span_metrics:
+      enable_target_info: true
+      dimensions: []
+    # service-graphs: 服务调用图
+    service_graphs:
+      dimensions: []
+      max_items: 10000
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      endpoint: cloud-app-minio:9000
+      bucket: tempo
+      access_key: minio
+      secret_key: miniopwd
+      insecure: true
+      forcepathstyle: true
+      region: tempo-0
+    wal:
+      path: /tmp/tempo/wal
+    local:
+      path: /tmp/tempo/blocks
+
+# 启用所有 processors
+overrides:
+  metrics_generator_processors:
+    - local-blocks
+    - service-graphs
+    - span-metrics

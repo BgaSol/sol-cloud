@@ -31,7 +31,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./config/grafana/tempo.yml:/etc/tempo/tempo.yml:ro
+      - ./config/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
     ports:
       - "3200:3200"
       - "4317:4317"
