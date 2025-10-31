@@ -8,8 +8,10 @@ distributor:
   receivers:
     otlp:
       protocols:
-        grpc: {}   # 启用 OTLP gRPC 协议
-        http: {}   # 启用 OTLP HTTP 协议
+        grpc:
+          endpoint: "0.0.0.0:4317"   # OTLP gRPC 端口
+        http:
+          endpoint: "0.0.0.0:4318"   # OTLP HTTP 端口
 
 overrides:
   defaults:
