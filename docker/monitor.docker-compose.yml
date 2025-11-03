@@ -60,6 +60,7 @@ services:
       - cloud-app
   cloud-monitor-prometheus:
     image: prom/prometheus:latest
+    user: root
     volumes:
       - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./data/prometheus:/prometheus
