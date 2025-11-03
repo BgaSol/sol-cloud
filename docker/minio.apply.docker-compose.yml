@@ -6,7 +6,7 @@ services:
     image: minio/mc
     entrypoint: [ "/bin/sh", "-c" ]
     command: >
-      "/init-buckets.sh"
+      "bash /init-buckets.sh"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
