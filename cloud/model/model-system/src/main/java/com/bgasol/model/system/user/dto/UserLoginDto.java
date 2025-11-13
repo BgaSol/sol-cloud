@@ -22,11 +22,11 @@ public class UserLoginDto {
     @Schema(description = "密码")
     String password;
 
-    @NotBlank(message = "验证码不能为空")
+//    @NotBlank(message = "验证码不能为空")
     @Schema(description = "验证码")
     private String verificationCode;
 
-    @NotBlank(message = "验证码Key不能为空")
+//    @NotBlank(message = "验证码Key不能为空")
     @Schema(description = "验证码key")
     private String verificationCodeKey;
 }
