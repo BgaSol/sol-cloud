@@ -67,17 +67,20 @@ public class LoginService {
 
     @Transactional(readOnly = true)
     public SaTokenInfo login(UserLoginDto userLoginDto) {
-        String verificationCodeKey = userLoginDto.getVerificationCodeKey();
-        // 获取验证码并且删除
-        String verificationCode = captchaCache.getAndDelete(verificationCodeKey);
-        if (StringUtils.isEmpty(verificationCode)) {
-            log.error("验证码已过期");
-            throw new BaseException("验证码已过期");
+        if (captchaIsOpen){
+            String verificationCodeKey = userLoginDto.getVerificationCodeKey();
+            // 获取验证码并且删除
+            String verificationCode = captchaCache.getAndDelete(verificationCodeKey);
+            if (StringUtils.isEmpty(verificationCode)) {
+                log.error("验证码已过期");
+                throw new BaseException("验证码已过期");
+            }
+            if (!verificationCode.equals(userLoginDto.getVerificationCode())) {
+                log.error("验证码错误");
+                throw new BaseException("验证码错误");
+            }
         }
-        if (!verificationCode.equals(userLoginDto.getVerificationCode())) {
-            log.error("验证码错误");
-            throw new BaseException("验证码错误");
-        }
+
         LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserEntity::getUsername, userLoginDto.getUsername());
         UserEntity userEntity = this.userMapper.selectOne(queryWrapper);
