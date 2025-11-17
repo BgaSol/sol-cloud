@@ -16,4 +16,4 @@ management:
       endpoint: http://${TEMPO_HOST:127.0.0.1}:4318/v1/traces
 logging:
   level:
-    com.github.loki4j: DEBUG
+    com.github.loki4j: info

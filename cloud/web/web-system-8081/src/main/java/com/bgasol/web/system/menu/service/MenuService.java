@@ -52,16 +52,13 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         return this.findByMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
     }
 
+    @Transactional(readOnly = true)
     public List<MenuEntity> findByMenuGroup(String group) {
         // 查询左侧菜单的树
-        LambdaQueryWrapper<MenuEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MenuEntity::getMenuGroup, group);
-        queryWrapper.isNull(MenuEntity::getParentId);
-        List<MenuEntity> menuEntityList = menuMapper.selectList(queryWrapper);
-        for (MenuEntity menuEntity : menuEntityList) {
-            menuEntity.setChildren(this.findTreeAll(menuEntity.getId(), null));
-        }
-
+        List<MenuEntity> menuEntityList = this.findAll()
+                .stream()
+                .filter(menuEntity -> menuEntity.getMenuGroup().equals(group))
+                .toList();
         // 获取当前用户可访问的菜单
         return getUserMenuEntities(menuEntityList);
     }
