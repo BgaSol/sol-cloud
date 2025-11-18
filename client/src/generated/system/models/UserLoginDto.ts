@@ -17,10 +17,10 @@ export type UserLoginDto = {
     /**
      * 验证码
      */
-    verificationCode: string;
+    verificationCode?: string;
     /**
      * 验证码key
      */
-    verificationCodeKey: string;
+    verificationCodeKey?: string;
 };
 
