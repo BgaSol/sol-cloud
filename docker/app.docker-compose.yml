@@ -99,6 +99,11 @@ services:
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: 2
     networks:
       - cloud-app
   cloud-server-web-file:
@@ -147,6 +152,11 @@ services:
       LOKI_HOST: cloud-monitor-grafana-loki
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: 2
     networks:
       - cloud-app
     depends_on:
