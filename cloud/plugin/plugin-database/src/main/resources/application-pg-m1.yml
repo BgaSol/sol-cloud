@@ -13,5 +13,5 @@ spring:
           seata: false
           p6spy: false
           hikari:
-            maximum-pool-size: 100
-            minimum-idle: 10
+            maximum-pool-size: 20
+            minimum-idle: 2
