@@ -16,17 +16,15 @@ public class UserLoginDto {
 
     @NotBlank(message = "用户名不能为空")
     @Schema(description = "用户名")
-    String username;
+    private String username;
 
     @NotBlank(message = "密码不能为空")
     @Schema(description = "密码")
-    String password;
+    private String password;
 
-//    @NotBlank(message = "验证码不能为空")
     @Schema(description = "验证码")
     private String verificationCode;
 
-//    @NotBlank(message = "验证码Key不能为空")
     @Schema(description = "验证码key")
     private String verificationCodeKey;
 }

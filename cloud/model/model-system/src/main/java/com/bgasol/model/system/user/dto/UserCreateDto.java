@@ -37,8 +37,6 @@ public class UserCreateDto extends BaseCreateDto<UserEntity> {
     private String nickname;
 
     @Schema(description = "邮箱")
-//    @Email(message = "邮箱格式不正确")
-//    @NotBlank(message = "邮箱不能为空")
     private String email;
 
     @Schema(description = "手机号")
