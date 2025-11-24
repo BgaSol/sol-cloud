@@ -83,6 +83,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      * @param menuEntity 菜单实体
      * @return 初始化后的菜单实体
      */
+    @Transactional
     public MenuEntity init(MenuEntity menuEntity) {
         this.initChildren(menuEntity);
         return this.findById(menuEntity.getId());

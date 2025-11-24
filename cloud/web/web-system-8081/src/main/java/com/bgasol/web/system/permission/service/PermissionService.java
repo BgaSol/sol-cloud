@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PermissionService extends BaseTreeService<PermissionEntity, BasePageDto<PermissionEntity>> {
     private final PermissionMapper permissionMapper;
 
@@ -27,6 +26,7 @@ public class PermissionService extends BaseTreeService<PermissionEntity, BasePag
         return permissionMapper;
     }
 
+    @Transactional
     public PermissionEntity init(PermissionEntity parentPermission) {
         if (this.findDirectById(parentPermission.getId()) == null) {
             this.insert(parentPermission);

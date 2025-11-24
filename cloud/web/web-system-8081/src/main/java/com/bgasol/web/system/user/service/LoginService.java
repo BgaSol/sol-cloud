@@ -26,7 +26,6 @@ import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class LoginService {
     private final UserMapper userMapper;

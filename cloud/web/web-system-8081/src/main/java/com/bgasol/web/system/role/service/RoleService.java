@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>> {
     private final RoleMapper roleMapper;
 
@@ -41,6 +40,7 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
         return roleMapper;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<RoleEntity> list) {
         List<String> roleIds = list.stream().map(RoleEntity::getId).toList();

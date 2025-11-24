@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 
-@Transactional
 @Slf4j
 @Service
 public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAGE_DTO extends BasePageDto<ENTITY>> extends BaseService<ENTITY, PAGE_DTO> {
