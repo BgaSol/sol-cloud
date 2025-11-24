@@ -149,6 +149,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
     /**
      * 读取文件流
      */
+    @Transactional(readOnly = true)
     public InputStream fileStreamFindById(String id) {
         FileEntity file = this.findById(id);
         return ossService.readFileStream(file);

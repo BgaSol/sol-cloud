@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class DepartmentService extends BaseTreeService<DepartmentEntity, BasePageDto<DepartmentEntity>> {
     private final DepartmentMapper departmentMapper;
@@ -29,6 +28,7 @@ public class DepartmentService extends BaseTreeService<DepartmentEntity, BasePag
         return departmentMapper;
     }
 
+    @Transactional(readOnly = true)
     public DepartmentEntity findByDomain(String domain) {
         LambdaQueryWrapper<DepartmentEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(DepartmentEntity::getDomain, domain);

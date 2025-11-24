@@ -37,7 +37,7 @@ public class UserPageDto extends BasePageDto<UserEntity> {
     private Boolean locked;
 
     @Schema(description = "部门id")
-    String departmentId;
+    private String departmentId;
 
     @Override
     @JsonIgnore

@@ -10,19 +10,39 @@ import org.redisson.api.RMapCache;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 
-@Transactional
 @Slf4j
 @Service
 public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAGE_DTO extends BasePageDto<ENTITY>> extends BaseService<ENTITY, PAGE_DTO> {
+
+    /**
+     * 根据id查询实体
+     * 无关联查询
+     */
+    @Transactional(readOnly = true)
+    public List<ENTITY> findDirectByIds(String... idArray) {
+        List<ENTITY> all = this.findAll();
+        // 递归查询idArray所有节点
+        List<ENTITY> result = new ArrayList<>();
+        filterResult(all, idArray, result);
+        return result;
+    }
+
+    private void filterResult(List<ENTITY> all, String[] idArray, List<ENTITY> result) {
+        for (ENTITY entity : all) {
+            if (Arrays.asList(idArray).contains(entity.getId())) {
+                result.add(entity);
+            }
+            if (ObjectUtils.isNotEmpty(entity.getChildren())) {
+                filterResult(entity.getChildren(), idArray, result);
+            }
+        }
+    }
 
     /**
      * 查询所有实体
@@ -32,23 +52,8 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
      */
     @Transactional(readOnly = true)
     public List<ENTITY> findAll() {
-        return this.findTreeAll(null, null);
-    }
-
-    /**
-     * 查询所有树形结构（一次性查全量 + 内存组装）
-     *
-     * @param parentId 父id，可为空；为空时返回所有根节点树
-     * @return 树形结构列表
-     */
-    @Transactional(readOnly = true)
-    public List<ENTITY> findTreeAll(String parentId, QueryWrapper<ENTITY> queryWrapper) {
-        if (queryWrapper == null) {
-            queryWrapper = new QueryWrapper<>();
-        }
-
         // 一次性全量查出
-        List<ENTITY> entities = commonBaseMapper().selectList(queryWrapper);
+        List<ENTITY> entities = commonBaseMapper().selectList(new QueryWrapper<>());
 
         if (entities.isEmpty()) {
             return Collections.emptyList();
@@ -63,8 +68,6 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
             );
         }
 
-        this.findOtherTable(entities);
-
         // id -> entity 映射
         Map<String, ENTITY> entityMap = entities.stream()
                 .collect(Collectors.toMap(BaseEntity::getId, e -> e));
@@ -72,11 +75,11 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
         // 组装树结构
         List<ENTITY> roots = new ArrayList<>();
         for (ENTITY entity : entities) {
-            String pid = entity.getParentId();
-            if (pid == null || pid.isEmpty()) {
+            String parentId = entity.getParentId();
+            if (ObjectUtils.isEmpty(parentId)) {
                 roots.add(entity);
             } else {
-                ENTITY parent = entityMap.get(pid);
+                ENTITY parent = entityMap.get(parentId);
                 if (parent != null) {
                     if (parent.getChildren() == null) {
                         parent.setChildren(new ArrayList<>());
@@ -85,13 +88,6 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
                 }
             }
         }
-
-        if (parentId != null && !parentId.isEmpty()) {
-            return entityMap.containsKey(parentId)
-                    ? entityMap.get(parentId).getChildren()
-                    : Collections.emptyList();
-        }
-
         return roots;
     }
 }

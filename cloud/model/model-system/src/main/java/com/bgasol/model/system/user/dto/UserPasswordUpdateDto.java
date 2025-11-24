@@ -15,9 +15,9 @@ import lombok.experimental.SuperBuilder;
 public class UserPasswordUpdateDto {
     @Schema(description = "旧密码")
     @NotBlank(message = "旧密码不能为空")
-    String oldPassword;
+    private String oldPassword;
 
     @Schema(description = "新密码")
     @NotBlank(message = "新密码不能为空")
-    String newPassword;
+    private String newPassword;
 }

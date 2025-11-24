@@ -349,6 +349,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 根据id查询实体
      * 无关联查询
      */
+    @Transactional(readOnly = true)
     public ENTITY findDirectById(String id) {
         List<ENTITY> directByIds = this.findDirectByIds(id);
         return ObjectUtils.isEmpty(directByIds) ? null : directByIds.get(0);
@@ -455,7 +456,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param values     插入的中间表数据 {主表主键:从表主键}
      */
     @Transactional
-    void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<Map.Entry<String, String>> values) {
+    public void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<Map.Entry<String, String>> values) {
         if (ObjectUtils.isEmpty(values)) {
             return;
         }
@@ -476,7 +477,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param value      从表实体列表
      */
     @Transactional
-    private void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
+    public void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
         List<Map.Entry<String, String>> insertList = value
                 .stream()
                 .map(childrenEntity -> new AbstractMap.SimpleEntry<>(entity.getId(), childrenEntity.getId()))

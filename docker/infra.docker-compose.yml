@@ -36,6 +36,11 @@ services:
       - ./data/nacos/logs:/home/nacos/logs
       - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
       - ./config/nacos/plugins/:/home/nacos/plugins/
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2g
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
       interval: 10s
@@ -61,6 +66,11 @@ services:
     volumes:
       - ./data/minio/data:/data
       - ./data/minio/root/.minio:/root/.minio
+    deploy:
+      resources:
+        limits:
+          cpus: 2
+          memory: 2g
     networks:
       - cloud-app
     healthcheck:
@@ -108,6 +118,11 @@ services:
       - redis-data:/data
     ports:
       - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2g
     networks:
       - cloud-app
     healthcheck:

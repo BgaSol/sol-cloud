@@ -1,6 +1,7 @@
 package com.bgasol.web.system.role.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
@@ -8,6 +9,7 @@ import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.web.system.role.service.RoleService;
+import com.bgasol.web.system.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +18,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class RoleController extends BaseController<
         RoleCreateDto,
         RoleUpdateDto> {
     private final RoleService roleService;
+    private final UserService userService;
 
     @Override
     public RoleService commonBaseService() {
@@ -79,6 +84,12 @@ public class RoleController extends BaseController<
     @Operation(summary = "查询所有角色", operationId = "findAllRole")
     @SaCheckPermission(value = "role:findAll", orRole = "admin")
     public BaseVo<List<RoleEntity>> findAll() {
-        return super.findAll();
+        String userId = StpUtil.getLoginIdAsString();
+        if (ADMIN_USER_ID.equals(userId)) {
+            // 管理员不需要做数据范围限制
+            return super.findAll();
+        }
+        List<RoleEntity> roles = userService.findById(userId).getRoles();
+        return BaseVo.success(roles);
     }
 }

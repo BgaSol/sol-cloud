@@ -90,6 +90,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     /**
      * 读取图片文件流
      */
+    @Transactional(readOnly = true)
     public InputStream imageStreamFindById(String id) {
         ImageEntity imageEntity = this.findById(id);
         FileEntity file = imageEntity.getFile();

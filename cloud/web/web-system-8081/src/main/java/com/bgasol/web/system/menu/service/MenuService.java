@@ -52,18 +52,29 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         return this.findByMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
     }
 
+    @Transactional(readOnly = true)
     public List<MenuEntity> findByMenuGroup(String group) {
         // 查询左侧菜单的树
-        LambdaQueryWrapper<MenuEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MenuEntity::getMenuGroup, group);
-        queryWrapper.isNull(MenuEntity::getParentId);
-        List<MenuEntity> menuEntityList = menuMapper.selectList(queryWrapper);
-        for (MenuEntity menuEntity : menuEntityList) {
-            menuEntity.setChildren(this.findTreeAll(menuEntity.getId(), null));
+        List<MenuEntity> menuEntityList = this.findAll()
+                .stream()
+                .filter(menuEntity -> menuEntity.getMenuGroup().equals(group))
+                .toList();
+        String userId = StpUtil.getLoginIdAsString();
+        if (userId.equals(SystemConfigValues.ADMIN_USER_ID)) {
+            return menuEntityList;
         }
+        Set<String> menuIds = getUserMenuIds();
+        return filterMenus(menuEntityList, menuIds);
+    }
 
-        // 获取当前用户可访问的菜单
-        return getUserMenuEntities(menuEntityList);
+    private List<MenuEntity> filterMenus(List<MenuEntity> menuEntityList, Set<String> menuIds) {
+        if (ObjectUtils.isNotEmpty(menuEntityList)) {
+            return menuEntityList.stream()
+                    .filter(menuEntity -> menuIds.contains(menuEntity.getId()))
+                    .peek(menuEntity -> menuEntity.setChildren(filterMenus(menuEntity.getChildren(), menuIds)))
+                    .toList();
+        }
+        return List.of();
     }
 
     /**
@@ -72,6 +83,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      * @param menuEntity 菜单实体
      * @return 初始化后的菜单实体
      */
+    @Transactional
     public MenuEntity init(MenuEntity menuEntity) {
         this.initChildren(menuEntity);
         return this.findById(menuEntity.getId());
@@ -99,48 +111,30 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
 
     @Transactional(readOnly = true)
     public List<MenuEntity> findAllMenuRoutes() {
-        LambdaQueryWrapper<MenuEntity> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.isNotNull(MenuEntity::getRouteName);
-
         boolean login = StpUtil.isLogin();
         if (!login) {
             return new ArrayList<>();
         }
-        String userId = StpUtil.getLoginIdAsString();
+
+        LambdaQueryWrapper<MenuEntity> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.isNotNull(MenuEntity::getRouteName);
         List<MenuEntity> menuEntityList = menuMapper.selectList(lambdaQueryWrapper);
+
+        String userId = StpUtil.getLoginIdAsString();
         if (userId.equals(SystemConfigValues.ADMIN_USER_ID)) {
             return menuEntityList;
         }
+        Set<String> menuIds = getUserMenuIds();
 
-        return getUserMenuEntities(menuEntityList);
+        return menuEntityList.stream()
+                .filter(menuEntity -> menuIds.contains(menuEntity.getId()))
+                .toList();
     }
 
-    /// 获取当前用户可访问的菜单
-    @Transactional(readOnly = true)
-    public List<MenuEntity> getUserMenuEntities(List<MenuEntity> menuEntityList) {
+    private Set<String> getUserMenuIds() {
         UserEntity user = userService.getUserInfo();
         Set<String> menuIds = new HashSet<>();
         user.getRoles().forEach(role -> role.getMenus().forEach(menu -> menuIds.add(menu.getId())));
-        if (!user.getId().equals(SystemConfigValues.ADMIN_USER_ID)) {
-            this.findChildMenu(menuEntityList, menuIds);
-        }
-        return menuEntityList;
-    }
-
-    /// 根据 ids 过滤 菜单列表
-    @Transactional(readOnly = true)
-    public void findChildMenu(List<MenuEntity> menus, Set<String> menuIds) {
-        for (int i = 0; i < menus.size(); i++) {
-            MenuEntity menu = menus.get(i);
-            if (menuIds.contains(menu.getId())) {
-                // 递归查询子菜单
-                List<MenuEntity> children = menu.getChildren();
-                if (ObjectUtils.isNotEmpty(children)) {
-                    this.findChildMenu(children, menuIds);
-                }
-            } else {
-                menus.remove(i--);
-            }
-        }
+        return menuIds;
     }
 }

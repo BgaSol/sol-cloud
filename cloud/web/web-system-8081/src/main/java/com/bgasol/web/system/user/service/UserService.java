@@ -32,7 +32,6 @@ import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPART
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class UserService extends BaseService<UserEntity, UserPageDto> {
     private final UserMapper userMapper;
@@ -54,6 +53,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         return redissonClient;
     }
 
+    @Transactional
     @Override
     public Integer delete(String id) {
         // 退出用户
@@ -63,6 +63,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         return super.delete(id);
     }
 
+    @Transactional
     @Override
     public UserEntity save(UserEntity entity) {
         // 检查用户名是否存在
@@ -78,6 +79,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         return super.save(entity);
     }
 
+    @Transactional
     @Override
     public UserEntity update(UserEntity entity) {
         String password = entity.getPassword();
@@ -87,6 +89,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         return super.update(entity);
     }
 
+    @Transactional
     public UserEntity updatePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
         String userid = StpUtil.getLoginIdAsString();
         UserEntity userEntity = this.findDirectById(userid);
@@ -102,6 +105,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
                 .build());
     }
 
+    @Transactional
     public UserEntity resetPassword(UserPasswordResetDto userPasswordResetDto) {
         UserEntity entity = userPasswordResetDto.toEntity();
         entity.setPassword(this.encodePassword(entity.getPassword()));
@@ -131,6 +135,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<UserEntity> list) {
         List<String> userIds = list.stream().map(UserEntity::getId).toList();
