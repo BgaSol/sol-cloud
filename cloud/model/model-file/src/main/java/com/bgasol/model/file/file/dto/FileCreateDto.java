@@ -1,6 +1,5 @@
 package com.bgasol.model.file.file.dto;
 
-import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
