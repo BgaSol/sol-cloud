@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PoiExportHistoryService extends BaseService<PoiExportHistoryEntity, PoiExportHistoryPageDto>{
+public class PoiExportHistoryService extends BaseService<PoiExportHistoryEntity, PoiExportHistoryPageDto> {
 
     private final PoiExportHistoryMapper poiExportHistoryMapper;
 

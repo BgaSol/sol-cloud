@@ -34,7 +34,7 @@ table "poi_t_export_history" {
     null = false
   }
   column "export_name" {
-    type = varchar(255)
+    type = varchar(100)
     null = false
   }
   column "params" {
@@ -47,7 +47,7 @@ table "poi_t_export_history" {
     default = 0
   }
   column "file_id" {
-    type = bigint
+    type = varchar(50)
     null = true
   }
   column "error_message" {

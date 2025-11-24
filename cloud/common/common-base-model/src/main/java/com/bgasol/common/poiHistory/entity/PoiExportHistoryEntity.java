@@ -37,7 +37,7 @@ public class PoiExportHistoryEntity extends BaseEntity {
 
     @Schema(description = "文件ID，关联文件存储表")
     @TableField("file_id")
-    private Long fileId;
+    private String fileId;
 
     @Schema(description = "错误信息")
     @TableField("error_message")

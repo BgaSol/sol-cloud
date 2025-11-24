@@ -1,13 +1,17 @@
 package com.bgasol.common.poiHistory.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.poiHistory.entity.PoiExportHistoryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.ObjectUtils;
 
 @Setter
 @Getter
@@ -26,4 +30,13 @@ public class PoiExportHistoryPageDto extends BasePageDto<PoiExportHistoryEntity>
     @TableField("status")
     private Integer status;
 
+    @Override
+    @JsonIgnore
+    @Schema(hidden = true)
+    public Wrapper<PoiExportHistoryEntity> getQueryWrapper() {
+        return Wrappers.<PoiExportHistoryEntity>lambdaQuery()
+                .like(ObjectUtils.isNotEmpty(exportServer), PoiExportHistoryEntity::getExportServer, exportServer)
+                .like(ObjectUtils.isNotEmpty(exportName), PoiExportHistoryEntity::getExportName, exportName)
+                .eq(ObjectUtils.isNotEmpty(status), PoiExportHistoryEntity::getStatus, status);
+    }
 }
