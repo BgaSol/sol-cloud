@@ -19,4 +19,22 @@ public class PoiExportHistoryService extends BaseService<PoiExportHistoryEntity,
     public MyBaseMapper<PoiExportHistoryEntity> commonBaseMapper() {
         return poiExportHistoryMapper;
     }
+
+    public void markFailed(String recordId, String errorMessage){
+        PoiExportHistoryEntity poiExportHistoryEntity = PoiExportHistoryEntity.builder()
+                .id(recordId)
+                .status(2)
+                .errorMessage(errorMessage)
+                .build();
+        poiExportHistoryMapper.updateById(poiExportHistoryEntity);
+    }
+
+    public void markSuccess(String recordId, String fileId){
+        PoiExportHistoryEntity poiExportHistoryEntity = PoiExportHistoryEntity.builder()
+                .id(recordId)
+                .status(1)
+                .fileId(fileId)
+                .build();
+        poiExportHistoryMapper.updateById(poiExportHistoryEntity);
+    }
 }
