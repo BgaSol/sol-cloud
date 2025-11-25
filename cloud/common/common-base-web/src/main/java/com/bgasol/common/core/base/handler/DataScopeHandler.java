@@ -62,6 +62,9 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
         ScopeOptionsBo scopeOption;
         try {
             Class<? extends BaseEntity> entityClass = (Class<? extends BaseEntity>) entityFieldCache.tableClassCache.get(table.getName());
+            if (entityClass == null) {
+                return null;
+            }
             scopeOption = getScopeOption(entityClass);
         } catch (RuntimeException e) {
             log.warn(e.getMessage(), e);
@@ -169,7 +172,9 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
 
     private ScopeOptionsBo getScopeOption(Class<? extends BaseEntity> entityClass) {
         ScopeOptionsBo scopeOptions = new ScopeOptionsBo();
-
+        if (entityClass == null) {
+            return scopeOptions;
+        }
         Field[] fields = FieldUtils.getAllFields(entityClass);
         for (Field field : fields) {
             Class<?> fieldType = field.getType();

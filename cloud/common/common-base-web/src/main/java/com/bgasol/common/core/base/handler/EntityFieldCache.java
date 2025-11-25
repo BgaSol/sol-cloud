@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Component
 public class EntityFieldCache {
-    private static final String SCAN_PACKAGE = "com.bgasol.model";
+    private static final String SCAN_PACKAGE = "com.bgasol";
     
     private final Map<String, Map<String, FieldInfo>> tableFieldCache = new ConcurrentHashMap<>();
     private final Map<String, String> tableNameCache = new ConcurrentHashMap<>();
@@ -32,7 +32,14 @@ public class EntityFieldCache {
         var scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(TableName.class));
 
-        scanner.findCandidateComponents(SCAN_PACKAGE).parallelStream().forEach(bd -> {
+        scanner.findCandidateComponents(SCAN_PACKAGE+".model").parallelStream().forEach(bd -> {
+            try {
+                scanEntityClass(Class.forName(bd.getBeanClassName()));
+            } catch (Exception e) {
+                log.warn("扫描实体类失败: {}", bd.getBeanClassName(), e);
+            }
+        });
+        scanner.findCandidateComponents(SCAN_PACKAGE+".common").parallelStream().forEach(bd -> {
             try {
                 scanEntityClass(Class.forName(bd.getBeanClassName()));
             } catch (Exception e) {
