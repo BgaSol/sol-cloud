@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,4 +43,8 @@ public class PoiExportHistoryEntity extends BaseEntity {
     @Schema(description = "错误信息")
     @TableField("error_message")
     private String errorMessage;
+
+    @Schema(description = "部门id，关联部门表")
+    @TableField("department_id")
+    private String departmentId;
 }

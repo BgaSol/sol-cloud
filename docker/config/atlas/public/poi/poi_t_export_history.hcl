@@ -57,6 +57,10 @@ table "poi_t_export_history" {
   primary_key {
     columns = [column.id]
   }
+  column "department_id" {
+    type = varchar(50)
+    null = true
+  }
 
   index "idx_export_server" {
     columns = [column.export_server]
