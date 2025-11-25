@@ -17,14 +17,14 @@ public class ThreadPoolConfig {
      */
     @Bean("cpuThreadPool")
     public ExecutorService cpuThreadPool() {
-        int cores = Runtime.getRuntime().availableProcessors() / 2; // 逻辑核除2 = 物理核数量
+        int cores = Runtime.getRuntime().availableProcessors() / 2;
         int corePoolSize = cores + 1;
         return new ThreadPoolExecutor(
                 corePoolSize,
                 corePoolSize,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(2000),
+                new LinkedBlockingQueue<>(500),
                 new NamedThreadFactory("cpu-pool"),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
@@ -37,14 +37,14 @@ public class ThreadPoolConfig {
     @Bean("ioThreadPool")
     public ExecutorService ioThreadPool() {
         int cores = Runtime.getRuntime().availableProcessors() / 2;
-        int corePoolSize = cores * 3; // 建议 2~3 倍
+        int corePoolSize = cores * 2;
 
         return new ThreadPoolExecutor(
                 corePoolSize,
                 corePoolSize,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(10000),
+                new LinkedBlockingQueue<>(2000),
                 new NamedThreadFactory("io-pool"),
                 new ThreadPoolExecutor.CallerRunsPolicy()
         );
