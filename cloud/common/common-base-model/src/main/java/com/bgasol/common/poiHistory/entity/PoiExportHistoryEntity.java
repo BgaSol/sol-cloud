@@ -32,7 +32,7 @@ public class PoiExportHistoryEntity extends BaseEntity {
     @TableField("params")
     private String params;
 
-    @Schema(description = "导出状态：0进行中 / 1成功 / 2失败")
+    @Schema(description = "导出状态：0 未开始 / 1 进行中 / 2 成功 / 3 失败 / 4 文件删除")
     @TableField("status")
     private Integer status;
 
