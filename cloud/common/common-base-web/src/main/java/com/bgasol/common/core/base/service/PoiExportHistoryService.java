@@ -20,7 +20,7 @@ public class PoiExportHistoryService extends BaseService<PoiExportHistoryEntity,
         return poiExportHistoryMapper;
     }
 
-    public void markFailed(String recordId, String errorMessage){
+    public void markFailed(String recordId, String errorMessage) {
         PoiExportHistoryEntity poiExportHistoryEntity = PoiExportHistoryEntity.builder()
                 .id(recordId)
                 .status(3)
@@ -29,7 +29,7 @@ public class PoiExportHistoryService extends BaseService<PoiExportHistoryEntity,
         poiExportHistoryMapper.updateById(poiExportHistoryEntity);
     }
 
-    public void markSuccess(String recordId, String fileId){
+    public void markSuccess(String recordId, String fileId) {
         PoiExportHistoryEntity poiExportHistoryEntity = PoiExportHistoryEntity.builder()
                 .id(recordId)
                 .status(2)

@@ -47,4 +47,17 @@ public class PoiExportHistoryEntity extends BaseEntity {
     @Schema(description = "部门id，关联部门表")
     @TableField("department_id")
     private String departmentId;
+
+    @Schema(description = "用户名")
+    @TableField("user_name")
+    private String userName;
+
+    @Schema(description = "文件大小")
+    @TableField("file_size")
+    private Long fileSize;
+
+    @Schema(description = "文件数量")
+    @TableField("file_num")
+    private Long fileNum;
+
 }

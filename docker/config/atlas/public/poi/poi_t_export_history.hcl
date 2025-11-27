@@ -61,6 +61,18 @@ table "poi_t_export_history" {
     type = varchar(50)
     null = true
   }
+  column "user_name" {
+    type = varchar(50)
+    null = true
+  }
+  column "file_size" {
+    type = bigint
+    null = true
+  }
+  column "file_num" {
+    type = bigint
+    null = true
+  }
 
   index "idx_export_server" {
     columns = [column.export_server]
