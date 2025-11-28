@@ -35,7 +35,7 @@ table "poi_t_export_history" {
   }
   column "export_name" {
     type = varchar(100)
-    null = false
+    null = true
   }
   column "params" {
     type = text
