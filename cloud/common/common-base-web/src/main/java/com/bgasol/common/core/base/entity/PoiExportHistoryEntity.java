@@ -1,10 +1,14 @@
-package com.bgasol.common.poiHistory.entity;
+package com.bgasol.common.core.base.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
+import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.bgasol.model.system.user.bo.ScopeField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,5 +63,12 @@ public class PoiExportHistoryEntity extends BaseEntity {
     @Schema(description = "文件数量")
     @TableField("file_num")
     private Long fileNum;
+
+    @Schema(description = "部门")
+    @TableField(exist = false)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    @ScopeField
+    private DepartmentEntity department;
 
 }

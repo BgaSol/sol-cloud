@@ -1,10 +1,9 @@
-package com.bgasol.common.poiHistory.dto;
+package com.bgasol.common.core.base.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.poiHistory.entity.PoiExportHistoryEntity;
+import com.bgasol.common.core.base.entity.PoiExportHistoryEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

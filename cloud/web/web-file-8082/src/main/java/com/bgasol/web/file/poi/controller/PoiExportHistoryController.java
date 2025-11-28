@@ -7,18 +7,16 @@ import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.common.core.base.service.PoiExportHistoryService;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
-import com.bgasol.common.poiHistory.dto.PoiExportHistoryPageDto;
-import com.bgasol.common.poiHistory.entity.PoiExportHistoryEntity;
+import com.bgasol.common.core.base.dto.PoiExportHistoryPageDto;
+import com.bgasol.common.core.base.entity.PoiExportHistoryEntity;
 import com.bgasol.web.file.file.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @RestController
