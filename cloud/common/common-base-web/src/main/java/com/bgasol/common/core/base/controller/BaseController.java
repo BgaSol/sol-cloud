@@ -30,13 +30,13 @@ public abstract class BaseController<
     public BaseVo<Void> insert(@Valid CREATE_DTO createDto) {
         ENTITY entity = createDto.toEntity();
         commonBaseService().insert(entity);
-        return BaseVo.success();
+        return BaseVo.success(null, "保存成功");
     }
 
     public BaseVo<Void> apply(@Valid UPDATE_DTO updateDto) {
         ENTITY entity = updateDto.toEntity();
         commonBaseService().apply(entity);
-        return BaseVo.success();
+        return BaseVo.success(null, "更新成功");
     }
 
     @Deprecated
@@ -59,8 +59,8 @@ public abstract class BaseController<
     }
 
     public BaseVo<ENTITY> findById(@Valid @NotBlank String id) {
-        ENTITY byId = commonBaseService().findById(id);
-        return BaseVo.success(byId);
+        ENTITY entity = commonBaseService().findById(id);
+        return BaseVo.success(entity);
     }
 
     public BaseVo<List<ENTITY>> findByIds(@Valid @NotBlank String ids) {
