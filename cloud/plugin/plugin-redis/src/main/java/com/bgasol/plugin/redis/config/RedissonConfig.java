@@ -56,19 +56,19 @@ public class RedissonConfig {
     private String sentinelNodes;
 
     // 连接池配置
-    @Value("${spring.data.redis.pool.connection-pool-size:64}")
+    @Value("${spring.data.redis.pool.connection-pool-size}")
     private int connectionPoolSize;
 
-    @Value("${spring.data.redis.pool.connection-minimum-idle-size:10}")
+    @Value("${spring.data.redis.pool.connection-minimum-idle-size}")
     private int connectionMinimumIdleSize;
 
-    @Value("${spring.data.redis.pool.idle-connection-timeout:10000}")
+    @Value("${spring.data.redis.pool.idle-connection-timeout}")
     private int idleConnectionTimeout;
 
-    @Value("${spring.data.redis.pool.connect-timeout:10000}")
+    @Value("${spring.data.redis.pool.connect-timeout}")
     private int connectTimeout;
 
-    @Value("${spring.data.redis.pool.timeout:3000}")
+    @Value("${spring.data.redis.pool.timeout}")
     private int timeout;
 
     @Bean(destroyMethod = "shutdown")

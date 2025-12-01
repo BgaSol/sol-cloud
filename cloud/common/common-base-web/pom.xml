@@ -57,11 +57,11 @@
             <artifactId>plugin-loadbalancer</artifactId>
             <version>0.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-micrometer</artifactId>
-            <version>0.0.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.bgasol</groupId>-->
+<!--            <artifactId>plugin-micrometer</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>

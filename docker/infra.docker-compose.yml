@@ -12,6 +12,8 @@ services:
     image: nacos/nacos-server:v2.5.1
     container_name: cloud-app-nacos
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1
     ports:
       - "8848:8848"
       - "9848:9848"
@@ -30,17 +32,18 @@ services:
       NACOS_AUTH_TOKEN: ${NACOS_AUTH_TOKEN}
       NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
       NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_SECRET}
+
+      JVM_XMS: 128m
+      JVM_XMX: 256m
+      JVM_XMN: 64m
+      JVM_MS: 64m
+      JVM_MMS: 128m
     networks:
       - cloud-app
     volumes:
       - ./data/nacos/logs:/home/nacos/logs
       - ./config/nacos/conf/application.properties:/home/nacos/conf/application.properties
       - ./config/nacos/plugins/:/home/nacos/plugins/
-    deploy:
-      resources:
-        limits:
-          cpus: 2
-          memory: 2g
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/v1/console/namespaces?&namespaceId=" ]
       interval: 10s
@@ -51,6 +54,8 @@ services:
     image: minio/minio:RELEASE.2024-11-07T00-52-20Z
     container_name: cloud-app-minio
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 1
     command:
       - server
       - /data
@@ -66,11 +71,6 @@ services:
     volumes:
       - ./data/minio/data:/data
       - ./data/minio/root/.minio:/root/.minio
-    deploy:
-      resources:
-        limits:
-          cpus: 2
-          memory: 2g
     networks:
       - cloud-app
     healthcheck:
@@ -83,6 +83,8 @@ services:
     image: postgres:17.2
     container_name: cloud-app-postgres
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     environment:
       TZ: ${TZ}
@@ -107,22 +109,19 @@ services:
     image: redis:7.4.2
     container_name: cloud-app-redis
     restart: unless-stopped
+    mem_limit: 256m
+    cpus: 1
     environment:
       TZ: ${TZ}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     command:
       - /bin/sh
       - -c
-      - redis-server --maxmemory 8gb --maxmemory-policy allkeys-lru --appendonly yes --requirepass $$REDIS_PASSWORD
+      - redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --appendonly yes --requirepass $$REDIS_PASSWORD
     volumes:
       - redis-data:/data
     ports:
       - "6379:6379"
-    deploy:
-      resources:
-        limits:
-          cpus: 1
-          memory: 2g
     networks:
       - cloud-app
     healthcheck:

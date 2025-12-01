@@ -1,8 +1,8 @@
 server:
   undertow:
     threads:
-      io: 4
-      worker: 128
+      io: 1
+      worker: 8
 system:
   ws:
-    open-request-log: true
+    open-request-log: false

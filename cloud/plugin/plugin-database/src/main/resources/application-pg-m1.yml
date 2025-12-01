@@ -13,6 +13,6 @@ spring:
           seata: false
           p6spy: false
           hikari:
-            maximum-pool-size: 20
+            maximum-pool-size: 5
             minimum-idle: 2
-            connection-timeout: 3000
+            connection-timeout: 5000

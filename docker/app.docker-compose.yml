@@ -6,6 +6,8 @@ services:
     image: nginx:alpine
     container_name: cloud-app-nginx
     restart: unless-stopped
+    mem_limit: 64m
+    cpus: 1
     environment:
       TZ: ${TZ}
     ports:
@@ -18,8 +20,10 @@ services:
     depends_on:
       - cloud-server-gateway
   cloud-server-gateway:
-    image: amazoncorretto:17.0.15
+    image: azul/zulu-openjdk:17.0.17-jre
     working_dir: /app
+    mem_limit: 256m
+    cpus: 1
     command:
       - java
       - -cp
@@ -54,8 +58,10 @@ services:
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
   cloud-server-web-system:
-    image: amazoncorretto:17.0.15
+    image: azul/zulu-openjdk:17.0.17-jre
     working_dir: /app
+    mem_limit: 256m
+    cpus: 1
     command:
       - java
       - -cp
@@ -99,16 +105,13 @@ services:
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
-    deploy:
-      resources:
-        limits:
-          memory: 1g
-          cpus: 2
     networks:
       - cloud-app
   cloud-server-web-file:
-    image: amazoncorretto:17.0.15
+    image: azul/zulu-openjdk:17.0.17-jre
     working_dir: /app
+    mem_limit: 256m
+    cpus: 1
     command:
       - java
       - -cp
@@ -152,11 +155,6 @@ services:
       LOKI_HOST: cloud-monitor-grafana-loki
 
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
-    deploy:
-      resources:
-        limits:
-          memory: 1g
-          cpus: 2
     networks:
       - cloud-app
     depends_on:

@@ -40,8 +40,8 @@ print_divider
 print_step "开始后端构建 🏗️"
 cd cloud
 export MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED -Xmx2g -XX:+UseG1GC"
-print_info "🔨 执行 Maven 构建..."
-mvn clean package -DskipTests -T 6 -Dspring-boot.repackage.layers.enabled=true
+print_info "🔨 执行 Maven 构建...(单线程)"
+mvn clean package -DskipTests -T 1 -Dspring-boot.repackage.layers.enabled=true
 cd ..
 print_success "🎉 后端构建成功！"
 
