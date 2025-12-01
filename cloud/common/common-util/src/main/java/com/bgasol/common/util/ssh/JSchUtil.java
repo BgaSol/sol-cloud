@@ -1,11 +1,13 @@
 package com.bgasol.common.util.ssh;
 
 import com.jcraft.jsch.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.util.Objects;
 import java.util.Properties;
 
+@Slf4j
 public class JSchUtil {
 
     private Session session;
@@ -22,7 +24,7 @@ public class JSchUtil {
         session.setConfig(properties);
 
         session.connect();
-        System.out.println("Connected to " + host);
+        log.info("Connected to {}", host);
     }
 
     // 执行远程命令
@@ -64,7 +66,7 @@ public class JSchUtil {
 
         sftpChannel.put(localFilePath, remoteFilePath, ChannelSftp.OVERWRITE);
         sftpChannel.disconnect();
-        System.out.println("File copied to " + remoteFilePath);
+        log.info("File copied to {}", remoteFilePath);
     }
 
     // 将本地目录复制到远程服务器
@@ -89,7 +91,7 @@ public class JSchUtil {
         }
 
         sftpChannel.disconnect();
-        System.out.println("Directory copied to " + remoteDirPath);
+        log.info("Directory copied to {}", remoteDirPath);
     }
 
     // 递归地将目录内容复制到远程服务器
@@ -115,7 +117,7 @@ public class JSchUtil {
     public void disconnect() {
         if (session != null && session.isConnected()) {
             session.disconnect();
-            System.out.println("Disconnected from server.");
+            log.info("Disconnected from server.");
         }
     }
 }
