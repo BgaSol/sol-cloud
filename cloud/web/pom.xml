@@ -31,28 +31,12 @@
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>common-constant</artifactId>
-            <version>0.0.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>com.bgasol</groupId>
             <artifactId>common-base-web</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-nacos</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-loadbalancer</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-micrometer</artifactId>
             <version>0.0.1</version>
         </dependency>
     </dependencies>
