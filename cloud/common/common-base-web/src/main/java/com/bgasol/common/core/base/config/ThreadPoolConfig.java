@@ -16,13 +16,13 @@ public class ThreadPoolConfig {
      */
     @Bean("cpuThreadPool")
     public ThreadPoolTaskExecutor cpuThreadPool() {
-        int cores = Runtime.getRuntime().availableProcessors() / 2;
+        int cores = Runtime.getRuntime().availableProcessors();
         int corePoolSize = cores + 1;
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
         executor.setQueueCapacity(500);
-        executor.setThreadNamePrefix("cpu-pool");
+        executor.setThreadNamePrefix("cpu-pool-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setAllowCoreThreadTimeOut(true);
         executor.initialize();
@@ -35,14 +35,13 @@ public class ThreadPoolConfig {
      */
     @Bean("ioThreadPool")
     public ThreadPoolTaskExecutor ioThreadPool() {
-        int cores = Runtime.getRuntime().availableProcessors() / 2;
+        int cores = Runtime.getRuntime().availableProcessors();
         int corePoolSize = cores * 2;
-
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(corePoolSize);
         executor.setMaxPoolSize(corePoolSize);
         executor.setQueueCapacity(2000);
-        executor.setThreadNamePrefix("io-pool");
+        executor.setThreadNamePrefix("io-pool-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setAllowCoreThreadTimeOut(true);
         executor.initialize();
