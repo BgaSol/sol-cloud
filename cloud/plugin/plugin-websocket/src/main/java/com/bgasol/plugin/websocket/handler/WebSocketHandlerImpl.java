@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -42,13 +43,13 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     // 在 WebSocket 协商成功且 WebSocket 连接打开并可供使用后调用。
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         sessions.put(session.getId(), session);
     }
 
     // 当新的 WebSocket 消息到达时调用。
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws JsonProcessingException {
+    public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) throws JsonProcessingException {
         if (!(message instanceof TextMessage textMessage)) {
             throw new IllegalStateException("意外的 WebSocket 消息类型: " + message);
         }
@@ -66,16 +67,16 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     // 处理来自底层 WebSocket 消息传输的错误。
     @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception) {
+    public void handleTransportError(WebSocketSession session, @NonNull Throwable exception) {
         log.error("websocket错误,sessionId:{},userId:{}", session.getId(), session.getAttributes().get(USER_ID), exception);
     }
 
     // 在任一端关闭 WebSocket 连接后或在发生传输错误后调用。
     // 尽管从技术上讲，会话可能仍处于打开状态，但根据底层实现，不建议在此时发送消息，并且很可能不会成功。
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-        log.info("websocket断开链接,sessionId:{},userId:{}", session.getId(), session.getAttributes().get(USER_ID));
+    public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus closeStatus) {
         sessions.remove(session.getId());
+        log.info("websocket断开链接,sessionId:{},userId:{}", session.getId(), session.getAttributes().get(USER_ID));
     }
 
     // WebSocketHandler 是否处理部分消息。
@@ -132,7 +133,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
             int start = index * chunkSize;
             int end = Math.min(start + chunkSize, sendData.length());
             String chunk = sendData.substring(start, end);
-            String json = null;
+            String json;
             try {
                 json = objectMapper.writeValueAsString(SendMessageChunkDto.builder()
                         .uuid(uuid)
