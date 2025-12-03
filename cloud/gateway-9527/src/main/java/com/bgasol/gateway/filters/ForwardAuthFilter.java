@@ -23,14 +23,14 @@ public class ForwardAuthFilter implements GlobalFilter {
             // 响应404
             return exchange.getResponse().setComplete();
         }
-        ServerHttpRequest oldRequest = exchange.getRequest();
-        ServerHttpRequest newRequest = oldRequest.mutate()
-                // 为请求追加 Same-Token 参数
-                .header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken())
-                .header(GatewayConfigValues.XFromGateway, "true")
-                .build();
-        ServerWebExchange newExchange = exchange.mutate().request(newRequest).build();
-        // 继续执行
-        return chain.filter(newExchange);
+        return chain.filter(
+                exchange.mutate().request(
+                        exchange.getRequest().mutate()
+                                .header(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken())
+                                .header(GatewayConfigValues.XFromGateway, "true")
+                                .build()
+                ).build()
+        );
+
     }
 }

@@ -6,14 +6,6 @@
  * 创建文件
  */
 export type FileCreateDto = {
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 描述
-     */
-    description?: string;
     uploadFile?: Blob;
     /**
      * 文件名称(包含文件后缀)
@@ -35,5 +27,13 @@ export type FileCreateDto = {
      * 文件来源
      */
     source?: string;
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 描述
+     */
+    description?: string;
 };
 

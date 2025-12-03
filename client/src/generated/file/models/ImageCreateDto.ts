@@ -21,6 +21,6 @@ export type ImageCreateDto = {
     /**
      * 图片文件id
      */
-    fileId: string;
+    fileId?: string;
 };
 

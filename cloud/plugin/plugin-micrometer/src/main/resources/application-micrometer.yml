@@ -11,6 +11,8 @@ management:
   tracing:
     sampling:
       probability: 1.0  # 开发 1.0，生产建议 0.1~0.3
+    propagation:
+      type: w3c
   otlp:
     tracing:
       endpoint: http://${TEMPO_HOST:127.0.0.1}:4318/v1/traces

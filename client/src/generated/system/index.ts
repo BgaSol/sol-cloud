@@ -30,6 +30,7 @@ export type { DepartmentCreateDto } from './models/DepartmentCreateDto';
 export type { DepartmentEntity } from './models/DepartmentEntity';
 export type { DepartmentUpdateDto } from './models/DepartmentUpdateDto';
 export type { ImportResult } from './models/ImportResult';
+export { MenuCreateDto } from './models/MenuCreateDto';
 export { MenuEntity } from './models/MenuEntity';
 export type { PageVoUserEntity } from './models/PageVoUserEntity';
 export type { PermissionEntity } from './models/PermissionEntity';
