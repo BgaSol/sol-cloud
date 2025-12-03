@@ -25,6 +25,6 @@ export type ImageUpdateDto = {
     /**
      * 图片文件id
      */
-    fileId: string;
+    fileId?: string;
 };
 

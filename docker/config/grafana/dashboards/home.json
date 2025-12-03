@@ -1,0 +1,166 @@
+{
+  "title": "云平台与微服务总览",
+  "tags": ["home", "总览"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "全局 QPS（请求数/秒）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(rate(http_server_requests_seconds_count[1m]))" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 5 }
+    },
+    {
+      "title": "全局错误率（%）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_server_requests_seconds_count{status!~\"2..\"}[5m])) / sum(rate(http_server_requests_seconds_count[5m]))"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 5 }
+    },
+    {
+      "title": "全局 P95 延迟（秒）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_sum[5m])) / sum(rate(http_server_requests_seconds_count[5m]))"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 5 }
+    },
+    {
+      "title": "最近5分钟请求总量",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(increase(http_server_requests_seconds_count[5m]))" }
+      ],
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 5 }
+    },
+
+
+    {
+      "title": "各服务错误率（%）",
+      "type": "bargauge",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "100 * sum(rate(http_server_requests_seconds_count{status!~\"2..\"}[5m])) by (application) / sum(rate(http_server_requests_seconds_count[5m])) by (application)",
+          "legendFormat": "{{application}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 5, "w": 24, "h": 7 }
+    },
+    {
+      "title": "各服务 QPS（请求数/秒）",
+      "type": "bargauge",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (application, instance)",
+          "legendFormat": "{{application}} - {{instance}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 7 }
+    },
+    {
+      "title": "各服务 P95 延迟（秒）",
+      "type": "bargauge",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_sum[5m])) by (application) / sum(rate(http_server_requests_seconds_count[5m])) by (application)",
+          "legendFormat": "{{application}}"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 19, "w": 24, "h": 7 }
+    },
+
+
+    {
+      "title": "Redis 当前连接数",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "redis_connected_clients" }
+      ],
+      "gridPos": { "x": 0, "y": 26, "w": 6, "h": 5 }
+    },
+    {
+      "title": "PostgreSQL 活跃连接数",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "pg_stat_activity_count" }
+      ],
+      "gridPos": { "x": 6, "y": 26, "w": 6, "h": 5 }
+    },
+    {
+      "title": "Loki 日志摄入速率（字节/秒）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(rate(loki_distributor_bytes_received_total[1m]))" }
+      ],
+      "gridPos": { "x": 12, "y": 26, "w": 6, "h": 5 }
+    },
+    {
+      "title": "Tempo Trace 请求数/秒",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(rate(tempo_request_duration_seconds_count[1m]))" }
+      ],
+      "gridPos": { "x": 18, "y": 26, "w": 6, "h": 5 }
+    },
+
+
+    {
+      "title": "应用日志发送速率（行数/秒）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(rate(loki4j_encode_events_count[1m]))" }
+      ],
+      "gridPos": { "x": 0, "y": 31, "w": 6, "h": 5 }
+    },
+    {
+      "title": "最近5分钟日志发送总量（行数）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        { "expr": "sum(increase(loki4j_encode_events_count[5m]))" }
+      ],
+      "gridPos": { "x": 6, "y": 31, "w": 6, "h": 5 }
+    },
+    {
+      "title": "Redis 命中率（%）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "100 * sum(rate(redis_keyspace_hits_total[5m])) / (sum(rate(redis_keyspace_hits_total[5m])) + sum(rate(redis_keyspace_misses_total[5m])))"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 31, "w": 6, "h": 5 }
+    },
+    {
+      "title": "JVM 堆使用率（%）",
+      "type": "stat",
+      "datasource": "prometheus",
+      "targets": [
+        {
+          "expr": "100 * sum(jvm_memory_used_bytes{area=\"heap\"}) / sum(jvm_memory_max_bytes{area=\"heap\"})"
+        }
+      ],
+      "gridPos": { "x": 18, "y": 31, "w": 6, "h": 5 }
+    }
+
+  ]
+}
