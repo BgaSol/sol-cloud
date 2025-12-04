@@ -1,10 +1,10 @@
 package com.bgasol.plugin.redis.config;
 
+import com.bgasol.plugin.redis.codec.CustomJsonJacksonCodec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
@@ -75,7 +75,7 @@ public class RedissonConfig {
     @Primary
     public RedissonClient redissonClient() {
         Config config = new Config();
-        config.setCodec(new JsonJacksonCodec());
+        config.setCodec(new CustomJsonJacksonCodec());
 
         switch (mode.toLowerCase()) {
             case "cluster":
@@ -90,7 +90,7 @@ public class RedissonConfig {
                 break;
         }
 
-        log.info("Redisson 配置完成: 模式={}, 编解码器=JsonJacksonCodec", mode);
+        log.info("Redisson 配置完成: 模式={}, 编解码器=CustomJsonJacksonCodec", mode);
         return Redisson.create(config);
     }
 
