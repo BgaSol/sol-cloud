@@ -106,7 +106,7 @@ const getDepartmentTree = async () => {
         <el-input v-model='data.code' placeholder='请输入编码'></el-input>
       </el-form-item>
       <el-form-item :error="errData.domain" label="域名">
-        <el-input v-model='data.domain' placeholder='请输入域名'></el-input>
+        <el-input v-model='data.domain' placeholder='例 localhost:8080'></el-input>
       </el-form-item>
       <el-form-item :error="errData.address" label="地址">
         <el-input v-model='data.address' placeholder='请输入地址'></el-input>
