@@ -14,7 +14,6 @@ import com.bgasol.web.system.user.service.LoginService;
 import com.bgasol.web.system.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -142,9 +141,7 @@ public class UserController extends BaseController<
     @GetMapping("/get-my")
     @Operation(summary = "获取我的部门", operationId = "getMyDepartment")
     @SaIgnore
-    public BaseVo<DepartmentEntity> getMyDepartment(HttpServletRequest request) {
-        // 获取域名
-        String domain = request.getServerName();
-        return BaseVo.success(userService.getMyDepartment(domain));
+    public BaseVo<DepartmentEntity> getMyDepartment(@RequestHeader("X-Forwarded-Host") String xForwardedHost) {
+        return BaseVo.success(userService.getMyDepartment(xForwardedHost));
     }
 }

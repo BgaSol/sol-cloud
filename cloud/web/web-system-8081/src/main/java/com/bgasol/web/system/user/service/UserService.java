@@ -29,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
+import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.InWebRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -173,14 +174,17 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
     /// 获取当前访问者所属的用户的部门
     @Transactional(readOnly = true)
-    public DepartmentEntity getMyDepartment(String domain) {
-        if (StpUtil.isLogin()) {
-            // 获取当前登录用户的部门
-            String userId = StpUtil.getLoginIdAsString();
-            return this.findById(userId).getDepartment();
-        } else if (ObjectUtils.isNotEmpty(domain)) {
-            // 获取当前域的部门
-            return departmentService.findByDomain(domain);
+    public DepartmentEntity getMyDepartment(String xForwardedHost) {
+        if (InWebRequest()) {
+            if (StpUtil.isLogin()) {
+                // 获取当前登录用户的部门
+                String userId = StpUtil.getLoginIdAsString();
+                return this.findById(userId).getDepartment();
+            }
+            DepartmentEntity byDomain = departmentService.findByDomain(xForwardedHost);
+            if (ObjectUtils.isNotEmpty(byDomain)) {
+                return byDomain;
+            }
         }
         // 若都找不到则返回默认部门
         return departmentService.findById(DEFAULT_DEPARTMENT_ID);
