@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "分页查询通用参数")
-public abstract class BasePageDto<T extends BaseEntity> {
+public abstract class BasePageDto<ENTITY extends BaseEntity> {
     @NotNull(message = "页码不能为空")
     @Min(value = 1, message = "页码不能小于1")
     @Schema(description = "页码")
@@ -31,7 +31,7 @@ public abstract class BasePageDto<T extends BaseEntity> {
 
     @JsonIgnore
     @Schema(hidden = true)
-    public Wrapper<T> getQueryWrapper() {
+    public Wrapper<ENTITY> getQueryWrapper() {
         throw new UnsupportedOperationException("not implemented yet");
     }
 }

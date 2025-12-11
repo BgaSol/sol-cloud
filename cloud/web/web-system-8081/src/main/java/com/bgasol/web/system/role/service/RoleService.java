@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -89,4 +90,22 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
         });
     }
 
+    @Override
+    public BiPredicate<RoleEntity, List<String>> importValidator() {
+        return (entity, errors) -> {
+
+            if (entity.getName() == null ) {
+                errors.add("角色名称不能为空");
+                return false;
+            }
+
+            if (entity.getCode() == null ) {
+                errors.add("角色编码不能为空");
+                return false;
+            }
+
+            // 其他业务校验...
+            return true;
+        };
+    }
 }

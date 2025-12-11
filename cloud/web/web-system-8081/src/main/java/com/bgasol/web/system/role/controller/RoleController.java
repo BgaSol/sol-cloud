@@ -2,9 +2,11 @@ package com.bgasol.web.system.role.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
+import com.bgasol.common.core.base.capability.PoiCapability;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
@@ -14,8 +16,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +38,12 @@ public class RoleController extends BaseController<
         RoleUpdateDto> {
     private final RoleService roleService;
     private final UserService userService;
+    private final PoiCapability poiCapability;
+
+    @Override
+    public PoiCapability getPoiCapability() {
+        return poiCapability;
+    }
 
     @Override
     public RoleService commonBaseService() {
@@ -92,4 +103,19 @@ public class RoleController extends BaseController<
         List<RoleEntity> roles = userService.findById(userId).getRoles();
         return BaseVo.success(roles);
     }
+
+    @GetMapping("/template-download")
+    @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
+    @SaCheckPermission(value = "role:downloadImportTemplate", orRole = "admin")
+    public ResponseEntity<InputStreamResource> downloadImportTemplate() {
+        return super.downloadImportTemplate();
+    }
+
+    @PostMapping(value = "/import", consumes = {"multipart/form-data"})
+    @Operation(summary = "导入角色", operationId = "importRole")
+    @SaCheckPermission(value = "role:importExcel", orRole = "admin")
+    public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) {
+        return super.importFromExcel(file);
+    }
+
 }

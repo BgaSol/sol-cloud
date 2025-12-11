@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
@@ -522,5 +523,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public ENTITY update(ENTITY entity) {
         this.apply(entity);
         return this.findById(entity.getId());
+    }
+
+    /**
+     * Excel 导入行级校验器（默认不做校验）
+     */
+    public BiPredicate<ENTITY, List<String>> importValidator() {
+        return null;
     }
 }
