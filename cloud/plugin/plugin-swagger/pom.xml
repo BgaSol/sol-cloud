@@ -22,9 +22,5 @@
             <artifactId>common-util</artifactId>
             <version>0.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-        </dependency>
     </dependencies>
 </project>
