@@ -7,7 +7,7 @@ set -e
 
 # 构建数据库连接字符串
 DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
-DEV_ENV="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/atlas?sslmode=disable"
+DEV_ENV="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/atlas?search_path=public&sslmode=disable"
 
 # 检查atlas命令是否存在
 if ! command -v atlas &> /dev/null; then

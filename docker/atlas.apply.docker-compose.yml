@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   atlas-go:
-    image: arigaio/atlas:0.37.0-alpine
+    image: arigaio/atlas:0.38.0-alpine
     container_name: atlas-go
     working_dir: /app
     entrypoint: ["/bin/sh"]
