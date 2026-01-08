@@ -5,16 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.bgasol</groupId>
-        <artifactId>plugin</artifactId>
+        <artifactId>plugin-discovery</artifactId>
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>plugin-nacos</artifactId>
+    <artifactId>plugin-discovery-k8s</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-kubernetes-fabric8</artifactId>
+        </dependency>
+        <!-- BouncyCastle - 解决 EC Key 问题 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>1.78.1</version>
         </dependency>
     </dependencies>
 </project>

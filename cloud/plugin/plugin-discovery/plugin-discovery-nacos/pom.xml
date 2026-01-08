@@ -5,15 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.bgasol</groupId>
-        <artifactId>plugin</artifactId>
+        <artifactId>plugin-discovery</artifactId>
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>plugin-discovery</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>plugin-discovery-k8s</module>
-        <module>plugin-discovery-nacos</module>
-        <module>plugin-discovery-starter</module>
-    </modules>
+    <artifactId>plugin-discovery-nacos</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+    </dependencies>
 </project>

@@ -49,7 +49,7 @@
 
         <dependency>
             <groupId>com.bgasol</groupId>
-            <artifactId>plugin-discovery</artifactId>
+            <artifactId>plugin-discovery-starter</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
