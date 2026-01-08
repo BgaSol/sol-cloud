@@ -5,8 +5,8 @@ spring:
     name: gateway
   profiles:
     active:
+      - discovery
       - logger
       - micrometer
-      - nacos
       - redis
       - sa-token

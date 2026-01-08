@@ -1,0 +1,10 @@
+spring:
+  main:
+    cloud-platform: kubernetes
+  cloud:
+    kubernetes:
+      discovery:
+        namespaces:
+          - app
+      client:
+        namespace: app

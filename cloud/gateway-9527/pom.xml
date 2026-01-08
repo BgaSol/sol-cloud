@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>com.bgasol</groupId>
-            <artifactId>plugin-nacos</artifactId>
+            <artifactId>plugin-discovery</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>

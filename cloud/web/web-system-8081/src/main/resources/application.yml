@@ -16,10 +16,10 @@ spring:
     active:
       - web
       - database
+      - discovery
       - loadbalancer
       - logger
       - micrometer
-      - nacos
       - feign
       - pg-m1
       - redis

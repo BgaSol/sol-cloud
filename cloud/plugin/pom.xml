@@ -19,12 +19,12 @@
         <module>plugin-mail</module>
         <module>plugin-micrometer</module>
         <module>plugin-minio</module>
-        <module>plugin-nacos</module>
         <module>plugin-openfeign</module>
         <module>plugin-redis</module>
         <module>plugin-sa-token</module>
         <module>plugin-swagger</module>
         <module>plugin-websocket</module>
+        <module>plugin-discovery</module>
     </modules>
     <dependencies>
         <dependency>
