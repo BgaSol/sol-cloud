@@ -3,6 +3,22 @@
 set -euo pipefail
 cd ..
 
+# 解析命令行参数
+DISCOVERY_TYPE="${DISCOVERY_TYPE:-nacos}"  # 默认值为 nacos
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --discovery-type|-d)
+      DISCOVERY_TYPE="$2"
+      shift 2
+      ;;
+    *)
+      echo "未知参数: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
 # ANSI 颜色
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -40,8 +56,8 @@ print_divider
 print_step "开始后端构建 🏗️"
 cd cloud
 export MAVEN_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED -Xmx2g -XX:+UseG1GC"
-print_info "🔨 执行 Maven 构建...(单线程)"
-mvn clean package -DskipTests -T 1 -Dspring-boot.repackage.layers.enabled=true -Ddiscovery.type=nacos
+print_info "🔨 执行 Maven 构建...(单线程) discovery.type=${DISCOVERY_TYPE}"
+mvn clean package -DskipTests -T 1 -Dspring-boot.repackage.layers.enabled=true -Ddiscovery.type="${DISCOVERY_TYPE}"
 cd ..
 print_success "🎉 后端构建成功！"
 
