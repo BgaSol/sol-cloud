@@ -7,6 +7,9 @@ public class SystemConfigValues {
 
     public final static String SERVICE_NAME = "system";
 
+    /// 服务注册key
+    public final static String SERVICE_REGISTRY_KEY = "SERVICE_REGISTRY";
+
     /// 超级管理员用户id
     public final static String ADMIN_USER_ID = "admin";
 
@@ -18,4 +21,5 @@ public class SystemConfigValues {
 
     /// 后台页面名字
     public final static String ADMIN_PAGE_NAME = "admin";
+
 }
