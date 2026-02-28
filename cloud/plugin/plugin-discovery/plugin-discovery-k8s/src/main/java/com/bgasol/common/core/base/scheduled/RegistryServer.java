@@ -1,18 +1,19 @@
 package com.bgasol.common.core.base.scheduled;
 
-import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.SERVICE_REGISTRY_KEY;
 
-@Server
+@Service
 @RequiredArgsConstructor
 public class RegistryServer {
     public static final String POD_IP = System.getenv("POD_IP");
@@ -21,8 +22,8 @@ public class RegistryServer {
 
     static {
         SERVER_INFO = Map.of(
-                "POD_IP", POD_IP,
-                "NODE_NAME", NODE_NAME
+                "POD_IP", ObjectUtils.isNotEmpty(POD_IP) ? POD_IP : "127.0.0.1",
+                "NODE_NAME", ObjectUtils.isNotEmpty(NODE_NAME) ? NODE_NAME : "local"
         );
     }
 
@@ -32,8 +33,8 @@ public class RegistryServer {
     private String serviceName;
 
     @Scheduled(fixedRate = 5000)
-    public void registryServer() {
+    public void registryCurrentServer() {
         RMapCache<String, Map<String, String>> serverInfo = redissonClient.getMapCache(SERVICE_REGISTRY_KEY);
-        serverInfo.put(serviceName + ":" + NODE_NAME, SERVER_INFO, 10, TimeUnit.SECONDS);
+        serverInfo.put(serviceName + NODE_NAME, SERVER_INFO, 10, TimeUnit.SECONDS);
     }
 }
