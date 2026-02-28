@@ -14,7 +14,7 @@ public class SystemMessageHandler implements MessageHandler {
     }
 
     @Override
-    public boolean support(String type) {
-        return TYPE.equals(type);
+    public boolean support(String handlerType) {
+        return TYPE.equals(handlerType);
     }
 }

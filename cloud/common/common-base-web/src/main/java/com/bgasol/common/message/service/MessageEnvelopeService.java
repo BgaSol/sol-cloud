@@ -28,7 +28,7 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
     @Override
     public void insert(MessageEnvelopeEntity<?> entity) {
         for (MessageHandler messageHandler : messageHandlers) {
-            if (messageHandler.support(entity.getType())) {
+            if (messageHandler.support(entity.getHandler())) {
                 messageHandler.handle(entity);
             }
         }

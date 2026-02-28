@@ -6,7 +6,6 @@ public interface MessageHandler {
 
     void handle(MessageEnvelopeEntity<?> messageEnvelopeEntity);
 
-    boolean support(String type);
-
+    boolean support(String handlerType);
 
 }
