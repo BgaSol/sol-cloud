@@ -22,4 +22,5 @@ public class SystemConfigValues {
     /// 后台页面名字
     public final static String ADMIN_PAGE_NAME = "admin";
 
+    public final static String NODE_NAME_KEY = "NODE_NAME";
 }
