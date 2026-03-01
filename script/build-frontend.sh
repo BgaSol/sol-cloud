@@ -17,8 +17,8 @@ START_TIME=$(date +%s)
 
 cd client
 print_step "开始前端构建 🌐"
-print_info "📦 安装依赖 (npm install)..."
-npm install
+print_info "📦 安装依赖 (pnpm install)..."
+pnpm install
 
 print_info "🧱 执行构建..."
 export NODE_OPTIONS="--max-old-space-size=4096"
