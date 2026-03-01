@@ -4,5 +4,7 @@ server:
       io: 1
       worker: 8
 system:
+  system:
+    node_name: ${NODE_NAME:test-node-1}
   ws:
     open-request-log: false
