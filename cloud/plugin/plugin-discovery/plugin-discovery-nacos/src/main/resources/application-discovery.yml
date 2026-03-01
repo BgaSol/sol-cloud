@@ -6,3 +6,5 @@ spring:
       password: ${NACOS_PASSWORD:nacospwd}
       discovery:
         cluster-name: DEFAULT
+        metadata:
+          node_name: ${NODE_NAME}
