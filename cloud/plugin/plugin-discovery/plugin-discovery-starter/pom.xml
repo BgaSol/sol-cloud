@@ -46,5 +46,22 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>consul</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>discovery.type</name>
+                    <value>consul</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.bgasol</groupId>
+                    <artifactId>plugin-discovry-consul</artifactId>
+                    <version>0.0.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

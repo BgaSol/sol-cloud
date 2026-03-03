@@ -1,11 +1,4 @@
 management:
-  metrics:
-    tags:
-      application: ${spring.application.name}
-  endpoints:
-    web:
-      exposure:
-        include: [ "*" ]
   logging:
     endpoint: http://${LOKI_HOST:127.0.0.1}:3100/loki/api/v1/push
   tracing:

@@ -1,5 +1,4 @@
-package com.bgasol.plugin.micrometer.config;
-
+package com.bgasol.plugin.actuator.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;

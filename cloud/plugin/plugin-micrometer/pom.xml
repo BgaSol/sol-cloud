@@ -14,11 +14,6 @@
 
     <artifactId>plugin-micrometer</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
         <!--开启普罗米修斯端口-->
         <dependency>
             <groupId>io.micrometer</groupId>

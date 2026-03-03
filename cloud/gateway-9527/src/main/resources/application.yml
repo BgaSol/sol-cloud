@@ -1,10 +1,11 @@
 server:
-  port: 9527
+  port: 9528
 spring:
   application:
     name: gateway
   profiles:
     active:
+      - actuator
       - discovery
       - logger
       - micrometer

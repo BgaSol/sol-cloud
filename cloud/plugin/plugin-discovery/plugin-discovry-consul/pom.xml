@@ -5,16 +5,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.bgasol</groupId>
-        <artifactId>plugin</artifactId>
+        <artifactId>plugin-discovery</artifactId>
         <version>0.0.1</version>
     </parent>
 
-    <artifactId>plugin-discovery</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>plugin-discovery-k8s</module>
-        <module>plugin-discovery-nacos</module>
-        <module>plugin-discovery-starter</module>
-        <module>plugin-discovry-consul</module>
-    </modules>
+    <artifactId>plugin-discovry-consul</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+        </dependency>
+    </dependencies>
 </project>

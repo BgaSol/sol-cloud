@@ -35,11 +35,6 @@ public class GatewayConfig {
     // 使用线程安全的Set来记录已注册的服务
     private final Set<String> registeredServices = ConcurrentHashMap.newKeySet();
 
-    {
-        // 预先添加网关自身服务，避免自己注册自己
-        registeredServices.add(GatewayConfigValues.SERVICE_NAME);
-    }
-
     /**
      * 添加路由定义
      */
@@ -104,6 +99,12 @@ public class GatewayConfig {
             log.debug("当前发现的服务：{}", currentServices);
 
             for (String service : currentServices) {
+                if (service.contains("gateway")
+                        || service.contains("consul")
+                        || service.contains("-management")
+                ) {
+                    continue;
+                }
                 if (!registeredServices.contains(service)) {
                     registerServiceRoute(service);
                 }

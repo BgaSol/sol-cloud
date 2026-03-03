@@ -44,6 +44,7 @@ services:
     environment:
       TZ: ${TZ}
 
+      CONSUL_HOST: cloud-app-consul
       NACOS_HOST: cloud-app-nacos
       NACOS_PORT: 8848
       NACOS_USER: ${NACOS_USER}
@@ -92,6 +93,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
+      CONSUL_HOST: cloud-app-consul
       NACOS_HOST: cloud-app-nacos
       NACOS_PORT: 8848
       NACOS_USER: ${NACOS_USER}
@@ -139,6 +141,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
+      CONSUL_HOST: cloud-app-consul
       NACOS_HOST: cloud-app-nacos
       NACOS_PORT: 8848
       NACOS_USER: ${NACOS_USER}

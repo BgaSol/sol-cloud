@@ -129,3 +129,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  cloud-app-consul:
+    image: hashicorp/consul:latest
+    container_name: cloud-app-consul
+    restart: unless-stopped
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: >
+      consul agent
+      -server
+      -ui
+      -node=local
+      -bootstrap-expect=1
+      -client=0.0.0.0
+      -data-dir=/consul/data
+    environment:
+      TZ: ${TZ}
+    mem_limit: 256m
+    cpus: 1
+    networks:
+      - cloud-app
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8500/v1/status/leader" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3

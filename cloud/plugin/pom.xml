@@ -25,6 +25,7 @@
         <module>plugin-swagger</module>
         <module>plugin-websocket</module>
         <module>plugin-discovery</module>
+        <module>plugin-actuator</module>
     </modules>
     <dependencies>
         <dependency>

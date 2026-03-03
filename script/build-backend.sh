@@ -4,7 +4,7 @@ set -euo pipefail
 cd ..
 
 # 解析命令行参数
-DISCOVERY_TYPE="${DISCOVERY_TYPE:-nacos}"  # 默认值为 nacos
+DISCOVERY_TYPE="${DISCOVERY_TYPE:-consul}"  # 默认值为 consul
 
 while [[ $# -gt 0 ]]; do
   case $1 in
