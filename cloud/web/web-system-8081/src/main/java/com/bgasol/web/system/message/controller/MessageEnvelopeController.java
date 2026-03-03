@@ -2,22 +2,19 @@ package com.bgasol.web.system.message.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
-import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
-import com.bgasol.common.message.dto.MessageEnvelopePageDto;
 import com.bgasol.common.message.entity.MessageEnvelopeEntity;
 import com.bgasol.common.message.service.MessageEnvelopeService;
+import com.bgasol.model.system.message.dto.MessageEnvelopeCreateDto;
+import com.bgasol.model.system.message.dto.MessageEnvelopePageDto;
+import com.bgasol.model.system.message.dto.MessageEnvelopeUpdateDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageEnvelopeController extends BaseController<
         MessageEnvelopeEntity<?>,
         MessageEnvelopePageDto,
-        BaseCreateDto<MessageEnvelopeEntity<?>>,
-        BaseUpdateDto<MessageEnvelopeEntity<?>>> {
+        MessageEnvelopeCreateDto,
+        MessageEnvelopeUpdateDto> {
 
     private final MessageEnvelopeService messageEnvelopeService;
 
@@ -42,6 +39,22 @@ public class MessageEnvelopeController extends BaseController<
     @SaCheckPermission(value = "messageEnvelope:findByPage", orRole = "admin")
     public BaseVo<PageVo<MessageEnvelopeEntity<?>>> findByPage(@RequestBody @Valid MessageEnvelopePageDto pageDto) {
         return super.findByPage(pageDto);
+    }
+
+    @Override
+    @PostMapping
+    @Operation(summary = "保存消息", operationId = "saveMessageEnvelope")
+    @SaCheckPermission(value = "messageEnvelope:save", orRole = "admin")
+    public BaseVo<MessageEnvelopeEntity<?>> save(@RequestBody @Valid MessageEnvelopeCreateDto entity) {
+        return super.save(entity);
+    }
+
+    @Override
+    @PutMapping
+    @Operation(summary = "更新消息", operationId = "updateMessageEnvelope")
+    @SaCheckPermission(value = "messageEnvelope:update", orRole = "admin")
+    public BaseVo<MessageEnvelopeEntity<?>> update(@RequestBody @Valid MessageEnvelopeUpdateDto entity) {
+        return super.update(entity);
     }
 
 }

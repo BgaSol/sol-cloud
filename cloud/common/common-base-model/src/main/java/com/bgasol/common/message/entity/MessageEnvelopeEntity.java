@@ -11,10 +11,12 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@SuperBuilder
 @TableName("system_t_message_envelope")
 @Schema(description = "消息实体类")
 @Entity

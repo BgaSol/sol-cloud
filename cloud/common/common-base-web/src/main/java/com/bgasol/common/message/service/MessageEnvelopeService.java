@@ -2,7 +2,7 @@ package com.bgasol.common.message.service;
 
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import com.bgasol.common.core.base.service.BaseService;
-import com.bgasol.common.message.dto.MessageEnvelopePageDto;
+import com.bgasol.model.system.message.dto.MessageEnvelopePageDto;
 import com.bgasol.common.message.entity.MessageEnvelopeEntity;
 import com.bgasol.common.message.handler.MessageHandler;
 import com.bgasol.common.message.mapper.MessageEnvelopeMapper;

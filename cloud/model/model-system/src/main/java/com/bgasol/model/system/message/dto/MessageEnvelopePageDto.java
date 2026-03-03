@@ -1,4 +1,4 @@
-package com.bgasol.common.message.dto;
+package com.bgasol.model.system.message.dto;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -43,6 +43,9 @@ public class MessageEnvelopePageDto extends BasePageDto<MessageEnvelopeEntity<?>
     @Schema(description = "消息状态")
     private MessageEnvelopeStatusEnum status;
 
+    @Schema(description = "描述")
+    private String description;
+
     @Override
     public Wrapper<MessageEnvelopeEntity<?>> getQueryWrapper() {
         LambdaQueryWrapper<MessageEnvelopeEntity<?>> queryWrapper = new LambdaQueryWrapper<>();
@@ -54,6 +57,7 @@ public class MessageEnvelopePageDto extends BasePageDto<MessageEnvelopeEntity<?>
 
         queryWrapper.like(ObjectUtils.isNotEmpty(metadata), MessageEnvelopeEntity::getMetadata, metadata);
         queryWrapper.eq(ObjectUtils.isNotEmpty(status), MessageEnvelopeEntity::getStatus, status);
+        queryWrapper.like(ObjectUtils.isNotEmpty(description), MessageEnvelopeEntity::getDescription, description);
         return queryWrapper;
     }
 }
