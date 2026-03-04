@@ -16,10 +16,11 @@ import static com.bgasol.common.constant.value.SystemConfigValues.NODE_NAME_KEY;
 
 @Slf4j
 @RequiredArgsConstructor
-public class HeaderRoutingLoadBalancer implements ReactorServiceInstanceLoadBalancer {
+public abstract class HeaderRoutingLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
     private final DiscoveryClient discoveryClient;
-    private final String serviceName;
+
+    abstract String serviceName();
 
     @Override
     public Mono<Response<ServiceInstance>> choose(Request request) {
@@ -34,15 +35,15 @@ public class HeaderRoutingLoadBalancer implements ReactorServiceInstanceLoadBala
                 return Mono.empty();
             }
 
-            List<ServiceInstance> instances = discoveryClient.getInstances(serviceName);
+            List<ServiceInstance> instances = discoveryClient.getInstances(serviceName());
 
             if (instances.isEmpty()) {
-                log.warn("没有找到服务实例: {}", serviceName);
+                log.warn("没有找到服务实例: {}", serviceName());
                 return Mono.empty();
             }
 
             String nodeName = clientRequest.getHeaders().getFirst(NODE_NAME_KEY);
-            log.info("service: {}, nodeName: {}", serviceName, nodeName);
+            log.info("service: {}, nodeName: {}", serviceName(), nodeName);
 
             if (StringUtils.isBlank(nodeName)) {
                 return randomSelect(instances);

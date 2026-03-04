@@ -7,6 +7,9 @@ spring:
   cloud:
     kubernetes:
       discovery:
+        metadata:
+          add-labels: true
+          add-pod-labels: true
         namespaces:
           - app
       client:
