@@ -130,7 +130,7 @@ services:
       timeout: 5s
       retries: 3
   cloud-app-consul:
-    image: hashicorp/consul:latest
+    image: hashicorp/consul:1.22
     container_name: cloud-app-consul
     restart: unless-stopped
     ports:
