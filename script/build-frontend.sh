@@ -22,7 +22,7 @@ pnpm install
 
 print_info "🧱 执行构建..."
 export NODE_OPTIONS="--max-old-space-size=4096"
-npm run build
+pnpm run build
 cd ..
 
 FRONTEND_OUTPUT_DIR="docker/output/client"
