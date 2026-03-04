@@ -22,8 +22,7 @@ print_info "正在等待服务组件启动..."
 sleep 10
 
 print_info "💾 正在同步数据库..."
-docker compose -f atlas.apply.docker-compose.yml up
-docker compose -f atlas.apply.docker-compose.yml down
+docker compose -f atlas.apply.docker-compose.yml run --rm atlas-go
 
 print_info "🚀 启动应用服务..."
 docker compose -f app.docker-compose.yml up -d

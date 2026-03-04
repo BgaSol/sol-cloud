@@ -29,7 +29,6 @@ print_divider
 print_step "关闭现有 Docker Compose 服务 🧹"
 cd docker || { print_error "❌ 未找到 docker 目录"; exit 1; }
 
-docker compose -f atlas.apply.docker-compose.yml down 2>/dev/null
 docker compose -f app.docker-compose.yml down 2>/dev/null || print_info "app服务未运行"
 docker compose -f infra.docker-compose.yml down 2>/dev/null || print_info "infra服务未运行"
 
