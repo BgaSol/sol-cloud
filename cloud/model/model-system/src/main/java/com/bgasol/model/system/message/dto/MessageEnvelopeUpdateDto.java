@@ -55,6 +55,11 @@ public class MessageEnvelopeUpdateDto extends BaseUpdateDto<MessageEnvelopeEntit
         entity.setHandler(this.handler);
         entity.setMetadata(this.metadata);
         entity.setStatus(this.status);
+
+        // 手动调用, 放弃调用super
+        entity.setSort(this.getSort());
+        entity.setDescription(this.getDescription());
+        entity.setId(this.getId());
         return entity;
     }
 }
