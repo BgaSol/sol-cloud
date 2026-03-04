@@ -1,6 +1,5 @@
 package com.bgasol.plugin.loadbalancer.config;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.client.ServiceInstance;
@@ -15,12 +14,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.bgasol.common.constant.value.SystemConfigValues.NODE_NAME_KEY;
 
 @Slf4j
-@RequiredArgsConstructor
 public abstract class HeaderRoutingLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-    private final DiscoveryClient discoveryClient;
+    abstract DiscoveryClient getDiscoveryClient();
 
-    abstract String serviceName();
+    abstract String getServiceName();
 
     @Override
     public Mono<Response<ServiceInstance>> choose(Request request) {
@@ -35,15 +33,15 @@ public abstract class HeaderRoutingLoadBalancer implements ReactorServiceInstanc
                 return Mono.empty();
             }
 
-            List<ServiceInstance> instances = discoveryClient.getInstances(serviceName());
+            List<ServiceInstance> instances = getDiscoveryClient().getInstances(getServiceName());
 
             if (instances.isEmpty()) {
-                log.warn("没有找到服务实例: {}", serviceName());
+                log.warn("没有找到服务实例: {}", getServiceName());
                 return Mono.empty();
             }
 
             String nodeName = clientRequest.getHeaders().getFirst(NODE_NAME_KEY);
-            log.info("service: {}, nodeName: {}", serviceName(), nodeName);
+            log.info("service: {}, nodeName: {}", getServiceName(), nodeName);
 
             if (StringUtils.isBlank(nodeName)) {
                 return randomSelect(instances);
