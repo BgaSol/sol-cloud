@@ -16,9 +16,9 @@ import static com.bgasol.common.constant.value.SystemConfigValues.NODE_NAME_KEY;
 @Slf4j
 public abstract class HeaderRoutingLoadBalancer implements ReactorServiceInstanceLoadBalancer {
 
-    abstract DiscoveryClient getDiscoveryClient();
+    public abstract DiscoveryClient getDiscoveryClient();
 
-    abstract String getServiceName();
+    public abstract String getServiceName();
 
     @Override
     public Mono<Response<ServiceInstance>> choose(Request request) {
