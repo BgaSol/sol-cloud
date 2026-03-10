@@ -2,14 +2,12 @@ package com.bgasol.common.core.base.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.user.bo.ScopeField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -3,26 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * 消息实体类
+ * 创建消息
  */
-export type MessageEnvelopeEntityObject = {
-    id?: string;
-    /**
-     * 类型
-     */
-    type?: string;
+export type MessageEnvelopeCreateDto = {
     /**
      * 排序
      */
     sort?: number;
-    /**
-     * 创建时间
-     */
-    createTime?: string;
-    /**
-     * 更新时间
-     */
-    updateTime?: string;
     /**
      * 描述
      */
@@ -34,7 +21,7 @@ export type MessageEnvelopeEntityObject = {
     /**
      * 接收者类型枚举
      */
-    messageRecipientTypeEnum?: MessageEnvelopeEntityObject.messageRecipientTypeEnum;
+    messageRecipientTypeEnum?: MessageEnvelopeCreateDto.messageRecipientTypeEnum;
     /**
      * 接收者id
      */
@@ -58,9 +45,9 @@ export type MessageEnvelopeEntityObject = {
     /**
      * 消息状态枚举
      */
-    status?: MessageEnvelopeEntityObject.status;
+    status?: MessageEnvelopeCreateDto.status;
 };
-export namespace MessageEnvelopeEntityObject {
+export namespace MessageEnvelopeCreateDto {
     /**
      * 接收者类型枚举
      */

@@ -2,6 +2,7 @@ package com.bgasol.model.system.user.api;
 
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.plugin.openfeign.interceptor.GlobalScope;
 import com.bgasol.model.system.user.dto.UserCreateDto;
 import com.bgasol.model.system.user.dto.UserUpdateDto;
 import com.bgasol.model.system.user.entity.UserEntity;
@@ -30,6 +31,7 @@ public interface UserApi {
     BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
 
     @GetMapping("/{id}")
+    @GlobalScope
     BaseVo<UserEntity> findById(@PathVariable("id") String id);
 
     @GetMapping("findAllOnlineUser")

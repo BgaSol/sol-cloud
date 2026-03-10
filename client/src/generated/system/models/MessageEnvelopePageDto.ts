@@ -46,6 +46,10 @@ export type MessageEnvelopePageDto = {
      * 消息状态枚举
      */
     status?: MessageEnvelopePageDto.status;
+    /**
+     * 描述
+     */
+    description?: string;
 };
 export namespace MessageEnvelopePageDto {
     /**

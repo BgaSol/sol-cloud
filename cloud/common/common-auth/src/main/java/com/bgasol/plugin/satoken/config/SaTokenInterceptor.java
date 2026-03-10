@@ -10,7 +10,7 @@ public class SaTokenInterceptor extends SaInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String header = request.getHeader(GatewayConfigValues.XFromGateway);
-        if ("false".equals(header)) {
+        if (Boolean.FALSE.toString().equals(header)) {
             // 若是服务内部调用，忽略SA-token的注解校验。直接返回true
             return true;
         }

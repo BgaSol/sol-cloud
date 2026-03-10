@@ -1,10 +1,8 @@
 package com.bgasol.common.core.base.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.handler.MultiDataPermissionHandler;
 import com.bgasol.common.core.base.entity.BaseEntity;
-import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.user.api.UserApi;
@@ -30,13 +28,11 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.InWebRequest;
@@ -61,6 +57,7 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
         }
         ScopeOptionsBo scopeOption;
         try {
+            @SuppressWarnings("unchecked")
             Class<? extends BaseEntity> entityClass = (Class<? extends BaseEntity>) entityFieldCache.tableClassCache.get(table.getName());
             if (entityClass == null) {
                 return null;
