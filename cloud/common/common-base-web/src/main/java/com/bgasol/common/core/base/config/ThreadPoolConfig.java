@@ -2,6 +2,7 @@ package com.bgasol.common.core.base.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,6 +34,7 @@ public class ThreadPoolConfig {
      * IO 密集型线程池
      * 线程数 = CPU物理核心 * 2
      */
+    @Primary
     @Bean("ioThreadPool")
     public ThreadPoolTaskExecutor ioThreadPool() {
         int cores = Runtime.getRuntime().availableProcessors();
