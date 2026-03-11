@@ -18,7 +18,6 @@ export { BaseVoListUserEntity } from './models/BaseVoListUserEntity';
 export { BaseVoListVerificationResult } from './models/BaseVoListVerificationResult';
 export { BaseVoMenuEntity } from './models/BaseVoMenuEntity';
 export { BaseVoMessageEnvelopeEntityObject } from './models/BaseVoMessageEnvelopeEntityObject';
-export { BaseVoObject } from './models/BaseVoObject';
 export { BaseVoPageVoMessageEnvelopeEntityObject } from './models/BaseVoPageVoMessageEnvelopeEntityObject';
 export { BaseVoPageVoUserEntity } from './models/BaseVoPageVoUserEntity';
 export { BaseVoPermissionEntity } from './models/BaseVoPermissionEntity';

@@ -14,7 +14,6 @@ export { BaseVoListFileEntity } from './models/BaseVoListFileEntity';
 export { BaseVoListImageEntity } from './models/BaseVoListImageEntity';
 export { BaseVoListVerificationResult } from './models/BaseVoListVerificationResult';
 export { BaseVoListVideoEntity } from './models/BaseVoListVideoEntity';
-export { BaseVoObject } from './models/BaseVoObject';
 export { BaseVoPageVoFileEntity } from './models/BaseVoPageVoFileEntity';
 export { BaseVoPageVoImageEntity } from './models/BaseVoPageVoImageEntity';
 export { BaseVoPageVoPoiExportHistoryEntity } from './models/BaseVoPageVoPoiExportHistoryEntity';

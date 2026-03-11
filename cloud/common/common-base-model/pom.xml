@@ -30,6 +30,11 @@
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.idev.excel</groupId>
+            <artifactId>fastexcel</artifactId>
+            <version>${fastexcel.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

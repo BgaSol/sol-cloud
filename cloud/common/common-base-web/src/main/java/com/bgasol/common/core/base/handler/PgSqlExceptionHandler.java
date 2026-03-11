@@ -1,14 +1,17 @@
 package com.bgasol.common.core.base.handler;
 
 import com.bgasol.common.core.base.vo.BaseVo;
-import com.bgasol.common.core.base.vo.ResponseType;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.ServerErrorMessage;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.REQUEST_EXCEPTION;
 
 /**
  * PostgreSQL 异常处理，转换为友好的中文提示
@@ -16,23 +19,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class PostgreSqlExceptionHandler {
+public class PgSqlExceptionHandler {
     private final EntityFieldCache entityFieldCache;
 
     @ExceptionHandler(PSQLException.class)
     @ApiResponse(description = "PostgreSQL异常", responseCode = "500")
-    public BaseVo<String> handlePSQLException(PSQLException ex) {
-        logDatabaseError(ex);
+    public BaseVo<Void> handlePSQLException(PSQLException e, HttpServletRequest request) {
+        logDatabaseError(e);
 
-        String errorMsg = ex.getMessage();
-        ServerErrorMessage serverError = ex.getServerErrorMessage();
+        String errorMsg = e.getMessage();
+        ServerErrorMessage serverError = e.getServerErrorMessage();
 
         String tableName = serverError != null ? serverError.getTable() : null;
         String detail = serverError != null ? serverError.getDetail() : null;
         String column = serverError != null ? serverError.getColumn() : null;
 
         String message = handleMessage(errorMsg, tableName, detail, column);
-        return BaseVo.error(message, ResponseType.ERROR);
+
+        request.setAttribute(REQUEST_EXCEPTION, ExceptionUtils.getStackTrace(e));
+        return BaseVo.error(message);
     }
 
     private String handleMessage(String errorMsg, String tableName, String detail, String column) {

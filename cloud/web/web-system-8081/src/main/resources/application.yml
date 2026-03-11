@@ -6,7 +6,7 @@ system:
   title: ${SYSTEM_TITLE_NAME:sol}
   describe: 系统基础服务，包含用户管理权限管理等。
   password:
-    plaintext: true # 是否明文存储密码
+    plaintext: ${SYSTEM_PASSWORD_PLAINTEXT:true} # 是否明文存储密码
   captcha:
     is-open: ${SYSTEM_CAPTCHA_IS_OPEN:true}
     max: ${SYSTEM_CAPTCHA_MAX:11}

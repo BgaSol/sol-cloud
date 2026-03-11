@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>com.pig4cloud.plugin</groupId>
-            <artifactId>captcha-spring-boot-starter</artifactId>
+            <artifactId>captcha-core</artifactId>
             <version>${captcha.version}</version>
         </dependency>
 

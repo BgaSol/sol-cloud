@@ -90,27 +90,11 @@ public class BaseVo<T> {
     /**
      * 错误响应
      *
-     * @param data    响应数据
-     * @param message 响应消息
-     */
-    static public <T> BaseVo<T> error(T data, String message) {
-        return BaseVo.<T>builder()
-                .code(500)
-                .data(data)
-                .time(new Date())
-                .message(message)
-                .type(ResponseType.ERROR)
-                .build();
-    }
-
-    /**
-     * 错误响应
-     *
      * @param message 响应消息
      * @param type    响应类型 前端可以根据这个类型进行不同的颜色展示
      */
-    static public <T> BaseVo<T> error(String message, ResponseType type) {
-        return BaseVo.<T>builder()
+    static public BaseVo<Void> error(String message, ResponseType type) {
+        return BaseVo.<Void>builder()
                 .code(500)
                 .time(new Date())
                 .message(message)
