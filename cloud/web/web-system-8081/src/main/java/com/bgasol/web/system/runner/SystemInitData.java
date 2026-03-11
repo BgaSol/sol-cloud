@@ -96,6 +96,16 @@ public class SystemInitData implements ApplicationRunner {
                                 .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/menu")
                                 .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_menu")
                                 .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("requestLog")
+                                .parentId(systemServiceId)
+                                .name("请求日志管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkLog")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/requestLog")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_request_log")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
                                 .build()
                 ))
                 .build();
