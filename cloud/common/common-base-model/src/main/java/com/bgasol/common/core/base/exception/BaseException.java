@@ -1,36 +1,30 @@
 package com.bgasol.common.core.base.exception;
 
-import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.ResponseType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-/// 自定义通用异常
 @Getter
 @Slf4j
 public class BaseException extends RuntimeException {
-    private Throwable throwable;
+    private final ResponseType responseType;
+    private final Boolean isPrimary;
+    private final Integer code;
 
-    private final BaseVo<?> baseVo;
-
-    public BaseException(BaseVo<?> baseVo) {
-        super(baseVo.getMessage());
-        this.baseVo = baseVo;
+    @Builder
+    public BaseException(String message, Throwable cause, ResponseType responseType, Boolean isPrimary, Integer code) {
+        super(message, cause);
+        this.responseType = responseType != null ? responseType : ResponseType.ERROR;
+        this.isPrimary = isPrimary != null ? isPrimary : false;
+        this.code = code != null ? code : -1;
     }
 
     public BaseException(String message) {
-        super(message);
-        this.baseVo = BaseVo.error(message);
+        this(message, null, null, null, null);
     }
 
-    public BaseException(String message, Throwable throwable) {
-        super(message);
-        this.baseVo = BaseVo.error(message);
-        this.throwable = throwable;
-    }
-
-    public BaseException(String message, ResponseType type) {
-        super(message);
-        this.baseVo = BaseVo.error(message, type);
+    public BaseException(String message, Throwable cause) {
+        this(message, cause, null, null, null);
     }
 }

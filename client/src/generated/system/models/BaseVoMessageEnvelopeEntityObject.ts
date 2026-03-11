@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { MessageEnvelopeEntityObject } from './MessageEnvelopeEntityObject';
 /**
  * 基础响应数据
  */
-export type BaseVoObject = {
+export type BaseVoMessageEnvelopeEntityObject = {
     /**
      * 响应码
      */
@@ -14,10 +15,7 @@ export type BaseVoObject = {
      * 响应消息
      */
     message?: string;
-    /**
-     * 响应数据
-     */
-    data?: Record<string, any>;
+    data?: MessageEnvelopeEntityObject;
     /**
      * 响应时间
      */
@@ -25,9 +23,9 @@ export type BaseVoObject = {
     /**
      * 响应类型
      */
-    type?: BaseVoObject.type;
+    type?: BaseVoMessageEnvelopeEntityObject.type;
 };
-export namespace BaseVoObject {
+export namespace BaseVoMessageEnvelopeEntityObject {
     /**
      * 响应类型
      */

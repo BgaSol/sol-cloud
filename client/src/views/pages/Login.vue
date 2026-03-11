@@ -6,7 +6,6 @@ import {useUser} from "~/pinia/modules/user";
 import {ElButton, ElCol, ElForm, ElFormItem, ElImage, ElInput, ElMessage, ElRow, FormInstance} from "element-plus";
 import {useFormValidation} from "~/composables/FormValidationHook";
 import AppHeader from "~/views/app/layout/AppHeader.vue";
-import {set} from "@vueuse/core";
 
 const loginDto = ref<UserLoginDto>({
   username: '',
@@ -19,15 +18,15 @@ const imageBase64 = ref<string>();
 const getCaptcha = () => {
   // 获取验证码
   Service.getVerificationCode().then((res) => {
-    if (res.data?.captcha){
+    if (res.data?.captcha) {
       loginDto.value.verificationCode = res.data?.captcha
       needCaptcha.value = false;
-    }else{
+    } else {
       needCaptcha.value = true;
     }
     loginDto.value.verificationCodeKey = res.data?.verificationId as string
     imageBase64.value = res.data?.verificationCode as string;
-    setTimeout(getCaptcha,30 * 1000)
+    setTimeout(getCaptcha, 30 * 1000)
   });
 };
 onMounted(() => {
@@ -64,8 +63,9 @@ const login = () => {
     }
   }).catch(() => {
     getCaptcha();
+  }).finally(() => {
     loading.value = false;
-  });
+  })
 };
 const pageLoading = ref(true);
 onMounted(() => {

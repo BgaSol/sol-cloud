@@ -1,6 +1,5 @@
 package com.bgasol.common.message.dto;
 
-import com.bgasol.common.message.dto.MessageBody;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

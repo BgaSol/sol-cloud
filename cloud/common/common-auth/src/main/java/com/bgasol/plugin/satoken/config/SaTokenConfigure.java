@@ -38,7 +38,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     }
                 })
                 .setError(e -> {
-                    throw new BaseException("鉴权失败");
+                    throw BaseException.builder()
+                            .message("鉴权失败")
+                            .cause(e).build();
                 });
     }
 

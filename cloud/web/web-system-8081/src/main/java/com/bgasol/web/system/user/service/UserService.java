@@ -71,7 +71,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserEntity::getUsername, entity.getUsername());
         if (userMapper.selectCount(queryWrapper) > 0) {
-            throw new BaseException("用户名已存在");
+            throw BaseException.builder().message("用户名已存在").build();
         }
         String password = entity.getPassword();
         if (ObjectUtils.isNotEmpty(password)) {

@@ -4,23 +4,26 @@ import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.exception.VerificationException;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.VerificationResult;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.REQUEST_EXCEPTION;
+import static com.bgasol.common.constant.value.SystemConfigValues.REQUEST_EXCEPTION_PRIMARY;
 
 /**
  * 全局异常处理
@@ -30,32 +33,34 @@ import java.util.List;
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
-    private final ObjectMapper objectMapper;
-
     /**
      * 处理业务异常
      */
     @ExceptionHandler(value = BaseException.class)
     @ApiResponse(description = "业务异常", responseCode = "500")
-    public BaseVo<?> baseExceptionHandler(BaseException e) {
-        log.error("业务异常", e);
-        return e.getBaseVo();
+    public BaseVo<Void> baseExceptionHandler(BaseException e, HttpServletRequest request) {
+        if (e.getIsPrimary()) {
+            request.setAttribute(REQUEST_EXCEPTION_PRIMARY, true);
+        }
+        request.setAttribute(REQUEST_EXCEPTION, ExceptionUtils.getStackTrace(e));
+        return BaseVo.error(e.getMessage(), e.getResponseType());
     }
 
     @ExceptionHandler(value = VerificationException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
-    public BaseVo<List<VerificationResult>> verificationExceptionHandler(VerificationException e) throws JsonProcessingException {
+    public BaseVo<List<VerificationResult>> verificationExceptionHandler(VerificationException e, HttpServletRequest request) {
         List<VerificationResult> verificationResults = e.getVerificationResults();
-        log.error(objectMapper.writeValueAsString(verificationResults));
+        request.setAttribute(REQUEST_EXCEPTION, "参数校验异常");
         return BaseVo.code400(verificationResults);
     }
 
     /**
      * 处理参数校验异常 方法参数级 MethodArgumentNotValidException
      */
+    @SneakyThrows
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
-    public BaseVo<List<VerificationResult>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JsonProcessingException {
+    public BaseVo<List<VerificationResult>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
         BindingResult bindingResult = e.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
         List<VerificationResult> verificationResults = new ArrayList<>();
@@ -68,7 +73,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
-        log.error(objectMapper.writeValueAsString(verificationResults));
+        request.setAttribute(REQUEST_EXCEPTION, "参数校验异常");
         return BaseVo.code400(verificationResults);
     }
 
@@ -77,8 +82,7 @@ public class BaseExceptionHandler {
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
     @ApiResponse(description = "参数校验异常", responseCode = "400")
-    public BaseVo<List<VerificationResult>> constraintViolationExceptionHandler(ConstraintViolationException e) throws JsonProcessingException {
-//        Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
+    public BaseVo<List<VerificationResult>> constraintViolationExceptionHandler(ConstraintViolationException e, HttpServletRequest request) {
         List<VerificationResult> verificationResults = new ArrayList<>();
         for (ConstraintViolation<?> constraintViolation : e.getConstraintViolations()) {
             VerificationResult verificationResult = new VerificationResult();
@@ -93,7 +97,7 @@ public class BaseExceptionHandler {
             verificationResult.setResult(false);
             verificationResults.add(verificationResult);
         }
-        log.error(objectMapper.writeValueAsString(verificationResults));
+        request.setAttribute(REQUEST_EXCEPTION, "参数校验异常");
         return BaseVo.code400(verificationResults);
     }
 }
