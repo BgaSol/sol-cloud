@@ -139,7 +139,10 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<UserEntity> list) {
-        List<String> userIds = list.stream().map(UserEntity::getId).toList();
+        List<String> userIds = list.stream()
+                .map(UserEntity::getId)
+                .filter(ObjectUtils::isNotEmpty)
+                .toList();
         Map<String, List<String>> roleIdGroup = this.findFromTableBatch(
                 "system_c_user_role",
                 "user_id",

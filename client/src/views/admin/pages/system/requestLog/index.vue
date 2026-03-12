@@ -142,7 +142,8 @@ const getStatusTagType = (status?: number) => {
           </el-input>
         </el-form-item>
         <el-form-item label='业务模块' class="w-250px">
-          <el-input v-model='requestData.businessController' class="important-w-full" clearable placeholder='请输入业务模块'
+          <el-input v-model='requestData.businessController' class="important-w-full" clearable
+                    placeholder='请输入业务模块'
                     @change="search">
           </el-input>
         </el-form-item>
@@ -163,11 +164,12 @@ const getStatusTagType = (status?: number) => {
       <div class='table-container'>
         <el-table ref='tableRef' v-loading='tableLoading' :data='tableData.result' border
                   height='100%' row-key='id' stripe>
-          <el-table-column align='center' label='服务名' min-width='180' prop='serviceName'>
-          </el-table-column>
-          <el-table-column align='center' label='节点名' min-width='150' prop='nodeName'>
-          </el-table-column>
-          <el-table-column align='center' label='节点 IP' min-width='140' prop='nodeIp'>
+          <el-table-column label='业务' min-width='250'>
+            <template #default='{ row }'>
+              <el-tag v-show="row.isPrimaryErr" type="danger">异常</el-tag>
+              {{ row.businessController }}
+              {{ row.businessMethod }}
+            </template>
           </el-table-column>
           <el-table-column align='center' label='请求方式' min-width='100' prop='method'>
             <template #default='{ row }'>
@@ -176,8 +178,6 @@ const getStatusTagType = (status?: number) => {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column align='center' label='请求 URI' min-width='220' prop='uri'>
-          </el-table-column>
           <el-table-column align='center' label='状态码' min-width='90' prop='status'>
             <template #default='{ row }'>
               <el-tag :type="getStatusTagType(row.status)">
@@ -185,26 +185,21 @@ const getStatusTagType = (status?: number) => {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column align='center' label='链路 ID' min-width='220' prop='traceId'>
-          </el-table-column>
-          <el-table-column align='center' label='业务模块' min-width='180' prop='businessController'>
-          </el-table-column>
-          <el-table-column align='center' label='业务方法' min-width='180' prop='businessMethod'>
-          </el-table-column>
-          <el-table-column align='center' label='线程 ID' min-width='120' prop='threadId'>
-          </el-table-column>
-          <el-table-column align='center' label='创建时间' min-width='180' prop='createTime'>
+          <el-table-column label='服务名' min-width='140' prop='serviceName'></el-table-column>
+          <el-table-column label='节点名' min-width='140' prop='nodeName'></el-table-column>
+          <el-table-column label='节点 IP' min-width='140' prop='nodeIp'></el-table-column>
+          <el-table-column label='请求时间' min-width='400' prop='createTime'>
             <template #default='{ row }'>
-              {{ dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
-            </template>
-          </el-table-column>
-          <el-table-column align='center' label='是否是重要异常' min-width='120' prop='isPrimaryErr'>
-            <template #default='{ row }'>
-              <el-tag :type="row.isPrimaryErr ? 'danger' : 'success'">
-                {{ row.isPrimaryErr ? '是' : '否' }}
+              <el-tag w-50px>
+                {{ dayjs(row.updateTime).diff(dayjs(row.createTime), 'millisecond')}}ms
               </el-tag>
+              {{ dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss.SSS') }}
+              →
+              {{ dayjs(row.updateTime).format('YYYY-MM-DD HH:mm:ss.SSS') }}
+
             </template>
           </el-table-column>
+          <el-table-column label='请求 URI' min-width='400' prop='uri'></el-table-column>
         </el-table>
       </div>
     </div>
@@ -217,3 +212,8 @@ const getStatusTagType = (status?: number) => {
     </div>
   </div>
 </template>
+<style lang="scss">
+.el-table .error-row {
+  --el-table-tr-bg-color: var(--el-color-danger-light-7);
+}
+</style>

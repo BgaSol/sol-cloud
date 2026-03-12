@@ -44,7 +44,10 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
     @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<RoleEntity> list) {
-        List<String> roleIds = list.stream().map(RoleEntity::getId).toList();
+        List<String> roleIds = list.stream()
+                .map(RoleEntity::getId)
+                .filter(ObjectUtils::isNotEmpty)
+                .toList();
 
         Map<String, List<String>> menuIdGroup = this.findFromTableBatch(
                 "system_c_role_menu", "role_id", roleIds, "menu_id"

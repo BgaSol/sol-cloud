@@ -1,9 +1,11 @@
 package com.bgasol.common.core.base.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
+import com.bgasol.common.core.base.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.redisson.api.RMapCache;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
+import static com.bgasol.common.core.base.entity.BaseTreeEntity.PARENT_ID;
 
 @Slf4j
 @Service
@@ -89,5 +92,45 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
             }
         }
         return roots;
+    }
+
+    @Override
+    public PageVo<ENTITY> findByPage(PAGE_DTO pageDto) {
+        PageVo<ENTITY> byPage = super.findByPage(pageDto);
+        List<ENTITY> result = byPage.getResult();
+        addChildrenToResult(result);
+        return byPage;
+    }
+
+    private void addChildrenToResult(List<ENTITY> result) {
+        if (ObjectUtils.isEmpty(result)) {
+            return;
+        }
+
+        Set<String> parentIds = result.stream()
+                .map(ENTITY::getId)
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+
+        QueryWrapper<ENTITY> qw = Wrappers.<ENTITY>query().in(PARENT_ID, parentIds);
+
+        List<ENTITY> entities = this.commonBaseMapper().selectList(qw);
+        if (ObjectUtils.isEmpty(entities)) {
+            return;
+        }
+
+        this.findOtherTable(entities);
+
+        Map<String, List<ENTITY>> childrenMap = entities.stream()
+                .collect(Collectors.groupingBy(ENTITY::getParentId));
+
+        result.forEach(entity -> {
+            List<ENTITY> children = childrenMap.get(entity.getId());
+            if (ObjectUtils.isNotEmpty(children)) {
+                entity.setChildren(children);
+            }
+        });
+
+        this.addChildrenToResult(entities);
     }
 }

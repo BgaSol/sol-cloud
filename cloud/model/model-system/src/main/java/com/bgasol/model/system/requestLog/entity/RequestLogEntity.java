@@ -80,5 +80,5 @@ public class RequestLogEntity extends BaseTreeEntity<RequestLogEntity> {
     @TableField(exist = false)
     @JoinColumn(name = "user_id")
     @ManyToOne
-    private UserEntity userEntity;
+    private UserEntity user;
 }
