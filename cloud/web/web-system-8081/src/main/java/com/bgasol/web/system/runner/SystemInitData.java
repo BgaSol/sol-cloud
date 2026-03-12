@@ -98,6 +98,16 @@ public class SystemInitData implements ApplicationRunner {
                                 .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
                                 .build(),
                         MenuEntity.builder()
+                                .id("message-envelope")
+                                .parentId(systemServiceId)
+                                .name("系统消息通知")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkRemind")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + SystemConfigValues.SERVICE_NAME + "/message-envelope")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + SystemConfigValues.SERVICE_NAME + "_message_envelope")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
                                 .id("requestLog")
                                 .parentId(systemServiceId)
                                 .name("请求日志管理")

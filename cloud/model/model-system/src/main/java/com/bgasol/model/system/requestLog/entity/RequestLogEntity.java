@@ -3,6 +3,7 @@ package com.bgasol.model.system.requestLog.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
+import com.bgasol.common.message.dto.MessageBody;
 import com.bgasol.model.system.user.entity.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
@@ -21,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @Schema(description = "系统请求日志实体类")
 @TableName(value = "system_t_request_log", autoResultMap = true)
 @Entity
-public class RequestLogEntity extends BaseTreeEntity<RequestLogEntity> {
+public class RequestLogEntity extends BaseTreeEntity<RequestLogEntity> implements MessageBody {
     @Schema(description = "全局链路ID")
     @TableField("trace_id")
     private String traceId;
