@@ -13,6 +13,7 @@ import type { BaseVoListUserEntity } from '../models/BaseVoListUserEntity';
 import type { BaseVoMenuEntity } from '../models/BaseVoMenuEntity';
 import type { BaseVoMessageEnvelopeEntityObject } from '../models/BaseVoMessageEnvelopeEntityObject';
 import type { BaseVoPageVoMessageEnvelopeEntityObject } from '../models/BaseVoPageVoMessageEnvelopeEntityObject';
+import type { BaseVoPageVoRequestLogEntity } from '../models/BaseVoPageVoRequestLogEntity';
 import type { BaseVoPageVoUserEntity } from '../models/BaseVoPageVoUserEntity';
 import type { BaseVoPermissionEntity } from '../models/BaseVoPermissionEntity';
 import type { BaseVoRoleEntity } from '../models/BaseVoRoleEntity';
@@ -27,6 +28,7 @@ import type { MessageEnvelopeCreateDto } from '../models/MessageEnvelopeCreateDt
 import type { MessageEnvelopePageDto } from '../models/MessageEnvelopePageDto';
 import type { MessageEnvelopeUpdateDto } from '../models/MessageEnvelopeUpdateDto';
 import type { PermissionEntity } from '../models/PermissionEntity';
+import type { RequestLogPageDto } from '../models/RequestLogPageDto';
 import type { RoleCreateDto } from '../models/RoleCreateDto';
 import type { RoleUpdateDto } from '../models/RoleUpdateDto';
 import type { UserCreateDto } from '../models/UserCreateDto';
@@ -57,7 +59,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -79,7 +81,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -101,7 +103,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -123,7 +125,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -140,7 +142,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -162,7 +164,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -184,7 +186,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -206,7 +208,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -228,7 +230,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -245,7 +247,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -267,7 +269,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -289,7 +291,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -311,7 +313,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -328,7 +330,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -350,7 +352,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -374,7 +376,29 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 分页查询请求日志
+     * @param requestBody
+     * @returns BaseVoPageVoRequestLogEntity OK
+     * @throws ApiError
+     */
+    public static findPageRequestLog(
+        requestBody: RequestLogPageDto,
+    ): CancelablePromise<BaseVoPageVoRequestLogEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/request-log/page',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -396,7 +420,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -418,7 +442,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -440,7 +464,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -463,7 +487,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -480,7 +504,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -503,7 +527,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -520,7 +544,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -543,7 +567,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -560,7 +584,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -583,7 +607,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -600,7 +624,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -623,7 +647,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -640,7 +664,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -663,7 +687,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -680,7 +704,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -703,7 +727,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -720,7 +744,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -743,7 +767,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -766,7 +790,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -783,7 +807,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -806,7 +830,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -829,7 +853,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -846,7 +870,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -869,7 +893,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -892,7 +916,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -915,7 +939,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -938,7 +962,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }
@@ -961,7 +985,7 @@ export class Service {
                 400: `参数校验异常`,
                 401: `未登录异常`,
                 403: `无权限异常`,
-                500: `系统异常`,
+                500: `业务异常`,
             },
         });
     }

@@ -19,6 +19,7 @@ export { BaseVoListVerificationResult } from './models/BaseVoListVerificationRes
 export { BaseVoMenuEntity } from './models/BaseVoMenuEntity';
 export { BaseVoMessageEnvelopeEntityObject } from './models/BaseVoMessageEnvelopeEntityObject';
 export { BaseVoPageVoMessageEnvelopeEntityObject } from './models/BaseVoPageVoMessageEnvelopeEntityObject';
+export { BaseVoPageVoRequestLogEntity } from './models/BaseVoPageVoRequestLogEntity';
 export { BaseVoPageVoUserEntity } from './models/BaseVoPageVoUserEntity';
 export { BaseVoPermissionEntity } from './models/BaseVoPermissionEntity';
 export { BaseVoRoleEntity } from './models/BaseVoRoleEntity';
@@ -37,8 +38,11 @@ export { MessageEnvelopeEntityObject } from './models/MessageEnvelopeEntityObjec
 export { MessageEnvelopePageDto } from './models/MessageEnvelopePageDto';
 export { MessageEnvelopeUpdateDto } from './models/MessageEnvelopeUpdateDto';
 export type { PageVoMessageEnvelopeEntityObject } from './models/PageVoMessageEnvelopeEntityObject';
+export type { PageVoRequestLogEntity } from './models/PageVoRequestLogEntity';
 export type { PageVoUserEntity } from './models/PageVoUserEntity';
 export type { PermissionEntity } from './models/PermissionEntity';
+export type { RequestLogEntity } from './models/RequestLogEntity';
+export type { RequestLogPageDto } from './models/RequestLogPageDto';
 export type { RoleCreateDto } from './models/RoleCreateDto';
 export type { RoleEntity } from './models/RoleEntity';
 export type { RoleUpdateDto } from './models/RoleUpdateDto';
