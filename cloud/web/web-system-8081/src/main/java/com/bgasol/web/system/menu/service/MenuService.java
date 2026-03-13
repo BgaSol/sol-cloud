@@ -23,7 +23,6 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
-@Transactional
 public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEntity>> {
     private final MenuMapper menuMapper;
 
