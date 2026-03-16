@@ -6,8 +6,7 @@ services:
     image: arigaio/atlas:0.38.0-alpine
     container_name: atlas-go
     working_dir: /app
-    entrypoint: ["/bin/sh"]
-    command: ["apply.sh"]
+    command: schema apply --env docker --auto-approve
     environment:
       DB_HOST: cloud-app-postgres
       DB_PORT: 5432

@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @RequiredArgsConstructor
 public class DynamicTableNameHandler implements TableNameHandler {
+    public final static String DynamicTableNameUnderscore = "_d_";
     private final List<BaseTableNameHandler> baseTableNameHandlers;
     private final ConcurrentHashMap<String, Boolean> createdTableNameMap = new ConcurrentHashMap<>();
     private final JdbcTemplate jdbcTemplate;
@@ -23,7 +24,7 @@ public class DynamicTableNameHandler implements TableNameHandler {
                 continue;
             }
 
-            String targetTable = baseTableNameHandler.dynamicTableName(sql, tableName);
+            String targetTable = tableName + DynamicTableNameUnderscore + baseTableNameHandler.dynamicTableName(sql, tableName);
 
             if (sql.startsWith("INSERT")) {
                 // 检查表是否缓存过

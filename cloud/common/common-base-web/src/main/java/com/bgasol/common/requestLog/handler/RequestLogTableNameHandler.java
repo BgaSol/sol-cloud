@@ -14,7 +14,7 @@ public class RequestLogTableNameHandler implements BaseTableNameHandler {
 
     @Override
     public String dynamicTableName(String sql, String tableName) {
-        return tableName + "_" + TABLE_SUFFIX.get();
+        return TABLE_SUFFIX.get();
     }
 
     @Override
