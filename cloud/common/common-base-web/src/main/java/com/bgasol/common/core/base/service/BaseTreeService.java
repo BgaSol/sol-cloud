@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
 import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
-import static com.bgasol.common.core.base.entity.BaseTreeEntity.PARENT_ID;
+import static com.bgasol.common.core.base.entity.BaseTreeTable.PARENT_ID;
 
 @Slf4j
 @Service

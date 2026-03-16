@@ -1,10 +1,12 @@
 package com.bgasol.common.requestLog.service;
 
 import com.bgasol.common.core.base.service.BaseTreeService;
+import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.common.message.entity.MessageEnvelopeEntity;
 import com.bgasol.common.message.entity.MessageEnvelopeStatusEnum;
 import com.bgasol.common.message.entity.MessageRecipientTypeEnum;
 import com.bgasol.common.message.service.MessageEnvelopeService;
+import com.bgasol.common.requestLog.handler.RequestLogTableNameHandler;
 import com.bgasol.common.requestLog.mapper.RequestLogMapper;
 import com.bgasol.model.system.requestLog.dto.RequestLogPageDto;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
@@ -16,6 +18,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,8 +65,21 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
     }
 
     @Override
+    public PageVo<RequestLogEntity> findByPage(RequestLogPageDto pageDto) {
+        String dateStr = pageDto.getCreateTime().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+        RequestLogTableNameHandler.TABLE_SUFFIX.set(dateStr);
+        return super.findByPage(pageDto);
+    }
+
+    @Override
     @Transactional
     public void insert(RequestLogEntity entity) {
+        // 获取当前年_月_日
+        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+        RequestLogTableNameHandler.TABLE_SUFFIX.set(dateStr);
         super.insert(entity);
         if (!entity.getIsPrimaryErr()) {
             return;

@@ -58,5 +58,9 @@ export type RequestLogPageDto = {
      * 用户ID
      */
     userId?: string;
+    /**
+     * 创建时间
+     */
+    createTime: string;
 };
 

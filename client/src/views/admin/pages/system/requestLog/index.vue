@@ -5,6 +5,7 @@ import {ElTable as ElTableRefType} from "element-plus/es/components/table";
 import {
   dayjs,
   ElButton,
+  ElDatePicker,
   ElForm,
   ElFormItem,
   ElInput,
@@ -46,6 +47,7 @@ const defaultRequestData: () => RequestLogPageDto = () => ({
   uri: '',
   businessController: '',
   isPrimaryErr: undefined,
+  createTime: new Date() as unknown as string
 });
 const requestData = ref<RequestLogPageDto>(defaultRequestData());
 
@@ -107,6 +109,10 @@ const getStatusTagType = (status?: number) => {
   <div class='main'>
     <div class='filter-header'>
       <el-form inline>
+        <el-form-item label="日期" required class="w-250px">
+          <el-date-picker v-model="requestData.createTime" class="important-w-full" type="date">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label='链路 ID' class="w-250px">
           <el-input v-model='requestData.traceId' class="important-w-full" clearable placeholder='请输入链路 ID'
                     @change="search">
@@ -191,7 +197,7 @@ const getStatusTagType = (status?: number) => {
           <el-table-column label='请求时间' min-width='400' prop='createTime'>
             <template #default='{ row }'>
               <el-tag w-50px>
-                {{ dayjs(row.updateTime).diff(dayjs(row.createTime), 'millisecond')}}ms
+                {{ dayjs(row.updateTime).diff(dayjs(row.createTime), 'millisecond') }}ms
               </el-tag>
               {{ dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss.SSS') }}
               →

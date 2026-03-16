@@ -93,6 +93,6 @@ export type RequestLogEntity = {
      * 用户ID
      */
     userId?: string;
-    userEntity?: UserEntity;
+    user?: UserEntity;
 };
 

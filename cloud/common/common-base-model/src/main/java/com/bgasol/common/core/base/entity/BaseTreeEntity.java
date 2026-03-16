@@ -10,6 +10,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+import static com.bgasol.common.core.base.entity.BaseTreeTable.PARENT_ID;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -17,7 +19,6 @@ import java.util.List;
 @MappedSuperclass
 @Entity
 public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEntity {
-    public static final String PARENT_ID = "parent_id";
     @Schema(description = "父id")
     @TableField(PARENT_ID)
     @Transient
@@ -25,7 +26,7 @@ public abstract class BaseTreeEntity<T extends BaseTreeEntity<T>> extends BaseEn
 
     @Schema(description = "父实体")
     @TableField(exist = false)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = PARENT_ID)
     @ManyToOne
     private T parent;
 

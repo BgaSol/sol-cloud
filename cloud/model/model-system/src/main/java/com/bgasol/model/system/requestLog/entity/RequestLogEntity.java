@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "系统请求日志实体类")
-@TableName(value = "system_t_request_log", autoResultMap = true)
+@TableName(value = RequestLogTable.TableName, autoResultMap = true)
 @Entity
 public class RequestLogEntity extends BaseTreeEntity<RequestLogEntity> implements MessageBody {
     @Schema(description = "全局链路ID")
