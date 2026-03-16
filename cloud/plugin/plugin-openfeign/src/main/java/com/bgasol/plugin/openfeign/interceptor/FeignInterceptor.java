@@ -21,6 +21,7 @@ public class FeignInterceptor implements RequestInterceptor {
 
     public static final String TRACE_ID = "TRACE_ID";
     public static final String SPAN_ID = "SPAN_ID";
+    public static final String TRACE_START_TIME = "TRACE_START_TIME";
 
     /**
      * feign拦截器, 在feign请求发出之前，加入一些操作
@@ -46,8 +47,10 @@ public class FeignInterceptor implements RequestInterceptor {
             HttpServletRequest request = servletAttributes.getRequest();
             String spanId = (String) request.getAttribute(SPAN_ID);
             String traceId = (String) request.getAttribute(TRACE_ID);
+            String traceStartTime = (String) request.getAttribute(TRACE_START_TIME);
             requestTemplate.header(SPAN_ID, spanId);
             requestTemplate.header(TRACE_ID, traceId);
+            requestTemplate.header(TRACE_START_TIME, traceStartTime);
         }
     }
 

@@ -1,8 +1,8 @@
 package com.bgasol.common.core.base.interceptor;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import com.bgasol.common.requestLog.service.RequestLogService;
+import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,13 +20,14 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.lang.reflect.Method;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.REQUEST_EXCEPTION;
 import static com.bgasol.common.constant.value.SystemConfigValues.REQUEST_EXCEPTION_PRIMARY;
-import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.SPAN_ID;
-import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.TRACE_ID;
+import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.*;
 
 /**
  * 请求日志拦截器
@@ -48,20 +49,44 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
     private static final String BUSINESS_METHOD = "BUSINESS_METHOD";
     private static final String START_TIME_ATTRIBUTE = "REQUEST_START_TIME";
 
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+
     @Lazy
     private final RequestLogService requestLogService;
 
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         getHandlerInfo(request, handler);
+
+        Date now = new Date();
+        request.setAttribute(START_TIME_ATTRIBUTE, now.getTime());
+
         String traceId = request.getHeader(TRACE_ID);
+        String traceStartTime = request.getHeader(TRACE_START_TIME);
+
         if (ObjectUtils.isEmpty(traceId)) {
-            request.setAttribute(TRACE_ID, UUID.randomUUID().toString());
+
+            traceId = UUID.randomUUID()
+                    .toString()
+                    .replace("-", "");
+            request.setAttribute(TRACE_ID, traceId);
+
+            traceStartTime = now.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                    .format(DATE_FORMAT);
+            request.setAttribute(TRACE_START_TIME, traceStartTime);
+
         } else {
             request.setAttribute(TRACE_ID, traceId);
+            request.setAttribute(TRACE_START_TIME, traceStartTime);
         }
-        request.setAttribute(SPAN_ID, UUID.randomUUID().toString());
-        request.setAttribute(START_TIME_ATTRIBUTE, System.currentTimeMillis());
+
+        String spanId = traceStartTime + "_" + UUID.randomUUID()
+                .toString()
+                .replace("-", "");
+        request.setAttribute(SPAN_ID, spanId);
+
         return true;
     }
 

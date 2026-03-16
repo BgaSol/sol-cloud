@@ -18,7 +18,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -33,6 +32,7 @@ import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 @RequiredArgsConstructor
 @Slf4j
 public class RequestLogService extends BaseTreeService<RequestLogEntity, RequestLogPageDto> {
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     private final RequestLogMapper requestLogMapper;
     private final UserApi userApi;
     private final MessageEnvelopeService messageEnvelopeService;
@@ -69,7 +69,7 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
         String dateStr = pageDto.getCreateTime().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
-                .format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+                .format(DATE_FORMAT);
         RequestLogTableNameHandler.TABLE_SUFFIX.set(dateStr);
         return super.findByPage(pageDto);
     }
@@ -77,8 +77,7 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
     @Override
     @Transactional
     public void insert(RequestLogEntity entity) {
-        // 获取当前年_月_日
-        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+        String dateStr = entity.getId().substring(0, "yyyy_MM_dd".length());
         RequestLogTableNameHandler.TABLE_SUFFIX.set(dateStr);
         super.insert(entity);
         if (!entity.getIsPrimaryErr()) {

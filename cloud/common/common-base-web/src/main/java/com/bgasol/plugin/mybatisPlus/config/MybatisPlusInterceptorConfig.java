@@ -19,7 +19,7 @@ public class MybatisPlusInterceptorConfig {
 
     @Bean()
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        // 初始化MybatisPlus拦截器
+        // 初始化MybatisPlus拦截器 插件顺序很重要
         MybatisPlusInterceptor interceptors = new MybatisPlusInterceptor();
 
         // 数据权限插件 *数据权限插件需要在分页插件之前添加
@@ -27,14 +27,14 @@ public class MybatisPlusInterceptorConfig {
         dataPermissionInterceptor.setDataPermissionHandler(dataScopeHandler);
         interceptors.addInnerInterceptor(dataPermissionInterceptor);
 
+        // 动态表名插件
+        DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor = new DynamicTableNameInnerInterceptor(dynamicTableNameHandler);
+        interceptors.addInnerInterceptor(dynamicTableNameInnerInterceptor);
+
         // 分页插件
         PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor();
         paginationInnerInterceptor.setMaxLimit(10000L);
         interceptors.addInnerInterceptor(paginationInnerInterceptor);
-
-        // 动态表名插件
-        DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor = new DynamicTableNameInnerInterceptor(dynamicTableNameHandler);
-        interceptors.addInnerInterceptor(dynamicTableNameInnerInterceptor);
 
         return interceptors;
     }
