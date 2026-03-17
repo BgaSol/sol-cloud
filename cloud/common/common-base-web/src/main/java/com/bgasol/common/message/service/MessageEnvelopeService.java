@@ -8,16 +8,22 @@ import com.bgasol.common.message.mapper.MessageEnvelopeMapper;
 import com.bgasol.model.system.message.dto.MessageEnvelopePageDto;
 import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
+import com.bgasol.model.system.user.api.UserApi;
+import com.bgasol.model.system.user.entity.UserEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +33,26 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
     private final MessageEnvelopeMapper messageEnvelopeMapper;
     private final List<MessageHandler> messageHandlers;
     private final ThreadPoolTaskExecutor ioThreadPool;
+    private final UserApi userApi;
 
     @Override
     public MyBaseMapper<MessageEnvelopeEntity<?>> commonBaseMapper() {
         return messageEnvelopeMapper;
+    }
+
+    @Override
+    public void findOtherTable(List<MessageEnvelopeEntity<?>> list) {
+        Set<String> userIds = list.stream()
+                .map(MessageEnvelopeEntity::getUserId)
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+        Map<String, UserEntity> userEntityMap = userApi.findByIds(String.join(",", userIds)).getData().stream().collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+        list.forEach(e -> {
+            if (ObjectUtils.isNotEmpty(e.getUserId())) {
+                e.setUser(userEntityMap.get(e.getUserId()));
+            }
+        });
+        super.findOtherTable(list);
     }
 
     @Override
