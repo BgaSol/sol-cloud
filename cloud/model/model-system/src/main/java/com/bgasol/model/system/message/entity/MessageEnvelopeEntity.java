@@ -1,12 +1,15 @@
-package com.bgasol.common.message.entity;
+package com.bgasol.model.system.message.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
-import com.bgasol.common.message.dto.MessageBody;
+import com.bgasol.model.system.message.dto.MessageBody;
+import com.bgasol.model.system.user.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +26,16 @@ public class MessageEnvelopeEntity<T extends MessageBody> extends BaseEntity {
     @Schema(description = "业务类型: 站内信，小程序通知，邮件")
     private String businessType;
 
-    @TableField("message_recipient_type")
-    @Schema(description = "接收者类型")
-    private MessageRecipientTypeEnum messageRecipientTypeEnum;
+    @Schema(description = "用户ID")
+    @TableField("user_id")
+    @Transient
+    private String userId;
 
-    @TableField("recipient_id")
-    @Schema(description = "接收者id")
-    private String recipientId;
+    @Schema(description = "用户")
+    @TableField(exist = false)
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    private UserEntity user;
 
     @TableField("title")
     @Schema(description = "消息标题")

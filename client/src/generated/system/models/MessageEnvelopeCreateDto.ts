@@ -19,13 +19,9 @@ export type MessageEnvelopeCreateDto = {
      */
     businessType?: string;
     /**
-     * 接收者类型枚举
+     * 用户ID
      */
-    messageRecipientTypeEnum?: MessageEnvelopeCreateDto.messageRecipientTypeEnum;
-    /**
-     * 接收者id
-     */
-    recipientId?: string;
+    userId?: string;
     /**
      * 消息标题
      */
@@ -48,14 +44,6 @@ export type MessageEnvelopeCreateDto = {
     status?: MessageEnvelopeCreateDto.status;
 };
 export namespace MessageEnvelopeCreateDto {
-    /**
-     * 接收者类型枚举
-     */
-    export enum messageRecipientTypeEnum {
-        USER = 'USER',
-        ROLE = 'ROLE',
-        DEPARTMENT = 'DEPARTMENT',
-    }
     /**
      * 消息状态枚举
      */

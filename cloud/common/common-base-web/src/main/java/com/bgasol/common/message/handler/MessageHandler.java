@@ -1,6 +1,6 @@
 package com.bgasol.common.message.handler;
 
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 
 public interface MessageHandler {
 

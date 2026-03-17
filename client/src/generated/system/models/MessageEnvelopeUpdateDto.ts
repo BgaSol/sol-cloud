@@ -23,13 +23,9 @@ export type MessageEnvelopeUpdateDto = {
      */
     businessType?: string;
     /**
-     * 接收者类型枚举
+     * 用户ID
      */
-    messageRecipientTypeEnum?: MessageEnvelopeUpdateDto.messageRecipientTypeEnum;
-    /**
-     * 接收者id
-     */
-    recipientId?: string;
+    userId?: string;
     /**
      * 消息标题
      */
@@ -52,14 +48,6 @@ export type MessageEnvelopeUpdateDto = {
     status?: MessageEnvelopeUpdateDto.status;
 };
 export namespace MessageEnvelopeUpdateDto {
-    /**
-     * 接收者类型枚举
-     */
-    export enum messageRecipientTypeEnum {
-        USER = 'USER',
-        ROLE = 'ROLE',
-        DEPARTMENT = 'DEPARTMENT',
-    }
     /**
      * 消息状态枚举
      */

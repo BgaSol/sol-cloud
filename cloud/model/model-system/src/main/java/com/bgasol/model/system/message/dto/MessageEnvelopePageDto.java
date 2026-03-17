@@ -3,9 +3,8 @@ package com.bgasol.model.system.message.dto;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
-import com.bgasol.common.message.entity.MessageEnvelopeStatusEnum;
-import com.bgasol.common.message.entity.MessageRecipientTypeEnum;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,12 +20,6 @@ import org.apache.commons.lang3.ObjectUtils;
 public class MessageEnvelopePageDto extends BasePageDto<MessageEnvelopeEntity<?>> {
     @Schema(description = "业务类型: 站内信，小程序通知，邮件")
     private String businessType;
-
-    @Schema(description = "接收者类型")
-    private MessageRecipientTypeEnum messageRecipientTypeEnum;
-
-    @Schema(description = "接收者id")
-    private String recipientId;
 
     @Schema(description = "消息标题")
     private String title;
@@ -50,8 +43,6 @@ public class MessageEnvelopePageDto extends BasePageDto<MessageEnvelopeEntity<?>
     public Wrapper<MessageEnvelopeEntity<?>> getQueryWrapper() {
         LambdaQueryWrapper<MessageEnvelopeEntity<?>> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ObjectUtils.isNotEmpty(businessType), MessageEnvelopeEntity::getBusinessType, businessType);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(messageRecipientTypeEnum), MessageEnvelopeEntity::getMessageRecipientTypeEnum, messageRecipientTypeEnum);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(recipientId), MessageEnvelopeEntity::getRecipientId, recipientId);
         queryWrapper.like(ObjectUtils.isNotEmpty(title), MessageEnvelopeEntity::getTitle, title);
         queryWrapper.like(ObjectUtils.isNotEmpty(content), MessageEnvelopeEntity::getContent, content);
 

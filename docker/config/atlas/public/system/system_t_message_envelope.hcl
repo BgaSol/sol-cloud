@@ -33,11 +33,7 @@ table "system_t_message_envelope" {
     type = varchar(100)
     null = true
   }
-  column "message_recipient_type" {
-    type = varchar(50)
-    null = true
-  }
-  column "recipient_id" {
+  column "user_id" {
     type = varchar(50)
     null = true
   }
@@ -72,11 +68,8 @@ table "system_t_message_envelope" {
   index "idx_message_envelope_business_type" {
     columns = [column.business_type]
   }
-  index "idx_message_envelope_recipient_type" {
-    columns = [column.message_recipient_type]
-  }
-  index "idx_message_envelope_recipient_id" {
-    columns = [column.recipient_id]
+  index "idx_message_envelope_user_id" {
+    columns = [column.user_id]
   }
   index "idx_message_envelope_status" {
     columns = [column.status]

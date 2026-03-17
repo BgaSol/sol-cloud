@@ -5,16 +5,18 @@ import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
 import com.bgasol.common.message.service.MessageEnvelopeService;
 import com.bgasol.model.system.message.dto.MessageEnvelopeCreateDto;
 import com.bgasol.model.system.message.dto.MessageEnvelopePageDto;
 import com.bgasol.model.system.message.dto.MessageEnvelopeUpdateDto;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +57,14 @@ public class MessageEnvelopeController extends BaseController<
     @SaCheckPermission(value = "messageEnvelope:update", orRole = "admin")
     public BaseVo<MessageEnvelopeEntity<?>> update(@RequestBody @Valid MessageEnvelopeUpdateDto entity) {
         return super.update(entity);
+    }
+
+    @PostMapping("/read")
+    @Operation(summary = "批量已读消息", operationId = "readMessageEnvelope")
+    @SaCheckPermission(value = "messageEnvelope:read", orRole = "admin")
+    public BaseVo<Void> read(@RequestBody @Valid List<String> ids) {
+        messageEnvelopeService.read(ids);
+        return BaseVo.success();
     }
 
 }

@@ -2,12 +2,11 @@ package com.bgasol.common.requestLog.service;
 
 import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.common.core.base.vo.PageVo;
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
-import com.bgasol.common.message.entity.MessageEnvelopeStatusEnum;
-import com.bgasol.common.message.entity.MessageRecipientTypeEnum;
 import com.bgasol.common.message.service.MessageEnvelopeService;
 import com.bgasol.common.requestLog.handler.RequestLogTableNameHandler;
 import com.bgasol.common.requestLog.mapper.RequestLogMapper;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import com.bgasol.model.system.requestLog.dto.RequestLogPageDto;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import com.bgasol.model.system.user.api.UserApi;
@@ -85,8 +84,7 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
         }
         MessageEnvelopeEntity<RequestLogEntity> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
         messageEnvelopeEntity.setBusinessType(BUSINESS_TYPE);
-        messageEnvelopeEntity.setMessageRecipientTypeEnum(MessageRecipientTypeEnum.USER);
-        messageEnvelopeEntity.setRecipientId(ADMIN_USER_ID);
+        messageEnvelopeEntity.setUserId(ADMIN_USER_ID);
         messageEnvelopeEntity.setTitle(entity.getBusinessController() + entity.getBusinessMethod());
         messageEnvelopeEntity.setDescription(entity.getErrorLog());
         messageEnvelopeEntity.setMetadata(entity.getId());

@@ -1,4 +1,4 @@
-package com.bgasol.common.message.entity;
+package com.bgasol.model.system.message.entity;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import io.swagger.v3.oas.annotations.media.Schema;

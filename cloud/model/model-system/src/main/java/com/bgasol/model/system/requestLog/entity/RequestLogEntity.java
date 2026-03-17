@@ -3,7 +3,7 @@ package com.bgasol.model.system.requestLog.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
-import com.bgasol.common.message.dto.MessageBody;
+import com.bgasol.model.system.message.dto.MessageBody;
 import com.bgasol.model.system.user.entity.UserEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;

@@ -19,14 +19,6 @@ export type MessageEnvelopePageDto = {
      */
     businessType?: string;
     /**
-     * 接收者类型枚举
-     */
-    messageRecipientTypeEnum?: MessageEnvelopePageDto.messageRecipientTypeEnum;
-    /**
-     * 接收者id
-     */
-    recipientId?: string;
-    /**
      * 消息标题
      */
     title?: string;
@@ -52,14 +44,6 @@ export type MessageEnvelopePageDto = {
     description?: string;
 };
 export namespace MessageEnvelopePageDto {
-    /**
-     * 接收者类型枚举
-     */
-    export enum messageRecipientTypeEnum {
-        USER = 'USER',
-        ROLE = 'ROLE',
-        DEPARTMENT = 'DEPARTMENT',
-    }
     /**
      * 消息状态枚举
      */

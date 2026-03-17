@@ -1,10 +1,8 @@
 package com.bgasol.model.system.message.dto;
 
 import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.common.message.dto.MessageBody;
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
-import com.bgasol.common.message.entity.MessageEnvelopeStatusEnum;
-import com.bgasol.common.message.entity.MessageRecipientTypeEnum;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,11 +18,8 @@ public class MessageEnvelopeCreateDto extends BaseCreateDto<MessageEnvelopeEntit
     @Schema(description = "业务类型: 站内信，小程序通知，邮件")
     private String businessType;
 
-    @Schema(description = "接收者类型")
-    private MessageRecipientTypeEnum messageRecipientTypeEnum;
-
-    @Schema(description = "接收者id")
-    private String recipientId;
+    @Schema(description = "用户ID")
+    private String userId;
 
     @Schema(description = "消息标题")
     private String title;
@@ -45,11 +40,10 @@ public class MessageEnvelopeCreateDto extends BaseCreateDto<MessageEnvelopeEntit
     private String description;
 
     @Override
-    public MessageEnvelopeEntity<MessageBody> toEntity() {
-        MessageEnvelopeEntity<MessageBody> entity = new MessageEnvelopeEntity<>();
+    public MessageEnvelopeEntity<?> toEntity() {
+        MessageEnvelopeEntity<?> entity = new MessageEnvelopeEntity<>();
         entity.setBusinessType(this.businessType);
-        entity.setMessageRecipientTypeEnum(this.messageRecipientTypeEnum);
-        entity.setRecipientId(this.recipientId);
+        entity.setUserId(this.userId);
         entity.setTitle(this.title);
         entity.setContent(this.content);
         entity.setHandler(this.handler);

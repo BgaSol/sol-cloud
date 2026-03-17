@@ -1,11 +1,12 @@
 package com.bgasol.model.system.message.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
-import com.bgasol.common.message.dto.MessageBody;
-import com.bgasol.common.message.entity.MessageEnvelopeEntity;
-import com.bgasol.common.message.entity.MessageEnvelopeStatusEnum;
-import com.bgasol.common.message.entity.MessageRecipientTypeEnum;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
+import com.bgasol.model.system.message.entity.MessageRecipientTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,11 +21,8 @@ public class MessageEnvelopeUpdateDto extends BaseUpdateDto<MessageEnvelopeEntit
     @Schema(description = "业务类型: 站内信，小程序通知，邮件")
     private String businessType;
 
-    @Schema(description = "接收者类型")
-    private MessageRecipientTypeEnum messageRecipientTypeEnum;
-
-    @Schema(description = "接收者id")
-    private String recipientId;
+    @Schema(description = "用户ID")
+    private String userId;
 
     @Schema(description = "消息标题")
     private String title;
@@ -45,11 +43,10 @@ public class MessageEnvelopeUpdateDto extends BaseUpdateDto<MessageEnvelopeEntit
     private String description;
 
     @Override
-    public MessageEnvelopeEntity<MessageBody> toEntity() {
-        MessageEnvelopeEntity<MessageBody> entity = new MessageEnvelopeEntity<>();
+    public MessageEnvelopeEntity<?> toEntity() {
+        MessageEnvelopeEntity<?> entity = new MessageEnvelopeEntity<>();
         entity.setBusinessType(this.businessType);
-        entity.setMessageRecipientTypeEnum(this.messageRecipientTypeEnum);
-        entity.setRecipientId(this.recipientId);
+        entity.setUserId(this.userId);
         entity.setTitle(this.title);
         entity.setContent(this.content);
         entity.setHandler(this.handler);

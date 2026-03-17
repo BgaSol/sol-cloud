@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { UserEntity } from './UserEntity';
 /**
  * 消息实体类
  */
@@ -32,13 +33,10 @@ export type MessageEnvelopeEntityObject = {
      */
     businessType?: string;
     /**
-     * 接收者类型枚举
+     * 用户ID
      */
-    messageRecipientTypeEnum?: MessageEnvelopeEntityObject.messageRecipientTypeEnum;
-    /**
-     * 接收者id
-     */
-    recipientId?: string;
+    userId?: string;
+    user?: UserEntity;
     /**
      * 消息标题
      */
@@ -61,14 +59,6 @@ export type MessageEnvelopeEntityObject = {
     status?: MessageEnvelopeEntityObject.status;
 };
 export namespace MessageEnvelopeEntityObject {
-    /**
-     * 接收者类型枚举
-     */
-    export enum messageRecipientTypeEnum {
-        USER = 'USER',
-        ROLE = 'ROLE',
-        DEPARTMENT = 'DEPARTMENT',
-    }
     /**
      * 消息状态枚举
      */

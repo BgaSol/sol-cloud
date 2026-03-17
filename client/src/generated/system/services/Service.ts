@@ -21,6 +21,7 @@ import type { BaseVoSaTokenInfo } from '../models/BaseVoSaTokenInfo';
 import type { BaseVoString } from '../models/BaseVoString';
 import type { BaseVoUserEntity } from '../models/BaseVoUserEntity';
 import type { BaseVoVerificationVo } from '../models/BaseVoVerificationVo';
+import type { BaseVoVoid } from '../models/BaseVoVoid';
 import type { DepartmentCreateDto } from '../models/DepartmentCreateDto';
 import type { DepartmentUpdateDto } from '../models/DepartmentUpdateDto';
 import type { MenuEntity } from '../models/MenuEntity';
@@ -414,6 +415,28 @@ export class Service {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/permission/init',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 批量已读消息
+     * @param requestBody
+     * @returns BaseVoVoid OK
+     * @throws ApiError
+     */
+    public static readMessageEnvelope(
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoVoid> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/message-envelope/read',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
