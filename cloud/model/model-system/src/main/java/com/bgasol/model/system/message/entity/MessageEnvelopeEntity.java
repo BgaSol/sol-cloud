@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.message.dto.MessageBody;
+import com.bgasol.model.system.user.bo.ScopeField;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,6 +36,7 @@ public class MessageEnvelopeEntity<T extends MessageBody> extends BaseEntity {
     @TableField(exist = false)
     @JoinColumn(name = "user_id")
     @ManyToOne
+    @ScopeField
     private UserEntity user;
 
     @TableField("title")
