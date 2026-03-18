@@ -117,9 +117,13 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --appendonly yes --requirepass $$REDIS_PASSWORD
-    volumes:
-      - redis-data:/data
+      - >
+        redis-server
+        --maxmemory 128mb
+        --maxmemory-policy allkeys-lru
+        --appendonly no
+        --save ""
+        --requirepass $$REDIS_PASSWORD
     ports:
       - "6379:6379"
     networks:
