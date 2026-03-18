@@ -10,7 +10,6 @@ import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import com.bgasol.model.system.user.api.UserApi;
 import com.bgasol.model.system.user.entity.UserEntity;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -41,6 +40,7 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void findOtherTable(List<MessageEnvelopeEntity<?>> list) {
         Set<String> userIds = list.stream()
                 .map(MessageEnvelopeEntity::getUserId)
@@ -82,7 +82,8 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
         }
     }
 
-    public void read(@Valid List<String> ids) {
+    @Transactional
+    public void toReadById(List<String> ids) {
         Set<String> idSet = new HashSet<>(ids);
         MessageEnvelopeEntity<?> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
         messageEnvelopeEntity.setStatus(MessageEnvelopeStatusEnum.READ);

@@ -13,6 +13,7 @@ import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,8 +63,8 @@ public class MessageEnvelopeController extends BaseController<
     @PostMapping("/read")
     @Operation(summary = "批量已读消息", operationId = "readMessageEnvelope")
     @SaCheckPermission(value = "messageEnvelope:read", orRole = "admin")
-    public BaseVo<Void> read(@RequestBody @Valid List<String> ids) {
-        messageEnvelopeService.read(ids);
+    public BaseVo<Void> read(@RequestBody @Valid @NotEmpty(message = "ids列表不能为空") List<String> ids) {
+        messageEnvelopeService.toReadById(ids);
         return BaseVo.success();
     }
 
