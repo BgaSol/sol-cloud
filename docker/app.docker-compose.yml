@@ -60,6 +60,7 @@ services:
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
 
       NODE_NAME: ${NODE_NAME}
+      NODE_IP: ${NODE_IP}
   cloud-server-web-system:
     image: azul/zulu-openjdk:17.0.17-jre
     working_dir: /app
@@ -112,6 +113,7 @@ services:
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
 
       NODE_NAME: ${NODE_NAME}
+      NODE_IP: ${NODE_IP}
     networks:
       - cloud-app
   cloud-server-web-file:
@@ -165,6 +167,7 @@ services:
       SYSTEM_AUTH_ENABLED: ${SYSTEM_AUTH_ENABLED}
 
       NODE_NAME: ${NODE_NAME}
+      NODE_IP: ${NODE_IP}
     networks:
       - cloud-app
     depends_on:
