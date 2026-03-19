@@ -41,7 +41,7 @@ public abstract class HeaderRoutingLoadBalancer implements ReactorServiceInstanc
             }
 
             String nodeName = clientRequest.getHeaders().getFirst(NODE_NAME_KEY);
-            log.info("service: {}, nodeName: {}", getServiceName(), nodeName);
+            log.debug("service: {}, nodeName: {}", getServiceName(), nodeName);
 
             if (StringUtils.isBlank(nodeName)) {
                 return randomSelect(instances);
