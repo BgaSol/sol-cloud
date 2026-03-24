@@ -54,7 +54,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
     @Transactional(readOnly = true)
     public List<MenuEntity> findByMenuGroup(String group) {
         // 查询左侧菜单的树
-        List<MenuEntity> menuEntityList = this.findAll()
+        List<MenuEntity> menuEntityList = this.findAll(false)
                 .stream()
                 .filter(menuEntity -> menuEntity.getMenuGroup().equals(group))
                 .toList();

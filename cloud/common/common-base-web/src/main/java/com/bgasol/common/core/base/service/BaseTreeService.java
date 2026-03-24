@@ -1,136 +1,82 @@
 package com.bgasol.common.core.base.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.common.core.base.entity.BaseTreeEntity;
-import com.bgasol.common.core.base.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.redisson.api.RMapCache;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.bgasol.common.constant.value.RedisConfigValues.DEFAULT_TIME_UNIT;
-import static com.bgasol.common.constant.value.RedisConfigValues.randomizeTtl;
 import static com.bgasol.common.core.base.entity.BaseTreeTable.PARENT_ID;
 
 @Slf4j
 @Service
 public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAGE_DTO extends BasePageDto<ENTITY>> extends BaseService<ENTITY, PAGE_DTO> {
 
-    /**
-     * 根据id查询实体
-     * 无关联查询
-     */
+    @Override
     @Transactional(readOnly = true)
-    public List<ENTITY> findDirectByIds(String... idArray) {
-        List<ENTITY> all = this.findAll();
-        // 递归查询idArray所有节点
-        List<ENTITY> result = new ArrayList<>();
-        filterResult(all, idArray, result);
-        return result;
-    }
-
-    private void filterResult(List<ENTITY> all, String[] idArray, List<ENTITY> result) {
-        for (ENTITY entity : all) {
-            if (Arrays.asList(idArray).contains(entity.getId())) {
-                result.add(entity);
-            }
-            if (ObjectUtils.isNotEmpty(entity.getChildren())) {
-                filterResult(entity.getChildren(), idArray, result);
-            }
-        }
-    }
-
-    /**
-     * 查询所有实体
-     * 如果实体是树形结构，查询所有根节点
-     *
-     * @return 实体列表
-     */
-    @Transactional(readOnly = true)
-    public List<ENTITY> findAll() {
-        // 一次性全量查出
-        List<ENTITY> entities = commonBaseMapper().selectList(new QueryWrapper<>());
-
-        if (entities.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 缓存查询结果（整批存）
-        if (ObjectUtils.isNotEmpty(commonBaseRedissonClient())) {
-            RMapCache<String, ENTITY> mapCache = getRMapCache();
-            mapCache.putAll(
-                    entities.stream().collect(Collectors.toMap(BaseEntity::getId, e -> e)),
-                    randomizeTtl(), DEFAULT_TIME_UNIT
-            );
-        }
-
-        // id -> entity 映射
-        Map<String, ENTITY> entityMap = entities.stream()
-                .collect(Collectors.toMap(BaseEntity::getId, e -> e));
-
-        // 组装树结构
-        List<ENTITY> roots = new ArrayList<>();
-        for (ENTITY entity : entities) {
-            String parentId = entity.getParentId();
-            if (ObjectUtils.isEmpty(parentId)) {
-                roots.add(entity);
-            } else {
-                ENTITY parent = entityMap.get(parentId);
-                if (parent != null) {
-                    if (parent.getChildren() == null) {
-                        parent.setChildren(new ArrayList<>());
-                    }
-                    parent.getChildren().add(entity);
-                }
-            }
-        }
-        return roots;
+    public Page<ENTITY> findByPage(Page<ENTITY> page, Wrapper<ENTITY> queryWrapper, boolean otherData) {
+        Page<ENTITY> entityPage = super.findByPage(page, queryWrapper, otherData);
+        addChildren(entityPage.getRecords(), otherData);
+        return entityPage;
     }
 
     @Override
-    public PageVo<ENTITY> findByPage(PAGE_DTO pageDto) {
-        PageVo<ENTITY> byPage = super.findByPage(pageDto);
-        List<ENTITY> result = byPage.getResult();
-        addChildrenToResult(result);
-        return byPage;
+    @Transactional(readOnly = true)
+    public List<ENTITY> findAll(boolean otherData) {
+        QueryWrapper<ENTITY> qw = Wrappers.<ENTITY>query().isNull(PARENT_ID);
+        List<ENTITY> entityList = this.findAll(qw, otherData);
+
+        addChildren(entityList, otherData);
+        return entityList;
     }
 
-    private void addChildrenToResult(List<ENTITY> result) {
-        if (ObjectUtils.isEmpty(result)) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<ENTITY> findById(Set<String> ids, boolean otherData) {
+        List<ENTITY> entityList = super.findById(ids, otherData);
+        addChildren(entityList, otherData);
+        return entityList;
+    }
+
+    @Transactional(readOnly = true)
+    public void addChildren(List<ENTITY> entityList, boolean otherData) {
+        if (ObjectUtils.isEmpty(entityList)) {
             return;
         }
 
-        Set<String> parentIds = result.stream()
+        Set<String> parentIds = entityList.stream()
                 .map(ENTITY::getId)
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
-
         QueryWrapper<ENTITY> qw = Wrappers.<ENTITY>query().in(PARENT_ID, parentIds);
 
-        List<ENTITY> entities = this.commonBaseMapper().selectList(qw);
+        List<ENTITY> entities = this.findAll(qw, otherData);
+
         if (ObjectUtils.isEmpty(entities)) {
             return;
         }
 
-        this.findOtherTable(entities);
-
-        Map<String, List<ENTITY>> childrenMap = entities.stream()
+        Map<String, List<ENTITY>> childrenMap = entities
+                .stream()
                 .collect(Collectors.groupingBy(ENTITY::getParentId));
 
-        result.forEach(entity -> {
+        entityList.forEach(entity -> {
             List<ENTITY> children = childrenMap.get(entity.getId());
             if (ObjectUtils.isNotEmpty(children)) {
                 entity.setChildren(children);
             }
         });
 
-        this.addChildrenToResult(entities);
+        this.addChildren(entities, otherData);
     }
 }

@@ -70,7 +70,7 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
                 .toLocalDate()
                 .format(DATE_FORMAT);
         RequestLogTableNameHandler.TABLE_SUFFIX.set(dateStr);
-        return super.findByPage(pageDto);
+        return super.findByPage(pageDto, true);
     }
 
     @Override

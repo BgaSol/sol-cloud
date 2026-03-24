@@ -60,7 +60,7 @@ public class MenuController extends BaseController<
     @Operation(summary = "查询所有菜单", operationId = "findAllMenu")
     @SaCheckPermission(value = "menu:findAll", orRole = "admin")
     public BaseVo<List<MenuEntity>> findAll() {
-        return super.findAll();
+        return super.findAll(true);
     }
 
     @GetMapping("/find-admin-menu-group")

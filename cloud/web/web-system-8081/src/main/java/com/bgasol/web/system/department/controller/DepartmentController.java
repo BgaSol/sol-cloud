@@ -89,9 +89,9 @@ public class DepartmentController extends BaseController<
         String userId = StpUtil.getLoginIdAsString();
         if (ADMIN_USER_ID.equals(userId)) {
             // 管理员不需要做数据范围限制
-            return super.findAll();
+            return super.findAll(true);
         }
-        DepartmentEntity department = userService.findById(userId).getDepartment();
+        DepartmentEntity department = userService.findById(userId, true).getDepartment();
         return BaseVo.success(List.of(department));
     }
 

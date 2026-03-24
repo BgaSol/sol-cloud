@@ -12,6 +12,8 @@ import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.common.core.base.vo.PageVo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.InputStreamResource;
@@ -25,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 
 @Validated
 public abstract class BaseController<
@@ -35,17 +38,11 @@ public abstract class BaseController<
         > {
     abstract public BaseService<ENTITY, PAGE_DTO> commonBaseService();
 
-
     /**
      * 获取poi能力 如果需要，就实现这个方法去做poi操作
      */
     public PoiCapability getPoiCapability() {
         return null;
-    }
-
-    public BaseVo<PageVo<ENTITY>> findByPage(@Valid PAGE_DTO pageDto) {
-        PageVo<ENTITY> byPage = commonBaseService().findByPage(pageDto);
-        return BaseVo.success(byPage);
     }
 
     public BaseVo<Void> insert(@Valid CREATE_DTO createDto) {
@@ -60,39 +57,32 @@ public abstract class BaseController<
         return BaseVo.success(null, "更新成功");
     }
 
-    @Deprecated
-    public BaseVo<ENTITY> save(@Valid CREATE_DTO createDto) {
-        ENTITY entity = createDto.toEntity();
-        return BaseVo.success(commonBaseService().save(entity), "保存成功");
+    public BaseVo<Integer[]> delete(@Valid @NotEmpty(message = "ids不能为空") Set<@NotBlank(message = "id不能为空") String> ids) {
+        commonBaseService().delete(ids);
+        return BaseVo.success(null, "删除成功");
     }
 
-    @Deprecated
-    public BaseVo<ENTITY> update(@Valid UPDATE_DTO updateDto) {
-        ENTITY entity = updateDto.toEntity();
-        return BaseVo.success(commonBaseService().update(entity), "更新成功");
+    public BaseVo<PageVo<ENTITY>> findByPage(@Valid PAGE_DTO pageDto, Boolean otherData) {
+        PageVo<ENTITY> page = commonBaseService().findByPage(pageDto, BooleanUtils.isTrue(otherData));
+        return BaseVo.success(page);
     }
 
-
-    public BaseVo<Integer[]> delete(@Valid @NotBlank String ids) {
-        String[] idsArr = ids.split(",");
-        Integer[] delete = commonBaseService().delete(idsArr);
-        return BaseVo.success(delete, "删除成功");
-    }
-
-    public BaseVo<ENTITY> findById(@Valid @NotBlank String id) {
-        ENTITY entity = commonBaseService().findById(id);
+    public BaseVo<ENTITY> findById(@Valid @NotBlank(message = "id不能为空") String id, Boolean otherData) {
+        ENTITY entity = commonBaseService().findById(id, BooleanUtils.isTrue(otherData));
         return BaseVo.success(entity);
     }
 
-    public BaseVo<List<ENTITY>> findByIds(@Valid @NotBlank String ids) {
-        String[] idsArr = ids.split(",");
-        return BaseVo.success(commonBaseService().findByIds(idsArr));
+    public BaseVo<List<ENTITY>> findByIds(@Valid @NotEmpty(message = "ids不能为空") Set<@NotBlank(message = "id不能为空") String> ids, Boolean otherData) {
+        List<ENTITY> entityList = commonBaseService().findById(ids, BooleanUtils.isTrue(otherData));
+        return BaseVo.success(entityList);
     }
 
-    public BaseVo<List<ENTITY>> findAll() {
-        List<ENTITY> all = commonBaseService().findAll();
-        return BaseVo.success(all);
+    public BaseVo<List<ENTITY>> findAll(Boolean otherData) {
+        List<ENTITY> entityList = commonBaseService().findAll(BooleanUtils.isTrue(otherData));
+        return BaseVo.success(entityList);
     }
+
+    // ----------------------------------------
 
     /**
      * 获取ENTITY实体类的Class对象
@@ -110,6 +100,45 @@ public abstract class BaseController<
         return (Class<CREATE_DTO>) ResolvableType.forClass(getClass()).as(BaseController.class).getGeneric(2).resolve();
     }
 
+    @Deprecated
+    public BaseVo<PageVo<ENTITY>> findByPage(@Valid PAGE_DTO pageDto) {
+        PageVo<ENTITY> byPage = commonBaseService().findByPage(pageDto);
+        return BaseVo.success(byPage);
+    }
+
+    @Deprecated
+    public BaseVo<ENTITY> save(@Valid CREATE_DTO createDto) {
+        ENTITY entity = createDto.toEntity();
+        return BaseVo.success(commonBaseService().save(entity), "保存成功");
+    }
+
+    @Deprecated
+    public BaseVo<ENTITY> update(@Valid UPDATE_DTO updateDto) {
+        ENTITY entity = updateDto.toEntity();
+        return BaseVo.success(commonBaseService().update(entity), "更新成功");
+    }
+
+    @Deprecated
+    public BaseVo<Integer[]> delete(@Valid @NotBlank String ids) {
+        String[] idsArr = ids.split(",");
+        Integer[] delete = commonBaseService().delete(idsArr);
+        return BaseVo.success(delete, "删除成功");
+    }
+    @Deprecated
+    public BaseVo<ENTITY> findById(@Valid @NotBlank String id) {
+        ENTITY entity = commonBaseService().findById(id);
+        return BaseVo.success(entity);
+    }
+    @Deprecated
+    public BaseVo<List<ENTITY>> findByIds(@Valid @NotBlank String ids) {
+        String[] idsArr = ids.split(",");
+        return BaseVo.success(commonBaseService().findByIds(idsArr));
+    }
+    @Deprecated
+    public BaseVo<List<ENTITY>> findAll() {
+        List<ENTITY> all = commonBaseService().findAll();
+        return BaseVo.success(all);
+    }
 
     /**
      * 下载导入模板
