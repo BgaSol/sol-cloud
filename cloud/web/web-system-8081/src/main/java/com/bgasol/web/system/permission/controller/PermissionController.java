@@ -36,7 +36,7 @@ public class PermissionController extends BaseController<
     @Operation(summary = "查询所有权限", operationId = "findAllPermission")
     @SaCheckPermission(value = "permission:findAll", orRole = "admin")
     public BaseVo<List<PermissionEntity>> findAll() {
-        return super.findAll();
+        return super.findAll(true);
     }
 
     @Override
