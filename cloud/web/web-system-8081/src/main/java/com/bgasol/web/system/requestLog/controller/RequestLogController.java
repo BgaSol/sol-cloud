@@ -3,7 +3,6 @@ package com.bgasol.web.system.requestLog.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
@@ -12,13 +11,9 @@ import com.bgasol.model.system.requestLog.dto.RequestLogPageDto;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,11 +33,11 @@ public class RequestLogController extends BaseController<
     }
 
     @Override
-    @PostMapping("/page")
+    @PostMapping("/page/{otherData}")
     @Operation(summary = "分页查询请求日志", operationId = "findPageRequestLog")
     @SaCheckPermission(value = "requestLog:findByPage", orRole = "admin")
-    public BaseVo<PageVo<RequestLogEntity>> findByPage(@RequestBody @Valid RequestLogPageDto pageDto) {
-        return super.findByPage(pageDto);
+    public BaseVo<PageVo<RequestLogEntity>> findByPage(@RequestBody RequestLogPageDto pageDto,
+                                                       @PathVariable Boolean otherData) {
+        return super.findByPage(pageDto, otherData);
     }
-
 }

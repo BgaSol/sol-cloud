@@ -26,7 +26,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findPageRequestLog(requestData.value).then((res) => {
+  return Service.findPageRequestLog(false, requestData.value).then((res) => {
     tableData.value = res.data as PageVoRequestLogEntity
   }).finally(() => {
     tableLoading.value = false;

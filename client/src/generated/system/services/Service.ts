@@ -383,16 +383,21 @@ export class Service {
     }
     /**
      * 分页查询请求日志
+     * @param otherData
      * @param requestBody
      * @returns BaseVoPageVoRequestLogEntity OK
      * @throws ApiError
      */
     public static findPageRequestLog(
+        otherData: boolean,
         requestBody: RequestLogPageDto,
     ): CancelablePromise<BaseVoPageVoRequestLogEntity> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/request-log/page',
+            url: '/request-log/page/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
