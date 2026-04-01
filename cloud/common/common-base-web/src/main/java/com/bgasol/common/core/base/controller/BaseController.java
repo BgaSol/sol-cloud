@@ -45,16 +45,16 @@ public abstract class BaseController<
         return null;
     }
 
-    public BaseVo<Void> insert(@Valid CREATE_DTO createDto) {
+    public BaseVo<ENTITY> insert(@Valid CREATE_DTO createDto) {
         ENTITY entity = createDto.toEntity();
         commonBaseService().insert(entity);
-        return BaseVo.success(null, "保存成功");
+        return BaseVo.success(entity, "保存成功");
     }
 
-    public BaseVo<Void> apply(@Valid UPDATE_DTO updateDto) {
+    public BaseVo<ENTITY> apply(@Valid UPDATE_DTO updateDto) {
         ENTITY entity = updateDto.toEntity();
         commonBaseService().apply(entity);
-        return BaseVo.success(null, "更新成功");
+        return BaseVo.success(entity, "更新成功");
     }
 
     public BaseVo<Integer[]> delete(@Valid @NotEmpty(message = "ids不能为空") Set<@NotBlank(message = "id不能为空") String> ids) {
@@ -124,16 +124,19 @@ public abstract class BaseController<
         Integer[] delete = commonBaseService().delete(idsArr);
         return BaseVo.success(delete, "删除成功");
     }
+
     @Deprecated
     public BaseVo<ENTITY> findById(@Valid @NotBlank String id) {
         ENTITY entity = commonBaseService().findById(id);
         return BaseVo.success(entity);
     }
+
     @Deprecated
     public BaseVo<List<ENTITY>> findByIds(@Valid @NotBlank String ids) {
         String[] idsArr = ids.split(",");
         return BaseVo.success(commonBaseService().findByIds(idsArr));
     }
+
     @Deprecated
     public BaseVo<List<ENTITY>> findAll() {
         List<ENTITY> all = commonBaseService().findAll();
