@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -9,7 +8,7 @@
     </parent>
     <groupId>com.bgasol</groupId>
     <artifactId>cloud</artifactId>
-    <version>0.0.1</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>cloud</name>
@@ -23,6 +22,7 @@
     </modules>
 
     <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
@@ -129,6 +129,35 @@
                                 <version>${lombok.version}</version>
                             </path>
                         </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.github.git-commit-id</groupId>
+                    <artifactId>git-commit-id-maven-plugin</artifactId>
+                    <version>9.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>get-the-git-infos</id>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                            <phase>initialize</phase>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                        <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                        <includeOnlyProperties>
+                            <includeOnlyProperty>^git.build.*</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.id.abbrev</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.id.full</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.message.short</includeOnlyProperty>
+                            <includeOnlyProperty>^git.commit.time</includeOnlyProperty>
+                            <includeOnlyProperty>^git.branch</includeOnlyProperty>
+                        </includeOnlyProperties>
+                        <commitIdGenerationMode>full</commitIdGenerationMode>
+                        <dateFormat>yyyy-MM-dd HH:mm:ss</dateFormat>
+                        <dateFormatTimeZone>Asia/Shanghai</dateFormatTimeZone>
                     </configuration>
                 </plugin>
             </plugins>

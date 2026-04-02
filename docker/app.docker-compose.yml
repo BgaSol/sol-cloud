@@ -28,7 +28,8 @@ services:
       - java
       - -cp
       - spring-boot-loader
-      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dspring.info.build.location=file:application/META-INF/build-info.properties
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib,snapshot-dependencies/BOOT-INF/lib
       - -Dloader.main=com.bgasol.gateway.GatewayApplication
       - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
@@ -70,7 +71,8 @@ services:
       - java
       - -cp
       - spring-boot-loader
-      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dspring.info.build.location=file:application/META-INF/build-info.properties
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib,snapshot-dependencies/BOOT-INF/lib
       - -Dloader.main=com.bgasol.web.system.SystemApplication
       - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped
@@ -125,7 +127,8 @@ services:
       - java
       - -cp
       - spring-boot-loader
-      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib
+      - -Dspring.info.build.location=file:application/META-INF/build-info.properties
+      - -Dloader.path=application/BOOT-INF/classes,application/BOOT-INF/lib,dependencies/BOOT-INF/lib,snapshot-dependencies/BOOT-INF/lib
       - -Dloader.main=com.bgasol.web.file.FileApplication
       - org.springframework.boot.loader.launch.PropertiesLauncher
     restart: unless-stopped

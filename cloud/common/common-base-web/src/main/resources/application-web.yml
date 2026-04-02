@@ -3,3 +3,10 @@ server:
     threads:
       io: 1
       worker: 8
+spring:
+  config:
+    import:
+      - optional:classpath:git.properties
+      - optional:classpath:META-INF/build-info.properties
+      - optional:file:./META-INF/build-info.properties
+      - optional:file:./application/META-INF/build-info.properties

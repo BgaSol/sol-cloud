@@ -1,2 +1,10 @@
-Spring Boot Version: ${spring-boot.version}
-Spring Application Name: ${spring.application.name}
+------------------------------------------------------------
+  Service          ${spring.application.name}
+  Spring Boot      ${spring-boot.version}
+  Build Version    ${build.version:unknown}
+  Build Time       ${build.time.display:${build.time:unknown}}
+
+  Git Branch       ${git.branch:unknown}
+  Git Commit       ${git.commit.id.abbrev:unknown}
+  Commit Time      ${git.commit.time.display:${git.commit.time:unknown}}
+------------------------------------------------------------
