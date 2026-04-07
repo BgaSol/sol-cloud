@@ -9,9 +9,12 @@ import com.bgasol.model.file.image.dto.ImageUpdateDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(
         path = "/" + FileConfigValues.SERVICE_NAME + "/image",
@@ -19,22 +22,24 @@ import java.util.List;
         contextId = FileConfigValues.SERVICE_NAME + "-ImageApi"
 )
 public interface ImageApi {
-    @PostMapping
-    BaseVo<ImageEntity> save(@RequestBody @Valid ImageCreateDto createDto);
+    @PostMapping("/insert")
+    BaseVo<ImageEntity> insert(@RequestBody @Valid ImageCreateDto createDto);
 
-    @PutMapping
-    BaseVo<ImageEntity> update(@RequestBody @Valid ImageUpdateDto updateDto);
+    @PostMapping("/apply")
+    BaseVo<ImageEntity> apply(@RequestBody @Valid ImageUpdateDto updateDto);
 
-    @GetMapping("/{id}")
-    BaseVo<ImageEntity> findById(@PathVariable String id);
+    @PostMapping("/delete")
+    BaseVo<Integer> delete(@RequestBody Set<String> ids);
 
-    @PostMapping("/page")
-    BaseVo<PageVo<ImageEntity>> findByPage(@RequestBody @Valid ImagePageDto pageDto);
+    @GetMapping("/{id}/{otherData}")
+    BaseVo<ImageEntity> findById(@PathVariable("id") String id, @PathVariable("otherData") Boolean otherData);
 
-    @DeleteMapping("/{ids}")
-    BaseVo<Integer[]> delete(@PathVariable String ids);
+    @PostMapping("/get/{otherData}")
+    BaseVo<List<ImageEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable("otherData") Boolean otherData);
 
-    @GetMapping("/ids/{ids}")
-    BaseVo<List<ImageEntity>> findByIds(@PathVariable String ids);
+    @PostMapping("/page/{otherData}")
+    BaseVo<PageVo<ImageEntity>> findByPage(@RequestBody @Valid ImagePageDto pageDto, @PathVariable("otherData") Boolean otherData);
 
+    @GetMapping("/download/{id}")
+    ResponseEntity<InputStreamResource> download(@PathVariable("id") String id);
 }

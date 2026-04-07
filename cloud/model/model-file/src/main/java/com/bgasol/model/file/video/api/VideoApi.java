@@ -9,9 +9,12 @@ import com.bgasol.model.file.video.dto.VideoUpdateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(
         path = "/" + FileConfigValues.SERVICE_NAME + "/video",
@@ -19,21 +22,24 @@ import java.util.List;
         contextId = FileConfigValues.SERVICE_NAME + "-VideoApi"
 )
 public interface VideoApi {
-    @PostMapping
-    BaseVo<VideoEntity> save(@RequestBody @Valid VideoCreateDto createDto);
+    @PostMapping("/insert")
+    BaseVo<VideoEntity> insert(@RequestBody @Valid VideoCreateDto createDto);
 
-    @PutMapping
-    BaseVo<VideoEntity> update(@RequestBody @Valid VideoUpdateDto updateDto);
+    @PostMapping("/apply")
+    BaseVo<VideoEntity> apply(@RequestBody @Valid VideoUpdateDto updateDto);
 
-    @GetMapping("/{id}")
-    BaseVo<VideoEntity> findById(@PathVariable String id);
+    @PostMapping("/delete")
+    BaseVo<Integer> delete(@RequestBody Set<String> ids);
 
-    @GetMapping("/ids/{ids}")
-    BaseVo<List<VideoEntity>> findByIds(@PathVariable String ids);
+    @GetMapping("/{id}/{otherData}")
+    BaseVo<VideoEntity> findById(@PathVariable("id") String id, @PathVariable("otherData") Boolean otherData);
 
-    @PostMapping("/page")
-    BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody @Valid VideoPageDto pageDto);
+    @PostMapping("/get/{otherData}")
+    BaseVo<List<VideoEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable("otherData") Boolean otherData);
 
-    @DeleteMapping("/{ids}")
-    BaseVo<Integer[]> delete(@PathVariable String ids);
+    @PostMapping("/page/{otherData}")
+    BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody @Valid VideoPageDto pageDto, @PathVariable("otherData") Boolean otherData);
+
+    @GetMapping("/play/{id}")
+    ResponseEntity<Resource> playVideo(@PathVariable("id") String id, @RequestHeader(value = "Range", required = false) String rangeHeader);
 }

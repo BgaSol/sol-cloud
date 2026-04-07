@@ -7,8 +7,11 @@ import com.bgasol.model.file.file.dto.FileCreateDto;
 import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,10 +24,10 @@ import java.util.Set;
 )
 public interface FileApi {
     @PostMapping(value = "/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    BaseVo<FileEntity> insert(FileCreateDto createDto);
+    BaseVo<FileEntity> insert(@ModelAttribute FileCreateDto createDto);
 
     @PostMapping("/apply")
-    BaseVo<FileEntity> apply(@RequestBody FileUpdateDto updateDto);
+    BaseVo<FileEntity> apply(@RequestBody @Valid FileUpdateDto updateDto);
 
     @PostMapping("/delete")
     BaseVo<Integer> delete(@RequestBody Set<String> ids);
@@ -36,8 +39,11 @@ public interface FileApi {
     BaseVo<List<FileEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable("otherData") Boolean otherData);
 
     @PostMapping("/page/{otherData}")
-    BaseVo<PageVo<FileEntity>> findByPage(@RequestBody FilePageDto pageDto, @PathVariable("otherData") Boolean otherData);
+    BaseVo<PageVo<FileEntity>> findByPage(@RequestBody @Valid FilePageDto pageDto, @PathVariable("otherData") Boolean otherData);
 
     @GetMapping("/all/{otherData}")
     BaseVo<List<FileEntity>> findAll(@PathVariable("otherData") Boolean otherData);
+
+    @GetMapping("/download/{id}")
+    ResponseEntity<InputStreamResource> download(@PathVariable("id") String id);
 }
