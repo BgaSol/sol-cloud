@@ -57,9 +57,9 @@ public abstract class BaseController<
         return BaseVo.success(entity, "更新成功");
     }
 
-    public BaseVo<Integer[]> delete(@Valid @NotEmpty(message = "ids不能为空") Set<@NotBlank(message = "id不能为空") String> ids) {
-        commonBaseService().delete(ids);
-        return BaseVo.success(null, "删除成功");
+    public BaseVo<Integer> delete(@Valid @NotEmpty(message = "ids不能为空") Set<@NotBlank(message = "id不能为空") String> ids) {
+        Integer deleteCount = commonBaseService().delete(ids);
+        return BaseVo.success(deleteCount, "删除成功");
     }
 
     public BaseVo<PageVo<ENTITY>> findByPage(@Valid PAGE_DTO pageDto, Boolean otherData) {

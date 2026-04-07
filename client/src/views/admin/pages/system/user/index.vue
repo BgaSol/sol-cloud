@@ -8,7 +8,8 @@ import ResetPassword from "~/views/admin/pages/system/user/ResetPassword.vue";
 import {usePage} from "~/composables/PageHook";
 import {ElTable as ElTableRefType} from "element-plus/es/components/table";
 import {
-  dayjs, ElButton,
+  dayjs,
+  ElButton,
   ElForm,
   ElFormItem,
   ElInput,
@@ -29,7 +30,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findPageUser(requestData.value).then((res) => {
+  return Service.findByPageUserController(true, requestData.value).then((res) => {
     tableData.value = res.data as PageVoUserEntity
   }).finally(() => {
     tableLoading.value = false;

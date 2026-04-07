@@ -17,7 +17,6 @@ import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.InputStreamResource;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,59 +51,59 @@ public class ImageController extends BaseController<
     }
 
     @Override
-    @PostMapping
-    @Operation(summary = "新增图片", operationId = "saveImage")
-    @SaCheckPermission(value = "image:save", orRole = "admin")
-    public BaseVo<ImageEntity> save(@RequestBody @Valid ImageCreateDto createDto) {
-        return super.save(createDto);
+    @PostMapping("/insert")
+    @Operation(summary = "创建图片", operationId = "insertImageController")
+    @SaCheckPermission(value = "ImageController:insert", orRole = "admin")
+    public BaseVo<ImageEntity> insert(@RequestBody ImageCreateDto createDto) {
+        return super.insert(createDto);
     }
 
     @Override
-    @PutMapping
-    @Operation(summary = "更新图片", operationId = "updateImage")
-    @SaCheckPermission(value = "image:update", orRole = "admin")
-    public BaseVo<ImageEntity> update(@RequestBody @Valid ImageUpdateDto updateDto) {
-        return super.update(updateDto);
+    @PostMapping("/apply")
+    @SaCheckPermission(value = "ImageController:apply", orRole = "admin")
+    @Operation(summary = "更新图片", operationId = "applyImageController")
+    public BaseVo<ImageEntity> apply(@RequestBody ImageUpdateDto updateDto) {
+        return super.apply(updateDto);
     }
 
     @Override
-    @GetMapping("/{id}")
-    @Operation(summary = "查询图片", operationId = "findImageById")
-    @SaCheckPermission(value = "image:findById", orRole = "admin")
-    public BaseVo<ImageEntity> findById(@PathVariable String id) {
-        return super.findById(id);
-    }
-
-    @Override
-    @PostMapping("/page")
-    @Operation(summary = "分页查询图片", operationId = "findPageImage")
-    @SaCheckPermission(value = "image:findByPage", orRole = "admin")
-    public BaseVo<PageVo<ImageEntity>> findByPage(@RequestBody @Valid ImagePageDto pageDto) {
-        return super.findByPage(pageDto);
-    }
-
-    @Override
-    @DeleteMapping("/{ids}")
-    @Operation(summary = "删除图片", operationId = "deleteImage")
-    @SaCheckPermission(value = "image:delete", orRole = "admin")
-    public BaseVo<Integer[]> delete(@PathVariable String ids) {
+    @PostMapping("/delete")
+    @SaCheckPermission(value = "ImageController:delete", orRole = "admin")
+    @Operation(summary = "删除图片", operationId = "deleteImageController")
+    public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
     }
 
     @Override
-    @GetMapping("/ids/{ids}")
-    @Operation(summary = "根据id批量查询图片", operationId = "findImageByIds")
-    @SaCheckPermission(value = "image:findByIds", orRole = "admin")
-    public BaseVo<List<ImageEntity>> findByIds(@PathVariable String ids) {
-        return super.findByIds(ids);
+    @GetMapping("/{id}/{otherData}")
+    @SaCheckPermission(value = "ImageController:findById", orRole = "admin")
+    @Operation(summary = "根据ID查询图片", operationId = "findByIdImageController")
+    public BaseVo<ImageEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
+        return super.findById(id, otherData);
+    }
+
+    @Override
+    @PostMapping("/get/{otherData}")
+    @SaCheckPermission(value = "ImageController:findByIds", orRole = "admin")
+    @Operation(summary = "根据ID批量查询图片", operationId = "findByIdsImageController")
+    public BaseVo<List<ImageEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
+        return super.findByIds(ids, otherData);
+    }
+
+    @Override
+    @PostMapping("/page/{otherData}")
+    @SaCheckPermission(value = "ImageController:findByPage", orRole = "admin")
+    @Operation(summary = "分页查询图片", operationId = "findByPageImageController")
+    public BaseVo<PageVo<ImageEntity>> findByPage(@RequestBody ImagePageDto pageDto, @PathVariable Boolean otherData) {
+        return super.findByPage(pageDto, otherData);
     }
 
     @SneakyThrows
     @GetMapping("/download/{id}")
-    @Operation(summary = "下载图片", operationId = "downloadImage")
-    @SaCheckPermission(value = "image:download", orRole = "admin")
-    public ResponseEntity<InputStreamResource> download(@PathVariable("id") String id) {
-        ImageEntity imageEntity = imageService.findById(id);
+    @Operation(summary = "下载图片", operationId = "downloadImageController")
+    @SaCheckPermission(value = "ImageController:download", orRole = "admin")
+    public ResponseEntity<InputStreamResource> download(@PathVariable String id) {
+        ImageEntity imageEntity = imageService.findById(id, true);
         FileEntity file = imageEntity.getFile();
         String bucket = file.getBucket();
         String objectName = ossService.buildObjectPath(file);
@@ -119,6 +119,6 @@ public class ImageController extends BaseController<
                         StandardCharsets.UTF_8
                 ))
                 .contentType(MediaType.valueOf(file.getType()))
-                .body(new InputStreamResource(imageService.imageStreamFindById(imageEntity.getId())));
+                .body(new InputStreamResource(ossService.readFileStream(file)));
     }
 }

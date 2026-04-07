@@ -19,6 +19,10 @@ export type UserUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 用户名
      */
     username: string;

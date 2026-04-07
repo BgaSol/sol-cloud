@@ -15,6 +15,10 @@ export type VideoCreateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 视频名称
      */
     name?: string;

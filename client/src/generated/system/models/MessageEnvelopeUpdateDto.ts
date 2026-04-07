@@ -19,6 +19,10 @@ export type MessageEnvelopeUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 业务类型: 站内信，小程序通知，邮件
      */
     businessType?: string;

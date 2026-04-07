@@ -12,7 +12,7 @@ const loading = ref(false);
 
 const read = () => {
   loading.value = true;
-  Service.updateMessageEnvelope({
+  Service.applyMessageEnvelopeController({
     id: props.id,
     status: MessageEnvelopeUpdateDto.status.READ,
   })

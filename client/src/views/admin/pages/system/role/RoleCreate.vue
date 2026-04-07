@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref} from "vue";
-import {RoleCreateDto, MenuEntity, PermissionEntity, Service, VerificationResult} from "~/generated/system";
+import {MenuEntity, PermissionEntity, RoleCreateDto, Service, VerificationResult} from "~/generated/system";
 import {useFormValidation} from "~/composables/FormValidationHook";
 import {roleMenuTreeProps, rolePermissionTreeProps} from "~/views/admin/pages/system/role/role.form.tree.props";
 import {ElButton, ElDialog, ElForm, ElFormItem, ElInput, ElMessage} from "element-plus";
@@ -34,7 +34,7 @@ const openDialog = () => {
 // 获取权限
 const permissionList = ref<PermissionEntity[]>([]);
 const getPermissionList = async () => {
-  return Service.findAllPermission().then((res) => {
+  return Service.findAllPermissionController(false).then((res) => {
     permissionList.value = res.data as PermissionEntity[];
   });
 }
@@ -42,7 +42,7 @@ const getPermissionList = async () => {
 // 获取菜单
 const menuList = ref<MenuEntity[]>([]);
 const getMenuList = async () => {
-  return Service.findAllMenu().then((res) => {
+  return Service.findAllMenuController(false).then((res) => {
     menuList.value = res.data as MenuEntity[];
   });
 }
@@ -52,7 +52,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.saveRole(buildDto(defaultData(), data.value)).then((res) => {
+  Service.insertRoleController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {

@@ -51,6 +51,16 @@ public class FileInitData implements ApplicationRunner {
                                 .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/image")
                                 .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_image")
                                 .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
+                                .build(),
+                        MenuEntity.builder()
+                                .id("video")
+                                .parentId(fileServiceMenuId)
+                                .name("视频管理")
+                                .menuType(MenuType.PAGE)
+                                .icon("IconParkVideoFile")
+                                .path("/" + SystemConfigValues.ADMIN_PAGE_NAME + "/" + FileConfigValues.SERVICE_NAME + "/video")
+                                .routeName(SystemConfigValues.ADMIN_PAGE_NAME + "_" + FileConfigValues.SERVICE_NAME + "_video")
+                                .menuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID)
                                 .build()
                 )).build();
         menuApi.init(fileServiceMenu);

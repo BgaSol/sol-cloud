@@ -30,7 +30,10 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -118,7 +121,7 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             finalExpression = finalExpression == null ? existsExpression : new AndExpression(finalExpression, existsExpression);
         }
 
-        UserEntity loginUser = userApi.findById(userId).getData();
+        UserEntity loginUser = userApi.findById(userId, true).getData();
         List<String> departmentIds = loginUser.getDepartment()
                 .getAllChildren()
                 .stream()

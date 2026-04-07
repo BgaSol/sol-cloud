@@ -26,17 +26,22 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class Service {
     /**
-     * 更新视频
+     * 分页查询视频
+     * @param otherData
      * @param requestBody
-     * @returns BaseVoVideoEntity OK
+     * @returns BaseVoPageVoVideoEntity OK
      * @throws ApiError
      */
-    public static updateVideo(
-        requestBody: VideoUpdateDto,
-    ): CancelablePromise<BaseVoVideoEntity> {
+    public static findByPageVideoController(
+        otherData: boolean,
+        requestBody: VideoPageDto,
+    ): CancelablePromise<BaseVoPageVoVideoEntity> {
         return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/video',
+            method: 'POST',
+            url: '/video/page/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -48,17 +53,186 @@ export class Service {
         });
     }
     /**
-     * 新增视频
+     * 创建视频
      * @param requestBody
      * @returns BaseVoVideoEntity OK
      * @throws ApiError
      */
-    public static saveVideo(
+    public static insertVideoController(
         requestBody: VideoCreateDto,
     ): CancelablePromise<BaseVoVideoEntity> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/video',
+            url: '/video/insert',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据ID批量查询视频
+     * @param otherData
+     * @param requestBody
+     * @returns BaseVoListVideoEntity OK
+     * @throws ApiError
+     */
+    public static findByIdsVideoController(
+        otherData: boolean,
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoListVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/video/get/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 删除视频
+     * @param requestBody
+     * @returns BaseVoInteger OK
+     * @throws ApiError
+     */
+    public static deleteVideoController(
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoInteger> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/video/delete',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 更新视频
+     * @param requestBody
+     * @returns BaseVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static applyVideoController(
+        requestBody: VideoUpdateDto,
+    ): CancelablePromise<BaseVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/video/apply',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 分页查询图片
+     * @param otherData
+     * @param requestBody
+     * @returns BaseVoPageVoImageEntity OK
+     * @throws ApiError
+     */
+    public static findByPageImageController(
+        otherData: boolean,
+        requestBody: ImagePageDto,
+    ): CancelablePromise<BaseVoPageVoImageEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/image/page/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 创建图片
+     * @param requestBody
+     * @returns BaseVoImageEntity OK
+     * @throws ApiError
+     */
+    public static insertImageController(
+        requestBody: ImageCreateDto,
+    ): CancelablePromise<BaseVoImageEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/image/insert',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据ID批量查询图片
+     * @param otherData
+     * @param requestBody
+     * @returns BaseVoListImageEntity OK
+     * @throws ApiError
+     */
+    public static findByIdsImageController(
+        otherData: boolean,
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoListImageEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/image/get/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 删除图片
+     * @param requestBody
+     * @returns BaseVoInteger OK
+     * @throws ApiError
+     */
+    public static deleteImageController(
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoInteger> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/image/delete',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -75,122 +249,12 @@ export class Service {
      * @returns BaseVoImageEntity OK
      * @throws ApiError
      */
-    public static updateImage(
+    public static applyImageController(
         requestBody: ImageUpdateDto,
     ): CancelablePromise<BaseVoImageEntity> {
         return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/image',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 新增图片
-     * @param requestBody
-     * @returns BaseVoImageEntity OK
-     * @throws ApiError
-     */
-    public static saveImage(
-        requestBody: ImageCreateDto,
-    ): CancelablePromise<BaseVoImageEntity> {
-        return __request(OpenAPI, {
             method: 'POST',
-            url: '/image',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 更新文件状态
-     * @param requestBody
-     * @returns BaseVoFileEntity OK
-     * @throws ApiError
-     */
-    public static updateFile(
-        requestBody: FileUpdateDto,
-    ): CancelablePromise<BaseVoFileEntity> {
-        return __request(OpenAPI, {
-            method: 'PUT',
-            url: '/file',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 保存|上传文件
-     * @param formData
-     * @returns BaseVoFileEntity OK
-     * @throws ApiError
-     */
-    public static saveFile(
-        formData?: FileCreateDto,
-    ): CancelablePromise<BaseVoFileEntity> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/file',
-            formData: formData,
-            mediaType: 'multipart/form-data',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 分页查询视频
-     * @param requestBody
-     * @returns BaseVoPageVoVideoEntity OK
-     * @throws ApiError
-     */
-    public static findPageVideo(
-        requestBody: VideoPageDto,
-    ): CancelablePromise<BaseVoPageVoVideoEntity> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/video/page',
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 分页查询图片
-     * @param requestBody
-     * @returns BaseVoPageVoImageEntity OK
-     * @throws ApiError
-     */
-    public static findPageImage(
-        requestBody: ImagePageDto,
-    ): CancelablePromise<BaseVoPageVoImageEntity> {
-        return __request(OpenAPI, {
-            method: 'POST',
-            url: '/image/page',
+            url: '/image/apply',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -203,16 +267,21 @@ export class Service {
     }
     /**
      * 分页查询文件
+     * @param otherData
      * @param requestBody
      * @returns BaseVoPageVoFileEntity OK
      * @throws ApiError
      */
-    public static findPageFile(
+    public static findByPageFileController(
+        otherData: boolean,
         requestBody: FilePageDto,
     ): CancelablePromise<BaseVoPageVoFileEntity> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/file/page',
+            url: '/file/page/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -224,19 +293,19 @@ export class Service {
         });
     }
     /**
-     * 查询视频
-     * @param id
-     * @returns BaseVoVideoEntity OK
+     * 保存|上传文件
+     * @param fileCreateDto
+     * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
-    public static findVideoById(
-        id: string,
-    ): CancelablePromise<BaseVoVideoEntity> {
+    public static insertFileController(
+        fileCreateDto: FileCreateDto,
+    ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
-            method: 'GET',
-            url: '/video/{id}',
-            path: {
-                'id': id,
+            method: 'POST',
+            url: '/file/insert',
+            query: {
+                'fileCreateDto': fileCreateDto,
             },
             errors: {
                 400: `参数校验异常`,
@@ -247,7 +316,104 @@ export class Service {
         });
     }
     /**
-     * 在线播放文件
+     * 根据ID批量查询文件
+     * @param otherData
+     * @param requestBody
+     * @returns BaseVoListFileEntity OK
+     * @throws ApiError
+     */
+    public static findByIdsFileController(
+        otherData: boolean,
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoListFileEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/file/get/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 删除文件
+     * @param requestBody
+     * @returns BaseVoInteger OK
+     * @throws ApiError
+     */
+    public static deleteFileController(
+        requestBody: Array<string>,
+    ): CancelablePromise<BaseVoInteger> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/file/delete',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 更新文件
+     * @param requestBody
+     * @returns BaseVoFileEntity OK
+     * @throws ApiError
+     */
+    public static applyFileController(
+        requestBody: FileUpdateDto,
+    ): CancelablePromise<BaseVoFileEntity> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/file/apply',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 根据ID查询视频
+     * @param id
+     * @param otherData
+     * @returns BaseVoVideoEntity OK
+     * @throws ApiError
+     */
+    public static findByIdVideoController(
+        id: string,
+        otherData: boolean,
+    ): CancelablePromise<BaseVoVideoEntity> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/video/{id}/{otherData}',
+            path: {
+                'id': id,
+                'otherData': otherData,
+            },
+            errors: {
+                400: `参数校验异常`,
+                401: `未登录异常`,
+                403: `无权限异常`,
+                500: `业务异常`,
+            },
+        });
+    }
+    /**
+     * 在线播放视频
      * @param id
      * @param range
      * @returns binary OK
@@ -275,65 +441,22 @@ export class Service {
         });
     }
     /**
-     * 根据id批量查询视频
-     * @param ids
-     * @returns BaseVoListVideoEntity OK
-     * @throws ApiError
-     */
-    public static findVideoByIds(
-        ids: string,
-    ): CancelablePromise<BaseVoListVideoEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/video/ids/{ids}',
-            path: {
-                'ids': ids,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 查询图片
+     * 根据ID查询图片
      * @param id
+     * @param otherData
      * @returns BaseVoImageEntity OK
      * @throws ApiError
      */
-    public static findImageById(
+    public static findByIdImageController(
         id: string,
+        otherData: boolean,
     ): CancelablePromise<BaseVoImageEntity> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/image/{id}',
+            url: '/image/{id}/{otherData}',
             path: {
                 'id': id,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 根据id批量查询图片
-     * @param ids
-     * @returns BaseVoListImageEntity OK
-     * @throws ApiError
-     */
-    public static findImageByIds(
-        ids: string,
-    ): CancelablePromise<BaseVoListImageEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/image/ids/{ids}',
-            path: {
-                'ids': ids,
+                'otherData': otherData,
             },
             errors: {
                 400: `参数校验异常`,
@@ -349,7 +472,7 @@ export class Service {
      * @returns binary OK
      * @throws ApiError
      */
-    public static downloadImage(
+    public static downloadImageController(
         id: string,
     ): CancelablePromise<Blob> {
         return __request(OpenAPI, {
@@ -367,42 +490,22 @@ export class Service {
         });
     }
     /**
-     * 根据id查询文件
+     * 根据ID查询文件
      * @param id
+     * @param otherData
      * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
-    public static findFileById(
+    public static findByIdFileController(
         id: string,
+        otherData: boolean,
     ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/file/{id}',
+            url: '/file/{id}/{otherData}',
             path: {
                 'id': id,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 根据id批量查询图片
-     * @param ids
-     * @returns BaseVoListFileEntity OK
-     * @throws ApiError
-     */
-    public static findFileByIds(
-        ids: string,
-    ): CancelablePromise<BaseVoListFileEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/file/ids/{ids}',
-            path: {
-                'ids': ids,
+                'otherData': otherData,
             },
             errors: {
                 400: `参数校验异常`,
@@ -426,75 +529,6 @@ export class Service {
             url: '/file/download/{id}',
             path: {
                 'id': id,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 删除视频
-     * @param ids
-     * @returns BaseVoInteger<any> OK
-     * @throws ApiError
-     */
-    public static deleteVideo(
-        ids: string,
-    ): CancelablePromise<BaseVoInteger> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/video/{ids}',
-            path: {
-                'ids': ids,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 删除图片
-     * @param ids
-     * @returns BaseVoInteger<any> OK
-     * @throws ApiError
-     */
-    public static deleteImage(
-        ids: string,
-    ): CancelablePromise<BaseVoInteger> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/image/{ids}',
-            path: {
-                'ids': ids,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 删除文件
-     * @param ids
-     * @returns BaseVoInteger<any> OK
-     * @throws ApiError
-     */
-    public static deleteFile(
-        ids: string,
-    ): CancelablePromise<BaseVoInteger> {
-        return __request(OpenAPI, {
-            method: 'DELETE',
-            url: '/file/{ids}',
-            path: {
-                'ids': ids,
             },
             errors: {
                 400: `参数校验异常`,

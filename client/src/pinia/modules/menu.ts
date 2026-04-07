@@ -12,7 +12,7 @@ export const useMenu = defineStore('menu', () => {
     const menus = ref<MenuEntity[]>([]);
     const getMenuList = async () => {
         await routes.getRoutes();
-        const menuList = await Service.findAdminMenuGroup()
+        const menuList = await Service.findByGroupMenuController("admin-master")
         menus.value = <MenuEntity[]>menuList.data;
     }
 

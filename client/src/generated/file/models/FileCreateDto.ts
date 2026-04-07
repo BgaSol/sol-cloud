@@ -6,6 +6,22 @@
  * 创建文件
  */
 export type FileCreateDto = {
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 描述
+     */
+    description?: string;
+    /**
+     * 类型
+     */
+    type?: string;
+    /**
+     * 自定义文件id
+     */
+    id?: string;
     uploadFile?: Blob;
     /**
      * 文件名称(包含文件后缀)
@@ -16,9 +32,9 @@ export type FileCreateDto = {
      */
     hash?: string;
     /**
-     * 文件状态
+     * 文件状态：LOADING, SUCCESS
      */
-    status?: string;
+    status?: FileCreateDto.status;
     /**
      * 文件后缀
      */
@@ -27,13 +43,14 @@ export type FileCreateDto = {
      * 文件来源
      */
     source?: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 描述
-     */
-    description?: string;
 };
+export namespace FileCreateDto {
+    /**
+     * 文件状态：LOADING, SUCCESS
+     */
+    export enum status {
+        LOADING = 'LOADING',
+        SUCCESS = 'SUCCESS',
+    }
+}
 

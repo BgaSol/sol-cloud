@@ -17,7 +17,7 @@ export const getHeaders = () => {
 /**
  * 上传文件的路径
  */
-export const uploadFilePath = `${BaseUrl}/file/file`
+export const uploadFilePath = `${BaseUrl}/file/file/insert`
 /**
  * 获取请求头字符串
  */

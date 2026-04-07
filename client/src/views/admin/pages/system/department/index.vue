@@ -15,7 +15,7 @@ const tableLoading = ref(true);
 
 const getTable = () => {
   tableLoading.value = true;
-  Service.findAllDepartment().then((res) => {
+  Service.findAllDepartmentController(false).then((res) => {
     tableData.value = res.data as DepartmentEntity[];
   }).finally(() => {
     tableLoading.value = false;
@@ -34,7 +34,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
     <div class="controllers">
       <create-department @success="getTable"></create-department>
       <base-batch-delete v-if="tableRef"
-                         :api="Service.deleteDepartment" :table="tableRef" @success='getTable'></base-batch-delete>
+                         :api="Service.deleteDepartmentController" :table="tableRef" @success='getTable'></base-batch-delete>
     </div>
     <div class='table'>
       <div class='table-container'>
@@ -61,7 +61,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
           <el-table-column align='center' fixed="right" label='操作' width="160">
             <template #default='{ row }'>
               <update-department :id="row.id" @success="getTable"></update-department>
-              <base-delete :id="row.id" :api="Service.deleteDepartment" @success="getTable"/>
+              <base-delete :id="row.id" :api="Service.deleteDepartmentController" @success="getTable"/>
             </template>
           </el-table-column>
         </el-table>

@@ -26,11 +26,9 @@ public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
     @Schema(description = "描述")
     private String description;
 
-    /**
-     * CreateDto转Entity
-     *
-     * @return ENTITY
-     */
+    @Schema(description = "类型")
+    private String type;
+
     @JsonIgnore
     @Schema(hidden = true)
     public abstract ENTITY toEntity();
@@ -38,9 +36,10 @@ public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public ENTITY toEntity(ENTITY entity) {
+        entity.setId(this.getId());
         entity.setSort(this.getSort());
         entity.setDescription(this.getDescription());
-        entity.setId(this.getId());
+        entity.setType(this.getType());
         return entity;
     }
 }

@@ -13,7 +13,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findAllRole().then((res) => {
+  return Service.findAllRoleController(false).then((res) => {
     tableData.value = res.data as RoleEntity[];
   }).finally(() => {
     tableLoading.value = false;
@@ -29,8 +29,8 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
   <div class='main'>
     <div class='controllers'>
       <role-create @success="getTable"></role-create>
-      <base-batch-delete v-if="tableRef"
-                         :api="Service.deleteRole" :table="tableRef" @success='getTable'></base-batch-delete>
+      <base-batch-delete v-if="tableRef" :api="Service.deleteRoleController" :table="tableRef" @success='getTable'>
+      </base-batch-delete>
     </div>
     <div class='table'>
       <div class='table-container'>
@@ -54,7 +54,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
           <el-table-column align='center' fixed="right" label='操作' width='160'>
             <template #default='{row}'>
               <role-update :id="row.id" @success="getTable"></role-update>
-              <base-delete :id="row.id" :api="Service.deleteRole" @success="getTable"/>
+              <base-delete :id="row.id" :api="Service.deleteRoleController" @success="getTable"/>
             </template>
           </el-table-column>
         </el-table>

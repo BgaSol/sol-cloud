@@ -7,7 +7,7 @@ import {buildDto} from "~/api/HttpRequest";
 
 const props = defineProps<{ id: string }>();
 const queryUpdateData = async () => {
-  return Service.findUserById(props.id).then((res) => {
+  return Service.findByIdUserController(props.id, false).then((res) => {
     if (res.code === 200 && res.data) {
       data.value = {
         password: '',
@@ -41,7 +41,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.resetUserPassword(buildDto(defaultData(), data.value)).then((res) => {
+  Service.resetUserPasswordUserController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {

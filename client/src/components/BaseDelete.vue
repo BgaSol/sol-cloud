@@ -1,8 +1,9 @@
 <script lang='ts' setup>
 import {ref} from 'vue';
 import {ElButton, ElMessage, ElPopconfirm} from 'element-plus';
+import {BaseVoInteger} from "~/generated/system";
 
-const props = defineProps<{ id: string; api: (id: string) => Promise<any> }>();
+const props = defineProps<{ id: string; api: (ids: string[]) => Promise<BaseVoInteger> }>();
 
 const emit = defineEmits<{ success: [] }>();
 
@@ -10,8 +11,8 @@ const loading = ref(false);
 
 const deleteById = () => {
   loading.value = true;
-  props.api(props.id).then(() => {
-    ElMessage.success('删除成功');
+  props.api([props.id]).then((res) => {
+    ElMessage.success("删除" + res.data + "条数据");
     emit('success');
   }).finally(() => {
     loading.value = false;

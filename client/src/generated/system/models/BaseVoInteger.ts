@@ -17,7 +17,7 @@ export type BaseVoInteger = {
     /**
      * 响应数据
      */
-    data?: Array<number>;
+    data?: number;
     /**
      * 响应时间
      */

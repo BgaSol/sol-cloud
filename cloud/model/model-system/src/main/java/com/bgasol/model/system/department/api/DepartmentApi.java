@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(
         path = "/" + SystemConfigValues.SERVICE_NAME + "/department",
@@ -18,21 +19,24 @@ import java.util.List;
 )
 public interface DepartmentApi {
 
-    @PostMapping
-    BaseVo<DepartmentEntity> save(@RequestBody @Valid DepartmentCreateDto createDto);
+    @PostMapping("/insert")
+    BaseVo<DepartmentEntity> insert(@RequestBody @Valid DepartmentCreateDto createDto);
 
-    @PutMapping
-    BaseVo<DepartmentEntity> update(@RequestBody @Valid DepartmentUpdateDto updateDto);
+    @PostMapping("/apply")
+    BaseVo<DepartmentEntity> apply(@RequestBody @Valid DepartmentUpdateDto updateDto);
 
-    @DeleteMapping("/{ids}")
-    BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
+    @PostMapping("/delete")
+    BaseVo<Integer> delete(@RequestBody Set<String> ids);
 
-    @GetMapping("/{id}")
-    BaseVo<DepartmentEntity> findById(@PathVariable("id") String id);
+    @GetMapping("/{id}/{otherData}")
+    BaseVo<DepartmentEntity> findById(@PathVariable("id") String id, @PathVariable("otherData") Boolean otherData);
 
-    @GetMapping("/ids/{ids}")
-    BaseVo<List<DepartmentEntity>> findByIds(@PathVariable String ids);
+    @PostMapping("/get/{otherData}")
+    BaseVo<List<DepartmentEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable("otherData") Boolean otherData);
 
-    @GetMapping()
-    BaseVo<List<DepartmentEntity>> findAll();
+    @GetMapping("/all/{otherData}")
+    BaseVo<List<DepartmentEntity>> findAll(@PathVariable("otherData") Boolean otherData);
+
+    @GetMapping("/get/default/{otherData}")
+    BaseVo<DepartmentEntity> findDefault(@PathVariable("otherData") Boolean otherData);
 }

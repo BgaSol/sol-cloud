@@ -19,6 +19,10 @@ export type DepartmentUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 部门名
      */
     name?: string;

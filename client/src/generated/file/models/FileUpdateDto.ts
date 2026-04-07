@@ -19,6 +19,10 @@ export type FileUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 文件状态
      */
     status?: string;

@@ -3,17 +3,14 @@ import {DepartmentEntity, DepartmentUpdateDto, Service, VerificationResult} from
 import {ref} from "vue";
 import {useFormValidation} from "~/composables/FormValidationHook";
 import {ElButton, ElCascader, ElDialog, ElForm, ElFormItem, ElInput, ElMessage} from "element-plus";
-import {
-  departmentFormTreeProps,
-  departmentPageTreeProps
-} from "~/views/admin/pages/system/department/department.form.tree.props";
+import {departmentFormTreeProps} from "~/views/admin/pages/system/department/department.form.tree.props";
 import {buildDto} from "~/api/HttpRequest";
 import UploadImage from "~/components/UploadImage.vue";
 
 const props = defineProps<{ id: string }>();
 
 const queryUpdateData = async () => {
-  return Service.findDepartmentById(props.id).then((res) => {
+  return Service.findByIdDepartmentController(props.id, false).then((res) => {
     if (res.code === 200 && res.data) {
       data.value = {
         name: res.data?.name || '',
@@ -66,7 +63,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.updateDepartment(buildDto(defaultData(), data.value)).then((res) => {
+  Service.applyDepartmentController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {
@@ -81,7 +78,7 @@ const submitForm = () => {
 
 const departmentTree = ref<DepartmentEntity[]>([]);
 const getDepartmentTree = async () => {
-  return Service.findAllDepartment().then((res) => {
+  return Service.findAllDepartmentController(false).then((res) => {
     departmentTree.value = res.data as DepartmentEntity[];
   });
 }

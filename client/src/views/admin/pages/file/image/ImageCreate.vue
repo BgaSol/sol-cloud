@@ -31,7 +31,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.saveImage(buildDto(defaultData(), data.value)).then((res) => {
+  Service.insertImageController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {

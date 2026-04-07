@@ -2,6 +2,7 @@ package com.bgasol.model.system.requestLog.dto;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,20 +60,29 @@ public class RequestLogPageDto extends BasePageDto<RequestLogEntity> {
 
     @Override
     public Wrapper<RequestLogEntity> getQueryWrapper() {
-        LambdaQueryWrapper<RequestLogEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ObjectUtils.isNotEmpty(traceId), RequestLogEntity::getTraceId, traceId);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(serviceName), RequestLogEntity::getServiceName, serviceName);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(nodeName), RequestLogEntity::getNodeName, nodeName);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(nodeIp), RequestLogEntity::getNodeIp, nodeIp);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(method), RequestLogEntity::getMethod, method);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(uri), RequestLogEntity::getUri, uri);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(queryString), RequestLogEntity::getQueryString, queryString);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(isPrimaryErr), RequestLogEntity::getIsPrimaryErr, isPrimaryErr);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(businessMethod), RequestLogEntity::getBusinessMethod, businessMethod);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(businessController), RequestLogEntity::getBusinessController, businessController);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), RequestLogEntity::getUserId, userId);
-        queryWrapper.isNull(RequestLogEntity::getParentId);
-        queryWrapper.orderByDesc(RequestLogEntity::getCreateTime);
-        return queryWrapper;
+
+        LambdaQueryWrapper<RequestLogEntity> qw = Wrappers.lambdaQuery();
+
+        qw.eq(ObjectUtils.isNotEmpty(traceId), RequestLogEntity::getTraceId, traceId)
+                .eq(ObjectUtils.isNotEmpty(serviceName), RequestLogEntity::getServiceName, serviceName)
+                .eq(ObjectUtils.isNotEmpty(nodeName), RequestLogEntity::getNodeName, nodeName)
+                .eq(ObjectUtils.isNotEmpty(nodeIp), RequestLogEntity::getNodeIp, nodeIp)
+                .eq(ObjectUtils.isNotEmpty(method), RequestLogEntity::getMethod, method)
+                .eq(ObjectUtils.isNotEmpty(uri), RequestLogEntity::getUri, uri)
+                .eq(ObjectUtils.isNotEmpty(queryString), RequestLogEntity::getQueryString, queryString)
+                .eq(ObjectUtils.isNotEmpty(isPrimaryErr), RequestLogEntity::getIsPrimaryErr, isPrimaryErr)
+                .eq(ObjectUtils.isNotEmpty(businessMethod), RequestLogEntity::getBusinessMethod, businessMethod)
+                .eq(ObjectUtils.isNotEmpty(businessController), RequestLogEntity::getBusinessController, businessController)
+                .eq(ObjectUtils.isNotEmpty(userId), RequestLogEntity::getUserId, userId)
+
+                .nested(w -> w
+                        .isNull(RequestLogEntity::getParentId)
+                        .or()
+                        .eq(RequestLogEntity::getParentId, "")
+                )
+
+                .orderByDesc(RequestLogEntity::getCreateTime);
+
+        return qw;
     }
 }

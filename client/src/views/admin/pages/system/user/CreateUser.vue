@@ -38,7 +38,7 @@ const openDialog = () => {
 
 const roleList = ref<RoleEntity[]>([])
 const getRoleList = async () => {
-  return Service.findAllRole().then((res) => {
+  return Service.findAllRoleController(false).then((res) => {
     roleList.value = res.data as RoleEntity[]
   })
 }
@@ -47,7 +47,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.saveUser(buildDto(defaultData(), data.value)).then((res) => {
+  Service.insertUserController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {
@@ -62,7 +62,7 @@ const submitForm = () => {
 
 const departmentTree = ref<DepartmentEntity[]>([]);
 const getDepartmentTree = async () => {
-  return Service.findAllDepartment().then((res) => {
+  return Service.findAllDepartmentController(false).then((res) => {
     departmentTree.value = res.data as DepartmentEntity[];
   });
 }

@@ -38,7 +38,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findPageVideo(requestData.value)
+  return Service.findByPageVideoController(true, requestData.value)
     .then((res) => {
       tableData.value = res.data as PageVoVideoEntity;
       pageKey.value++;
@@ -85,7 +85,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
     <div class="controllers">
       <base-batch-delete
         v-if="tableRef"
-        :api="Service.deleteVideo"
+        :api="Service.deleteVideoController"
         :table="tableRef"
         @success="getTable"
       ></base-batch-delete>
@@ -139,7 +139,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
               ></download-file>
               <base-delete
                 :id="row.id"
-                :api="Service.deleteVideo"
+                :api="Service.deleteVideoController"
                 @success="getTable"
               ></base-delete>
             </template>

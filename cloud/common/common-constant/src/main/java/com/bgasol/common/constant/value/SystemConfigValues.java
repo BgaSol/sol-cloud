@@ -13,6 +13,9 @@ public class SystemConfigValues {
     /// 超级管理员用户id
     public final static String ADMIN_USER_ID = "admin";
 
+    /// 超级管理员角色id
+    public final static String ADMIN_ROLE_ID = "*";
+
     /// 默认部门id
     public final static String DEFAULT_DEPARTMENT_ID = "default";
 

@@ -2,7 +2,9 @@ package com.bgasol.model.file.file.api;
 
 import com.bgasol.common.constant.value.FileConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.vo.PageVo;
 import com.bgasol.model.file.file.dto.FileCreateDto;
+import com.bgasol.model.file.file.dto.FilePageDto;
 import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @FeignClient(
         path = "/" + FileConfigValues.SERVICE_NAME + "/file",
@@ -17,19 +20,24 @@ import java.util.List;
         contextId = FileConfigValues.SERVICE_NAME + "-FileApi"
 )
 public interface FileApi {
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    BaseVo<FileEntity> save(FileCreateDto fileCreateDto);
+    @PostMapping(value = "/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    BaseVo<FileEntity> insert(FileCreateDto createDto);
 
-    @PutMapping
-    BaseVo<FileEntity> update(@RequestBody FileUpdateDto fileUpdateDto);
+    @PostMapping("/apply")
+    BaseVo<FileEntity> apply(@RequestBody FileUpdateDto updateDto);
 
-    @DeleteMapping("/{ids}")
-    BaseVo<Integer[]> delete(@PathVariable("ids") String ids);
+    @PostMapping("/delete")
+    BaseVo<Integer> delete(@RequestBody Set<String> ids);
 
-    @GetMapping("/{id}")
-    BaseVo<FileEntity> findById(@PathVariable("id") String id);
+    @GetMapping("/{id}/{otherData}")
+    BaseVo<FileEntity> findById(@PathVariable("id") String id, @PathVariable("otherData") Boolean otherData);
 
-    @GetMapping("/ids/{ids}")
-    BaseVo<List<FileEntity>> findByIds(@PathVariable String ids);
+    @PostMapping("/get/{otherData}")
+    BaseVo<List<FileEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable("otherData") Boolean otherData);
 
+    @PostMapping("/page/{otherData}")
+    BaseVo<PageVo<FileEntity>> findByPage(@RequestBody FilePageDto pageDto, @PathVariable("otherData") Boolean otherData);
+
+    @GetMapping("/all/{otherData}")
+    BaseVo<List<FileEntity>> findAll(@PathVariable("otherData") Boolean otherData);
 }

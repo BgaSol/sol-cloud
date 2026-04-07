@@ -10,7 +10,7 @@ const tableData = ref<PermissionEntity[]>([]);
 const tableLoading = ref(true);
 const getTable = () => {
   tableLoading.value = true;
-  Service.findAllPermission().then((res) => {
+  Service.findAllPermissionController(false).then((res) => {
     tableData.value = res.data as PermissionEntity[];
   }).finally(() => {
     tableLoading.value = false;
@@ -25,7 +25,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
 <template>
   <div class='main'>
     <div class="controllers">
-      <base-batch-delete v-if="tableRef" :api="Service.deletePermission" :table="tableRef" @success='getTable'>
+      <base-batch-delete v-if="tableRef" :api="Service.deletePermissionController" :table="tableRef" @success='getTable'>
       </base-batch-delete>
     </div>
     <div class='table'>
@@ -41,7 +41,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
           <el-table-column label='请求方式' min-width='120' prop='type'></el-table-column>
           <el-table-column align='center' fixed="right" label='操作' width="160">
             <template #default='{ row }'>
-              <base-delete :id="row.id" :api="Service.deletePermission" @success="getTable"/>
+              <base-delete :id="row.id" :api="Service.deletePermissionController" @success="getTable"/>
             </template>
           </el-table-column>
         </el-table>

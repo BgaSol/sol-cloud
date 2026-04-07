@@ -30,7 +30,6 @@ public class PoiExportHistoryController extends BaseController<
         BaseCreateDto<PoiExportHistoryEntity>,
         BaseUpdateDto<PoiExportHistoryEntity>> {
     private final PoiExportHistoryService poiExportHistoryService;
-    private final FileService fileService;
 
     @Override
     public PoiExportHistoryService commonBaseService() {
@@ -45,15 +44,5 @@ public class PoiExportHistoryController extends BaseController<
         return super.findByPage(pageDto);
     }
 
-//    @Override
-//    @DeleteMapping("/{ids}")
-//    @SaCheckPermission(value = "poiExportHistory:delete", orRole = "admin")
-//    @Operation(summary = "删除POI导出记录", operationId = "deletePoiExportHistory")
-//    public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
-//        List<PoiExportHistoryEntity> poiExportHistoryEntityList = poiExportHistoryService.findDirectByIds(ids.split(","));
-//        poiExportHistoryEntityList.stream()
-//                .filter(e -> ObjectUtils.isNotEmpty(e.getFileId()))
-//                .forEach(e -> fileService.delete(e.getFileId()));
-//        return super.delete(ids);
-//    }
+
 }

@@ -122,27 +122,30 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
                 errorLog = (String) request.getAttribute(REQUEST_EXCEPTION);
             }
         }
-
-        requestLogService.insert(RequestLogEntity.builder()
-                .id(spanId)
-                .parentId(parentSpanId)
-                .createTime(new Date(startTime))
-                .updateTime(new Date(endTime))
-                .traceId(traceId)
-                .serviceName(serviceName)
-                .nodeName(nodeName)
-                .nodeIp(nodeIp)
-                .method(method)
-                .uri(uri)
-                .queryString(queryString)
-                .status(status)
-                .threadId(threadId)
-                .errorLog(errorLog)
-                .isPrimaryErr(isPrimaryErr)
-                .businessMethod(businessMethod)
-                .businessController(businessController)
-                .userId(StpUtil.isLogin() ? StpUtil.getLoginIdAsString() : null)
-                .build());
+        try {
+            requestLogService.insert(RequestLogEntity.builder()
+                    .id(spanId)
+                    .parentId(parentSpanId)
+                    .createTime(new Date(startTime))
+                    .updateTime(new Date(endTime))
+                    .traceId(traceId)
+                    .serviceName(serviceName)
+                    .nodeName(nodeName)
+                    .nodeIp(nodeIp)
+                    .method(method)
+                    .uri(uri)
+                    .queryString(queryString)
+                    .status(status)
+                    .threadId(threadId)
+                    .errorLog(errorLog)
+                    .isPrimaryErr(isPrimaryErr)
+                    .businessMethod(businessMethod)
+                    .businessController(businessController)
+                    .userId(StpUtil.isLogin() ? StpUtil.getLoginIdAsString() : null)
+                    .build());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     private void getHandlerInfo(HttpServletRequest request, Object handler) {

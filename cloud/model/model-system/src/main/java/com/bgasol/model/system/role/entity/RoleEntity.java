@@ -41,9 +41,9 @@ public class RoleEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = PermissionEntity.class)
     @JoinTable(
-            name = "system_c_role_permission",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
+            name = RolePermissionTable.NAME,
+            joinColumns = @JoinColumn(name = RolePermissionTable.ROLE_ID),
+            inverseJoinColumns = @JoinColumn(name = RolePermissionTable.PERMISSION_ID)
     )
     private List<PermissionEntity> permissions;
 
@@ -51,9 +51,9 @@ public class RoleEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = MenuEntity.class)
     @JoinTable(
-            name = "system_c_role_menu",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "menu_id")
+            name = RoleMenuTable.NAME,
+            joinColumns = @JoinColumn(name = RoleMenuTable.ROLE_ID),
+            inverseJoinColumns = @JoinColumn(name = RoleMenuTable.MENU_ID)
     )
     private List<MenuEntity> menus;
 }

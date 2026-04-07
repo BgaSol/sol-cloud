@@ -28,7 +28,7 @@ const {errData, validate, resetValidate} = useFormValidation();
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.updateUserPassword(buildDto(defaultData(), data.value)).then((res) => {
+  Service.updateUserPasswordUserController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {

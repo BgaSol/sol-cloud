@@ -7,6 +7,7 @@ import com.bgasol.model.system.role.entity.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
 import static com.bgasol.model.system.role.mapstruct.RoleMapstruct.ROLE_MAPSTRUCT_IMPL;
 
 @Setter
@@ -28,6 +30,7 @@ public class RoleUpdateDto extends BaseUpdateDto<RoleEntity> {
     @Schema(description = "角色名")
     private String name;
 
+    @Pattern(regexp = "^[^" + ADMIN_ROLE_ID + "]+$", message = "角色编码不能包含*")
     @NotBlank(message = "角色编码不能为空")
     @Schema(description = "角色编码")
     private String code;

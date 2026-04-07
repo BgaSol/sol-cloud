@@ -3,10 +3,10 @@ package com.bgasol.web.system.user.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.stp.StpUtil;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.PageVo;
-import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.user.dto.*;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.model.system.user.vo.VerificationVo;
@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,109 +40,117 @@ public class UserController extends BaseController<
         return userService;
     }
 
-    @GetMapping("/get-verification-code")
-    @Operation(summary = "获取验证码", operationId = "getVerificationCode")
+    @Override
+    @PostMapping("/insert")
+    @SaCheckPermission(value = "UserController:insert", orRole = "admin")
+    @Operation(summary = "新增用户", operationId = "insertUserController")
+    public BaseVo<UserEntity> insert(@RequestBody UserCreateDto createDto) {
+        return super.insert(createDto);
+    }
+
+    @Override
+    @PostMapping("/apply")
+    @SaCheckPermission(value = "UserController:apply", orRole = "admin")
+    @Operation(summary = "更新用户", operationId = "applyUserController")
+    public BaseVo<UserEntity> apply(@RequestBody UserUpdateDto updateDto) {
+        return super.apply(updateDto);
+    }
+
+    @Override
+    @PostMapping("/delete")
+    @SaCheckPermission(value = "UserController:delete", orRole = "admin")
+    @Operation(summary = "删除用户", operationId = "deleteUserController")
+    public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
+        return super.delete(ids);
+    }
+
+    @Override
+    @GetMapping("/{id}/{otherData}")
+    @SaCheckPermission(value = "UserController:findById", orRole = "admin")
+    @Operation(summary = "根据ID查询用户", operationId = "findByIdUserController")
+    public BaseVo<UserEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
+        return super.findById(id, otherData);
+    }
+
+    @Override
+    @PostMapping("/get/{otherData}")
+    @SaCheckPermission(value = "UserController:findByIds", orRole = "admin")
+    @Operation(summary = "根据ID批量查询用户", operationId = "findByIdsUserController")
+    public BaseVo<List<UserEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
+        return super.findByIds(ids, otherData);
+    }
+
+    @Override
+    @PostMapping("/page/{otherData}")
+    @SaCheckPermission(value = "UserController:findByPage", orRole = "admin")
+    @Operation(summary = "分页查询用户", operationId = "findByPageUserController")
+    public BaseVo<PageVo<UserEntity>> findByPage(@RequestBody UserPageDto pageDto, @PathVariable Boolean otherData) {
+        return super.findByPage(pageDto, otherData);
+    }
+
+    @Override
+    @GetMapping("/all/{otherData}")
+    @SaCheckPermission(value = "UserController:findAll", orRole = "admin")
+    @Operation(summary = "查询所有用户", operationId = "findAllUserController")
+    public BaseVo<List<UserEntity>> findAll(@PathVariable Boolean otherData) {
+        return super.findAll(otherData);
+    }
+
+    @GetMapping("/all")
+    @SaCheckPermission(value = "UserController:findAll", orRole = "admin")
+    @Operation(summary = "查询所有用户(支持设置otherData)", operationId = "findAllWithParamUserController")
+    public BaseVo<List<UserEntity>> findAllByParam(@RequestParam(defaultValue = "false") Boolean otherData) {
+        return super.findAll(otherData);
+    }
+
     @SaIgnore
+    @GetMapping("/get/verification/code")
+    @Operation(summary = "获取验证码", operationId = "getVerificationCodeUserController")
     public BaseVo<VerificationVo> getVerificationCode() {
         return BaseVo.success(this.loginService.getVerificationCode());
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "用户登录", operationId = "login")
     @SaIgnore
+    @PostMapping("/login")
+    @Operation(summary = "用户登录", operationId = "loginUserController")
     public BaseVo<SaTokenInfo> login(@RequestBody @Valid UserLoginDto userLoginDto) {
         return BaseVo.success(this.loginService.login(userLoginDto));
     }
 
     @PostMapping("/logout")
-    @Operation(summary = "用户登出", operationId = "logout")
+    @Operation(summary = "用户登出", operationId = "logoutUserController")
     public BaseVo<String> logout() {
         this.loginService.logout();
         return BaseVo.success("登出成功", "登出成功");
     }
 
-    @GetMapping("/user-info")
-    @Operation(summary = "获取用户信息", operationId = "getUserInfo")
-    public BaseVo<UserEntity> getUserInfo() {
-        UserEntity user = this.userService.getUserInfo();
+    @GetMapping("/info")
+    @Operation(summary = "获取用户信息", operationId = "getInfoUserController")
+    public BaseVo<UserEntity> getInfo() {
+        UserEntity user = userService.findById(StpUtil.getLoginIdAsString(), true);
         return BaseVo.success(user);
     }
 
     @PutMapping("/update-password")
-    @Operation(summary = "修改用户密码", operationId = "updateUserPassword")
-    @SaCheckPermission(value = "user:updatePassword", orRole = "admin")
-    public BaseVo<UserEntity> updatePassword(@RequestBody @Valid UserPasswordUpdateDto userPasswordUpdateDto) {
-        UserEntity userEntity = this.userService.updatePassword(userPasswordUpdateDto);
-        return BaseVo.success(userEntity, "修改密码成功");
+    @Operation(summary = "修改用户密码", operationId = "updateUserPasswordUserController")
+    @SaCheckPermission(value = "UserController:updatePassword", orRole = "admin")
+    public BaseVo<Void> updatePassword(@RequestBody @Valid UserPasswordUpdateDto userPasswordUpdateDto) {
+        this.userService.updatePassword(userPasswordUpdateDto);
+        return BaseVo.success(null, "修改密码成功");
     }
 
     @PutMapping("/reset-password")
-    @Operation(summary = "重置用户密码", operationId = "resetUserPassword")
-    @SaCheckPermission(value = "user:resetPassword", orRole = "admin")
-    public BaseVo<UserEntity> resetPassword(@RequestBody @Valid UserPasswordResetDto userPasswordResetDto) {
-        UserEntity userEntity = this.userService.resetPassword(userPasswordResetDto);
-        return BaseVo.success(userEntity, "重置密码成功");
+    @Operation(summary = "重置用户密码", operationId = "resetUserPasswordUserController")
+    @SaCheckPermission(value = "UserController:resetPassword", orRole = "admin")
+    public BaseVo<Void> resetPassword(@RequestBody @Valid UserPasswordResetDto userPasswordResetDto) {
+        this.userService.resetPassword(userPasswordResetDto);
+        return BaseVo.success(null, "重置密码成功");
     }
 
-    @Override
-    @PostMapping("/page")
-    @Operation(summary = "分页查询用户", operationId = "findPageUser")
-    @SaCheckPermission(value = "user:findByPage", orRole = "admin")
-    public BaseVo<PageVo<UserEntity>> findByPage(@RequestBody @Valid UserPageDto pageDto) {
-        return super.findByPage(pageDto);
-    }
-
-    @Override
-    @PostMapping
-    @Operation(summary = "保存用户", operationId = "saveUser")
-    @SaCheckPermission(value = "user:save", orRole = "admin")
-    public BaseVo<UserEntity> save(@RequestBody @Valid UserCreateDto entity) {
-        return super.save(entity);
-    }
-
-    @Override
-    @PutMapping
-    @Operation(summary = "更新用户", operationId = "updateUser")
-    @SaCheckPermission(value = "user:update", orRole = "admin")
-    public BaseVo<UserEntity> update(@RequestBody @Valid UserUpdateDto entity) {
-        return super.update(entity);
-    }
-
-    @Override
-    @DeleteMapping("/{ids}")
-    @Operation(summary = "删除用户并强制退出登录", operationId = "deleteUser")
-    @SaCheckPermission(value = "user:delete", orRole = "admin")
-    public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
-        return super.delete(ids);
-    }
-
-    @Override
-    @GetMapping("/{id}")
-    @Operation(summary = "根据id查询用户", operationId = "findUserById")
-    @SaCheckPermission(value = "user:findById", orRole = "admin")
-    public BaseVo<UserEntity> findById(@PathVariable("id") String id) {
-        return super.findById(id);
-    }
-
-    @GetMapping("findAllOnlineUser")
-    @Operation(summary = "查询所有在线用户", operationId = "findAllOnlineUser")
-    @SaCheckPermission(value = "user:findOnlineUser", orRole = "admin")
-    public BaseVo<List<UserEntity>> findOnlineUser() {
-        return BaseVo.success(this.loginService.findOnlineUser());
-    }
-
-    @Override
-    @GetMapping("/ids/{ids}")
-    @Operation(summary = "根据id批量查询角色", operationId = "findUserByIds")
-    @SaCheckPermission(value = "user:findByIds", orRole = "admin")
-    public BaseVo<List<UserEntity>> findByIds(@PathVariable String ids) {
-        return super.findByIds(ids);
-    }
-
-    @GetMapping("/get-my")
-    @Operation(summary = "获取我的部门", operationId = "getMyDepartment")
-    @SaIgnore
-    public BaseVo<DepartmentEntity> getMyDepartment(@RequestHeader("X-Forwarded-Host") String xForwardedHost) {
-        return BaseVo.success(userService.getMyDepartment(xForwardedHost));
+    @GetMapping("/all/online/{otherData}")
+    @Operation(summary = "查询所有在线用户", operationId = "findAllOnlineUserUserController")
+    @SaCheckPermission(value = "UserController:findOnlineUser", orRole = "admin")
+    public BaseVo<List<UserEntity>> findOnlineUser(@PathVariable Boolean otherData) {
+        return BaseVo.success(this.loginService.findOnlineUser(otherData));
     }
 }

@@ -2,6 +2,7 @@ package com.bgasol.web.system.menu.service;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseTreeService;
@@ -41,23 +42,16 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         return menuMapper;
     }
 
-    /**
-     * 查询后台管理系统的左侧主菜单
-     *
-     * @return 菜单实体树集合
-     */
-    @Transactional(readOnly = true)
-    public List<MenuEntity> findAdminMenuGroup() {
-        return this.findByMenuGroup(SystemConfigValues.ADMIN_MENU_GROUP_ID);
-    }
-
     @Transactional(readOnly = true)
     public List<MenuEntity> findByMenuGroup(String group) {
+        LambdaQueryWrapper<MenuEntity> nested = Wrappers.<MenuEntity>lambdaQuery()
+                .eq(MenuEntity::getMenuGroup, group)
+                .nested(w -> w
+                        .isNull(MenuEntity::getParentId)
+                        .or()
+                        .eq(MenuEntity::getParentId, ""));
+        List<MenuEntity> menuEntityList = this.findAll(nested, false);
         // 查询左侧菜单的树
-        List<MenuEntity> menuEntityList = this.findAll(false)
-                .stream()
-                .filter(menuEntity -> menuEntity.getMenuGroup().equals(group))
-                .toList();
         String userId = StpUtil.getLoginIdAsString();
         if (userId.equals(SystemConfigValues.ADMIN_USER_ID)) {
             return menuEntityList;
@@ -78,14 +72,10 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
 
     /**
      * 递归初始化菜单及其子菜单
-     *
-     * @param menuEntity 菜单实体
-     * @return 初始化后的菜单实体
      */
     @Transactional
-    public MenuEntity init(MenuEntity menuEntity) {
+    public void init(MenuEntity menuEntity) {
         this.initChildren(menuEntity);
-        return this.findById(menuEntity.getId());
     }
 
     /**
@@ -93,8 +83,9 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
      *
      * @param menuEntity 菜单实体
      */
-    private void initChildren(MenuEntity menuEntity) {
-        if (ObjectUtils.isEmpty(findDirectById(menuEntity.getId()))) {
+    @Transactional()
+    public void initChildren(MenuEntity menuEntity) {
+        if (ObjectUtils.isEmpty(findById(menuEntity.getId(), false))) {
             this.insert(menuEntity);
         } else {
             this.apply(menuEntity);
@@ -131,7 +122,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
     }
 
     private Set<String> getUserMenuIds() {
-        UserEntity user = userService.getUserInfo();
+        UserEntity user = userService.findById(StpUtil.getLoginIdAsString(), true);
         Set<String> menuIds = new HashSet<>();
         user.getRoles().forEach(role -> role.getMenus().forEach(menu -> menuIds.add(menu.getId())));
         return menuIds;

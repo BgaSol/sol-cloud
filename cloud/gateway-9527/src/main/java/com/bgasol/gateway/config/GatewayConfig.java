@@ -76,8 +76,7 @@ public class GatewayConfig {
      * 服务注册事件监听器
      */
     @EventListener(InstanceRegisteredEvent.class)
-    public void onInstanceRegistered(InstanceRegisteredEvent<?> event) {
-        log.debug("接收到服务注册事件：{}", event.getConfig());
+    public void onInstanceRegistered() {
         syncRoutes();
     }
 

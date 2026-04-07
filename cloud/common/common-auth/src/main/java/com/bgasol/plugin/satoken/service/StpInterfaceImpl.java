@@ -15,8 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
-
 /// 权限数据加载源
 @Component
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class StpInterfaceImpl implements StpInterface {
     private String contextPath;
 
     public UserEntity getUser(String userId, String loginType) {
-        BaseVo<UserEntity> userEntityBaseVo = userApi.findById(userId);
+        BaseVo<UserEntity> userEntityBaseVo = userApi.findById(userId, true);
         return userEntityBaseVo.getData();
     }
 
@@ -37,14 +35,10 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);
         Set<String> permissions = new HashSet<>();
-        if (user.getId().equals(ADMIN_USER_ID)) {
-            permissions.add("*");
-        } else {
-            for (RoleEntity role : user.getRoles()) {
-                for (PermissionEntity permission : role.getPermissions()) {
-                    if (permission.getMicroService().equals(contextPath)) {
-                        permissions.add(permission.getCode());
-                    }
+        for (RoleEntity role : user.getRoles()) {
+            for (PermissionEntity permission : role.getPermissions()) {
+                if (permission.getMicroService().equals(contextPath)) {
+                    permissions.add(permission.getCode());
                 }
             }
         }
@@ -56,12 +50,8 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         UserEntity user = this.getUser((String) loginId, loginType);
         Set<String> roles = new HashSet<>();
-        if (user.getId().equals(ADMIN_USER_ID)) {
-            roles.add("*");
-        } else {
-            for (RoleEntity role : user.getRoles()) {
-                roles.add(role.getCode());
-            }
+        for (RoleEntity role : user.getRoles()) {
+            roles.add(role.getCode());
         }
         return new ArrayList<>(roles);
     }

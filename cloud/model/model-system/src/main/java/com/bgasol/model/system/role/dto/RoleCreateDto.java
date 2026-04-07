@@ -48,6 +48,9 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
     @Schema(hidden = true)
     public RoleEntity toEntity() {
         RoleEntity roleEntity = ROLE_MAPSTRUCT_IMPL.toEntity(this);
+
+        roleEntity.setId(code);
+
         if (permissionIds != null) {
             Stream<PermissionEntity> permissionEntityStream = permissionIds.stream().map((id) -> {
                 PermissionEntity permissionEntity = new PermissionEntity();
@@ -57,6 +60,7 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
             List<PermissionEntity> collect = permissionEntityStream.collect(Collectors.toList());
             roleEntity.setPermissions(collect);
         }
+
         if (menuIds != null) {
             Stream<MenuEntity> menuEntityStream = menuIds.stream().map((id) -> {
                 MenuEntity menuEntity = new MenuEntity();

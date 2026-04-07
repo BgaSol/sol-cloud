@@ -33,11 +33,17 @@ public abstract class BaseTreeService<ENTITY extends BaseTreeEntity<ENTITY>, PAG
     @Override
     @Transactional(readOnly = true)
     public List<ENTITY> findAll(boolean otherData) {
-        QueryWrapper<ENTITY> qw = Wrappers.<ENTITY>query().isNull(PARENT_ID);
-        List<ENTITY> entityList = this.findAll(qw, otherData);
+        QueryWrapper<ENTITY> qw = Wrappers.<ENTITY>query()
+                .nested(w -> w.isNull(PARENT_ID).or().eq(PARENT_ID, ""));
+        return this.findAll(qw, otherData);
+    }
 
-        addChildren(entityList, otherData);
-        return entityList;
+    @Override
+    @Transactional(readOnly = true)
+    public List<ENTITY> findAll(Wrapper<ENTITY> wrapper, Boolean otherData) {
+        List<ENTITY> all = super.findAll(wrapper, otherData);
+        addChildren(all, otherData);
+        return all;
     }
 
     @Override

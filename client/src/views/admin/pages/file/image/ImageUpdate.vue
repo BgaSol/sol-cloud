@@ -8,7 +8,7 @@ import {buildDto, getFileUrl, getHeaders, uploadFilePath} from "~/api/HttpReques
 const props = defineProps<{ id: string }>();
 
 const queryUpdateData = async () => {
-  return Service.findImageById(props.id).then((res) => {
+  return Service.findByIdImageController(props.id, true).then((res) => {
     if (res.code === 200 && res.data) {
       data.value = {
         name: res.data?.name || '',
@@ -46,7 +46,7 @@ const submitLoading = ref(false);
 const submitForm = () => {
   resetValidate();
   submitLoading.value = true;
-  Service.updateImage(buildDto(defaultData(), data.value)).then((res) => {
+  Service.applyImageController(buildDto(defaultData(), data.value)).then((res) => {
     if (res.code === 400) {
       validate(res.data as unknown as VerificationResult[]);
     } else if (res.code === 200) {

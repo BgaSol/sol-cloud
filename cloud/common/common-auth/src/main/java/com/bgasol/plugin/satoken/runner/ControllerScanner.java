@@ -2,35 +2,31 @@ package com.bgasol.plugin.satoken.runner;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.model.system.permission.api.PermissionApi;
+import com.bgasol.model.system.permission.dto.PermissionCreateDto;
+import com.bgasol.model.system.permission.dto.PermissionUpdateDto;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
-import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/// 扫描controller
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@EnableAsync
 public class ControllerScanner {
 
     @Value("${server.servlet.context-path}")
@@ -38,105 +34,156 @@ public class ControllerScanner {
 
     private final PermissionApi permissionApi;
 
-    private final static String controllerPackage = "com.bgasol.web.**.controller";
+    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    /// 扫描controller类和方法，将权限信息存入数据库
-    public void scanController(Class<?> controllerClass) {
-        // 只扫描controller的类
-        PermissionEntity parentPermissionEntity = new PermissionEntity();
-        // 获取当前服务名
-        parentPermissionEntity.setMicroService(contextPath);
-        // 获取controller的路径
-        String annotation = controllerClass.getAnnotation(RequestMapping.class).value()[0];
-        parentPermissionEntity.setPath(annotation);
-        // 获取controller的名称
-        String controllerName = annotation.startsWith("/") ? annotation.substring(1) : annotation;
-        parentPermissionEntity.setId(controllerName);
-        parentPermissionEntity.setName(controllerName);
+    @EventListener(InstanceRegisteredEvent.class)
+    public void scanControllers() throws InterruptedException {
 
-        log.info("Controller: {}", controllerName);
-        // 获取controller的描述
-        String controllerDescription = controllerName + "Controller";
-        if (controllerClass.isAnnotationPresent(Tag.class)) {
-            Tag tag = controllerClass.getAnnotation(Tag.class);
-            controllerDescription = tag.name();
-        }
-        parentPermissionEntity.setDescription(controllerDescription);
-        // 开始遍历每一个接口
-        List<PermissionEntity> children = new ArrayList<>();
-        Method[] methods = controllerClass.getMethods();
-        for (Method method : methods) {
-            PermissionEntity permissionEntity = new PermissionEntity();
-            // 获取当前服务名
-            permissionEntity.setMicroService(contextPath);
+        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
 
-            permissionEntity.setParentId(parentPermissionEntity.getId());
-            // 获取方法名
-            permissionEntity.setName(method.getName());
-            // 获取请求路径和请求方式
-            if (method.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-                String path = ArrayUtils.get(requestMapping.value(), 0);
-                permissionEntity.setPath(path);
-                permissionEntity.setType("ALL");
-            } else if (method.isAnnotationPresent(GetMapping.class)) {
-                GetMapping getMapping = method.getAnnotation(GetMapping.class);
-                String path = ArrayUtils.get(getMapping.value(), 0);
-                permissionEntity.setPath(path);
-                permissionEntity.setType("GET");
-            } else if (method.isAnnotationPresent(PostMapping.class)) {
-                PostMapping postMapping = method.getAnnotation(PostMapping.class);
-                String path = ArrayUtils.get(postMapping.value(), 0);
-                permissionEntity.setPath(path);
-                permissionEntity.setType("POST");
-            } else if (method.isAnnotationPresent(PutMapping.class)) {
-                PutMapping putMapping = method.getAnnotation(PutMapping.class);
-                String path = ArrayUtils.get(putMapping.value(), 0);
-                permissionEntity.setPath(path);
-                permissionEntity.setType("PUT");
-            } else if (method.isAnnotationPresent(DeleteMapping.class)) {
-                DeleteMapping deleteMapping = method.getAnnotation(DeleteMapping.class);
-                String path = ArrayUtils.get(deleteMapping.value(), 0);
-                permissionEntity.setPath(path);
-                permissionEntity.setType("DELETE");
-            }
-            // 获取方法的描述
-            if (method.isAnnotationPresent(Operation.class)) {
-                Operation operation = method.getAnnotation(Operation.class);
-                permissionEntity.setDescription(operation.summary());
-            }
-            // 获取方法的权限
-            if (method.isAnnotationPresent(SaCheckPermission.class)) {
-                String permissionValue = method.getAnnotation(SaCheckPermission.class).value()[0];
-                permissionEntity.setId(parentPermissionEntity.getId() + permissionValue);
-                permissionEntity.setCode(permissionValue);
-                // 插入数据库
-                children.add(permissionEntity);
-            }
-        }
-        parentPermissionEntity.setChildren(children);
-        try {
-            permissionApi.init(parentPermissionEntity);
-        } catch (FeignException e) {
-            System.exit(1);
+        log.info("Scanning controllers...");
+
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods =
+                requestMappingHandlerMapping.getHandlerMethods();
+
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
+
+            RequestMappingInfo mappingInfo = entry.getKey();
+            HandlerMethod handlerMethod = entry.getValue();
+
+            Class<?> controllerClass = handlerMethod.getBeanType();
+            Method method = handlerMethod.getMethod();
+
+            scanMethod(controllerClass, method, mappingInfo);
         }
     }
 
-    /// 开始扫描controller
-    @EventListener(InstanceRegisteredEvent.class)
-    @Async()
-    public void scanControllers() throws ClassNotFoundException, InterruptedException {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-        log.info("Scanning-controllers");
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(RequestMapping.class));
-        scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
+    private void scanMethod(
+            Class<?> controllerClass,
+            Method method,
+            RequestMappingInfo mappingInfo) {
 
-        Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(controllerPackage);
-        for (BeanDefinition candidateComponent : candidateComponents) {
-            String className = candidateComponent.getBeanClassName();
-            Class<?> clazz = Class.forName(className);
-            scanController(clazz);
+        if (!method.isAnnotationPresent(SaCheckPermission.class)) {
+            return;
+        }
+
+        // Controller路径
+        String controllerPath = "";
+
+        RequestMapping requestMapping =
+                controllerClass.getAnnotation(RequestMapping.class);
+
+        if (requestMapping != null && requestMapping.value().length > 0) {
+            controllerPath = requestMapping.value()[0];
+        }
+
+        String controllerName =
+                controllerPath.startsWith("/") ? controllerPath.substring(1) : controllerPath;
+
+        // Controller描述
+        String controllerDescription = controllerName + "Controller";
+
+        if (controllerClass.isAnnotationPresent(Tag.class)) {
+            controllerDescription =
+                    controllerClass.getAnnotation(Tag.class).name();
+        }
+
+        PermissionEntity parentPermission =
+                permissionApi.findById(controllerName, false).getData();
+
+        if (ObjectUtils.isEmpty(parentPermission)) {
+
+            parentPermission = permissionApi.insert(
+                    PermissionCreateDto.builder()
+                            .parentId(null)
+                            .microService(contextPath)
+                            .path(controllerPath)
+                            .id(controllerName)
+                            .name(controllerName)
+                            .description(controllerDescription)
+                            .build()
+            ).getData();
+
+            log.info("insert parent permission:{}", parentPermission.getName());
+
+        } else {
+
+            parentPermission = permissionApi.apply(
+                    PermissionUpdateDto.builder()
+                            .microService(contextPath)
+                            .path(controllerPath)
+                            .id(controllerName)
+                            .name(controllerName)
+                            .description(controllerDescription)
+                            .build()
+            ).getData();
+
+            log.info("apply parent permission:{}", parentPermission.getName());
+        }
+
+        // Method描述
+        String description = "";
+
+        if (method.isAnnotationPresent(Operation.class)) {
+            description = method.getAnnotation(Operation.class).summary();
+        }
+
+        // HTTP Method
+        String httpMethod = mappingInfo.getMethodsCondition()
+                .getMethods()
+                .stream()
+                .findFirst()
+                .map(Enum::name)
+                .orElse("ALL");
+
+        // Path
+        String path = mappingInfo.getPatternValues()
+                .stream()
+                .findFirst()
+                .orElse("");
+
+        // 权限
+        String permissionValue =
+                method.getAnnotation(SaCheckPermission.class).value()[0];
+
+        String id = parentPermission.getId() + permissionValue;
+
+        PermissionEntity permission =
+                permissionApi.findById(id, false).getData();
+
+        if (ObjectUtils.isEmpty(permission)) {
+
+            permission = permissionApi.insert(
+                    PermissionCreateDto.builder()
+                            .microService(contextPath)
+                            .parentId(parentPermission.getId())
+                            .id(id)
+                            .name(method.getName())
+                            .code(permissionValue)
+                            .path(path)
+                            .description(description)
+                            .type(httpMethod)
+                            .build()
+            ).getData();
+
+            log.info("insert children permission:{}", permission.getName());
+
+        } else {
+
+            permission = permissionApi.apply(
+                    PermissionUpdateDto.builder()
+                            .microService(contextPath)
+                            .parentId(parentPermission.getId())
+                            .id(id)
+                            .name(method.getName())
+                            .code(permissionValue)
+                            .path(path)
+                            .description(description)
+                            .type(httpMethod)
+                            .build()
+            ).getData();
+
+            log.info("apply children permission:{}", permission.getName());
         }
     }
 }

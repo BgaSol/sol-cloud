@@ -15,6 +15,10 @@ export type ImageCreateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 图片名称
      */
     name?: string;

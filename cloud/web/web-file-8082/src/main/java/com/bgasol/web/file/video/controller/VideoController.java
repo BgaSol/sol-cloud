@@ -17,7 +17,6 @@ import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.core.io.InputStreamResource;
@@ -29,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,63 +50,60 @@ public class VideoController extends BaseController<
     }
 
     @Override
-    @PostMapping
-    @Operation(summary = "新增视频", operationId = "saveVideo")
-    @SaCheckPermission(value = "video:save", orRole = "admin")
-    public BaseVo<VideoEntity> save(@RequestBody @Valid VideoCreateDto createDto) {
-        return super.save(createDto);
+    @PostMapping("/insert")
+    @Operation(summary = "创建视频", operationId = "insertVideoController")
+    @SaCheckPermission(value = "VideoController:insert", orRole = "admin")
+    public BaseVo<VideoEntity> insert(@RequestBody VideoCreateDto createDto) {
+        return super.insert(createDto);
     }
 
     @Override
-    @PutMapping
-    @Operation(summary = "更新视频", operationId = "updateVideo")
-    @SaCheckPermission(value = "video:update", orRole = "admin")
-    public BaseVo<VideoEntity> update(@RequestBody @Valid VideoUpdateDto updateDto) {
-        return super.update(updateDto);
+    @PostMapping("/apply")
+    @SaCheckPermission(value = "VideoController:apply", orRole = "admin")
+    @Operation(summary = "更新视频", operationId = "applyVideoController")
+    public BaseVo<VideoEntity> apply(@RequestBody VideoUpdateDto updateDto) {
+        return super.apply(updateDto);
     }
 
     @Override
-    @GetMapping("/{id}")
-    @Operation(summary = "查询视频", operationId = "findVideoById")
-    @SaCheckPermission(value = "video:findById", orRole = "admin")
-    public BaseVo<VideoEntity> findById(@PathVariable String id) {
-        return super.findById(id);
-    }
-
-    @Override
-    @GetMapping("/ids/{ids}")
-    @Operation(summary = "根据id批量查询视频", operationId = "findVideoByIds")
-    @SaCheckPermission(value = "video:findByIds", orRole = "admin")
-    public BaseVo<List<VideoEntity>> findByIds(@PathVariable String ids) {
-        return super.findByIds(ids);
-    }
-
-    @Override
-    @PostMapping("/page")
-    @Operation(summary = "分页查询视频", operationId = "findPageVideo")
-    @SaCheckPermission(value = "video:findByPage", orRole = "admin")
-    public BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody @Valid VideoPageDto pageDto) {
-        return super.findByPage(pageDto);
-    }
-
-    @Override
-    @DeleteMapping("/{ids}")
-    @Operation(summary = "删除视频", operationId = "deleteVideo")
-    @SaCheckPermission(value = "video:delete", orRole = "admin")
-    public BaseVo<Integer[]> delete(@PathVariable String ids) {
+    @PostMapping("/delete")
+    @SaCheckPermission(value = "VideoController:delete", orRole = "admin")
+    @Operation(summary = "删除视频", operationId = "deleteVideoController")
+    public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
     }
 
+    @Override
+    @GetMapping("/{id}/{otherData}")
+    @SaCheckPermission(value = "VideoController:findById", orRole = "admin")
+    @Operation(summary = "根据ID查询视频", operationId = "findByIdVideoController")
+    public BaseVo<VideoEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
+        return super.findById(id, otherData);
+    }
+
+    @Override
+    @PostMapping("/get/{otherData}")
+    @SaCheckPermission(value = "VideoController:findByIds", orRole = "admin")
+    @Operation(summary = "根据ID批量查询视频", operationId = "findByIdsVideoController")
+    public BaseVo<List<VideoEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
+        return super.findByIds(ids, otherData);
+    }
+
+    @Override
+    @PostMapping("/page/{otherData}")
+    @SaCheckPermission(value = "VideoController:findByPage", orRole = "admin")
+    @Operation(summary = "分页查询视频", operationId = "findByPageVideoController")
+    public BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody VideoPageDto pageDto, @PathVariable Boolean otherData) {
+        return super.findByPage(pageDto, otherData);
+    }
 
     @SneakyThrows
     @GetMapping("/play/{id}")
-    @Operation(summary = "在线播放文件", operationId = "playVideo")
+    @Operation(summary = "在线播放视频", operationId = "playVideo")
     @SaCheckPermission(value = "video:playVideo", orRole = "admin")
-    public ResponseEntity<Resource> playVideo(
-            @PathVariable("id") String id,
-            @RequestHeader(value = "Range", required = false) String rangeHeader) {
+    public ResponseEntity<Resource> playVideo(@PathVariable String id, @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
-        FileEntity file = videoService.findById(id).getFile();
+        FileEntity file = videoService.findById(id, true).getFile();
         String contentType = file.getType();
         String bucket = file.getBucket();
         String objectName = ossService.buildObjectPath(file);

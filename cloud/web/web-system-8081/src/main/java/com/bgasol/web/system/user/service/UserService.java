@@ -1,7 +1,6 @@
 package com.bgasol.web.system.user.service;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
@@ -10,6 +9,7 @@ import com.bgasol.model.system.user.dto.UserPageDto;
 import com.bgasol.model.system.user.dto.UserPasswordResetDto;
 import com.bgasol.model.system.user.dto.UserPasswordUpdateDto;
 import com.bgasol.model.system.user.entity.UserEntity;
+import com.bgasol.model.system.user.entity.UserRoleTable;
 import com.bgasol.web.system.department.service.DepartmentService;
 import com.bgasol.web.system.role.service.RoleService;
 import com.bgasol.web.system.user.mapper.UserMapper;
@@ -28,9 +28,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
-import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.InWebRequest;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,92 +45,59 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         return userMapper;
     }
 
-
     @Override
     public RedissonClient commonBaseRedissonClient() {
         return redissonClient;
     }
 
-    @Transactional
     @Override
-    public Integer delete(String id) {
-        // 退出用户
-        StpUtil.logout(id);
-        // 删除用户关联角色-中间表
-        this.userMapper.deleteFromTable("system_c_user_role", "user_id", id);
-        return super.delete(id);
+    public Integer delete(Set<String> ids) {
+        ids.forEach(StpUtil::logout);
+        return super.delete(ids);
     }
 
     @Transactional
     @Override
-    public UserEntity save(UserEntity entity) {
-        // 检查用户名是否存在
-        LambdaQueryWrapper<UserEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserEntity::getUsername, entity.getUsername());
-        if (userMapper.selectCount(queryWrapper) > 0) {
-            throw BaseException.builder().message("用户名已存在").build();
-        }
+    public void insert(UserEntity entity) {
         String password = entity.getPassword();
         if (ObjectUtils.isNotEmpty(password)) {
             entity.setPassword(this.encodePassword(password));
         }
-        return super.save(entity);
+        super.insert(entity);
     }
 
-    @Transactional
     @Override
-    public UserEntity update(UserEntity entity) {
+    public void apply(UserEntity entity) {
         String password = entity.getPassword();
         if (ObjectUtils.isNotEmpty(password)) {
             entity.setPassword(this.encodePassword(password));
         }
-        return super.update(entity);
+        super.apply(entity);
     }
 
     @Transactional
-    public UserEntity updatePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
+    public void updatePassword(UserPasswordUpdateDto userPasswordUpdateDto) {
         String userid = StpUtil.getLoginIdAsString();
-        UserEntity userEntity = this.findDirectById(userid);
+        UserEntity userEntity = this.findById(userid, false);
         String userInputOldPassword = userPasswordUpdateDto.getOldPassword();
         // 对比新旧密码
         if (!userEntity.getPassword().equals(this.encodePassword(userInputOldPassword))) {
             throw new BaseException("原密码错误");
         }
+
         String newPassword = this.encodePassword(userPasswordUpdateDto.getNewPassword());
-        return this.update(UserEntity.builder()
+        this.apply(UserEntity.builder()
                 .id(userid)
                 .password(newPassword)
                 .build());
     }
 
     @Transactional
-    public UserEntity resetPassword(UserPasswordResetDto userPasswordResetDto) {
-        UserEntity entity = userPasswordResetDto.toEntity();
-        entity.setPassword(this.encodePassword(entity.getPassword()));
-        return this.update(entity);
-    }
-
-    @Transactional(readOnly = true)
-    public UserEntity getUserInfo() {
-        return this.getUserInfo(StpUtil.getLoginIdAsString());
-    }
-
-    @Transactional(readOnly = true)
-    public UserEntity getUserInfo(String id) {
-        return this.findById(id);
-    }
-
-    /**
-     * @param password 明文密码
-     * @return 密文密码
-     */
-    public String encodePassword(String password) {
-        if (plaintextPassword) {
-            return password;
-        } else {
-            // 使用MD5加密
-            return DigestUtils.md5Hex(password);
-        }
+    public void resetPassword(UserPasswordResetDto dto) {
+        this.apply(UserEntity.builder()
+                .id(dto.getId())
+                .password(this.encodePassword(dto.getPassword()))
+                .build());
     }
 
     @Transactional(readOnly = true)
@@ -144,10 +108,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
                 .filter(ObjectUtils::isNotEmpty)
                 .toList();
         Map<String, List<String>> roleIdGroup = this.findFromTableBatch(
-                "system_c_user_role",
-                "user_id",
-                userIds,
-                "role_id");
+                UserRoleTable.NAME, UserRoleTable.USER_ID, userIds, UserRoleTable.ROLE_ID);
 
         Set<String> roleIds = roleIdGroup
                 .values()
@@ -156,12 +117,14 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
                 .collect(Collectors.toSet());
 
         Map<String, RoleEntity> roleMap = roleService
-                .findByIds(roleIds.toArray(String[]::new))
+                .findById(roleIds, true)
                 .stream()
                 .collect(Collectors.toMap(RoleEntity::getId, Function.identity()));
 
         Set<String> departmentIds = list.stream().map(UserEntity::getDepartmentId).collect(Collectors.toSet());
-        Map<String, DepartmentEntity> collect = departmentService.findByIds(departmentIds.toArray(String[]::new)).stream()
+        Map<String, DepartmentEntity> collect = departmentService
+                .findById(departmentIds, true)
+                .stream()
                 .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()));
         for (UserEntity userEntity : list) {
             userEntity.setRoles(roleIdGroup
@@ -175,21 +138,16 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         }
     }
 
-    /// 获取当前访问者所属的用户的部门
-    @Transactional(readOnly = true)
-    public DepartmentEntity getMyDepartment(String xForwardedHost) {
-        if (InWebRequest()) {
-            if (StpUtil.isLogin()) {
-                // 获取当前登录用户的部门
-                String userId = StpUtil.getLoginIdAsString();
-                return this.findById(userId).getDepartment();
-            }
-            DepartmentEntity byDomain = departmentService.findByDomain(xForwardedHost);
-            if (ObjectUtils.isNotEmpty(byDomain)) {
-                return byDomain;
-            }
+    /**
+     * @param password 明文密码
+     * @return 密文密码
+     */
+    public String encodePassword(String password) {
+        if (plaintextPassword) {
+            return password;
+        } else {
+            // 使用MD5加密
+            return DigestUtils.md5Hex(password);
         }
-        // 若都找不到则返回默认部门
-        return departmentService.findById(DEFAULT_DEPARTMENT_ID);
     }
 }

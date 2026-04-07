@@ -10,6 +10,8 @@ import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import com.bgasol.model.system.user.api.UserApi;
 import com.bgasol.model.system.user.entity.UserEntity;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,7 +19,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +48,10 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
         if (ObjectUtils.isNotEmpty(userIds)) {
-            Map<String, UserEntity> userEntityMap = userApi.findByIds(String.join(",", userIds)).getData().stream().collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+            Map<String, UserEntity> userEntityMap = userApi.findByIds(userIds, true)
+                    .getData()
+                    .stream()
+                    .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
             list.forEach(e -> {
                 if (ObjectUtils.isNotEmpty(e.getUserId())) {
                     e.setUser(userEntityMap.get(e.getUserId()));
@@ -71,25 +75,20 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
     }
 
     private void processMessages(MessageEnvelopeEntity<?> entity) {
-        try {
-            for (MessageHandler messageHandler : messageHandlers) {
-                if (messageHandler.support(entity.getHandler())) {
-                    messageHandler.handle(entity);
-                }
+        for (MessageHandler messageHandler : messageHandlers) {
+            if (messageHandler.support(entity.getHandler())) {
+                messageHandler.handle(entity);
             }
-        } catch (RuntimeException e) {
-            log.error("消息处理异常", e);
         }
     }
 
     @Transactional
-    public void toReadById(List<String> ids) {
-        Set<String> idSet = new HashSet<>(ids);
+    public Integer read(@Valid @NotEmpty(message = "ids列表不能为空") Set<String> ids) {
         MessageEnvelopeEntity<?> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
         messageEnvelopeEntity.setStatus(MessageEnvelopeStatusEnum.READ);
 
         LambdaUpdateWrapper<MessageEnvelopeEntity<?>> luw = new LambdaUpdateWrapper<>();
-        luw.in(MessageEnvelopeEntity::getId, idSet);
-        messageEnvelopeMapper.update(messageEnvelopeEntity, luw);
+        luw.in(MessageEnvelopeEntity::getId, ids);
+        return messageEnvelopeMapper.update(messageEnvelopeEntity, luw);
     }
 }

@@ -26,7 +26,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findPageImage(requestData.value).then((res) => {
+  return Service.findByPageImageController(true, requestData.value).then((res) => {
     tableData.value = res.data as PageVoImageEntity;
     pageKey.value++;
   }).finally(() => {
@@ -66,7 +66,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
     <div class='controllers'>
       <image-create @success="getTable"></image-create>
       <base-batch-delete v-if="tableRef"
-                         :api="Service.deleteImage" :table="tableRef" @success='getTable'></base-batch-delete>
+                         :api="Service.deleteImageController" :table="tableRef" @success='getTable'></base-batch-delete>
     </div>
     <div class='table'>
       <div class='table-container'>
@@ -88,7 +88,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
           <el-table-column align='center' fixed="right" label='操作' width='160'>
             <template #default='{ row }'>
               <image-update :id="row.id" @success="getTable"></image-update>
-              <base-delete :id="row.id" :api="Service.deleteImage" @success='getTable'></base-delete>
+              <base-delete :id="row.id" :api="Service.deleteImageController" @success='getTable'></base-delete>
             </template>
           </el-table-column>
         </el-table>

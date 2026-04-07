@@ -2,8 +2,12 @@
 import {ref} from 'vue';
 import {ElTable as ElTableRefType} from 'element-plus/es/components/table';
 import {ElButton, ElMessage, ElPopconfirm} from 'element-plus';
+import {BaseVoInteger} from "~/generated/system";
 
-const props = defineProps<{ table: InstanceType<typeof ElTableRefType>, api: (ids: string) => Promise<any> }>();
+const props = defineProps<{
+  table: InstanceType<typeof ElTableRefType>,
+  api: (ids: string[]) => Promise<BaseVoInteger>
+}>();
 
 const emit = defineEmits<{ success: [] }>();
 
@@ -13,8 +17,8 @@ const deleteByIds = () => {
   const ids = (props.table.getSelectionRows()).map((entity: any) => entity.id);
   if (ids.length) {
     loading.value = true;
-    props.api(ids.join(",")).then(() => {
-      ElMessage.success('删除成功');
+    props.api(ids).then((res) => {
+      ElMessage.success("删除" + res.data + "条数据");
       emit('success');
     }).finally(() => {
       loading.value = false;

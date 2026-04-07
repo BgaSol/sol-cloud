@@ -42,33 +42,33 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     @Override
     @Transactional(readOnly = true)
     public void findOtherTable(List<VideoEntity> list) {
-        Set<String> fileIds = list.stream()
+        Set<String> fileIds = list
+                .stream()
                 .map(VideoEntity::getFileId)
-                .filter(ObjectUtils::isNotEmpty).collect(Collectors.toSet());
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
 
         Map<String, FileEntity> fileMap = fileService
-                .findByIds(fileIds.toArray(String[]::new))
+                .findById(fileIds, true)
                 .stream()
                 .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
 
-        list.forEach(videoEntity -> {
-            if (ObjectUtils.isNotEmpty(videoEntity.getFileId())) {
-                videoEntity.setFile(fileMap.get(videoEntity.getFileId()));
+        list.forEach(imageEntity -> {
+            if (ObjectUtils.isNotEmpty(imageEntity.getFileId())) {
+                imageEntity.setFile(fileMap.get(imageEntity.getFileId()));
             }
         });
     }
 
-    /**
-     * 删除视频
-     */
     @Override
-    @Transactional()
-    public Integer delete(String id) {
-        VideoEntity videoEntity = this.findById(id);
-        if (ObjectUtils.isNotEmpty(videoEntity.getFile())) {
-            FileEntity file = videoEntity.getFile();
-            fileService.delete(file.getId());
-        }
-        return super.delete(id);
+    @Transactional(readOnly = true)
+    public Integer delete(Set<String> ids) {
+        Set<String> fileIds = this.findById(ids, false)
+                .stream()
+                .map(VideoEntity::getFileId)
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+        fileService.delete(fileIds);
+        return super.delete(ids);
     }
 }

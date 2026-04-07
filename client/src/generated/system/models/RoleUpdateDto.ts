@@ -19,6 +19,10 @@ export type RoleUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 角色名
      */
     name: string;

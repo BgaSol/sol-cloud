@@ -7,20 +7,12 @@
  */
 export type UserPasswordResetDto = {
     /**
-     * 主键
-     */
-    id: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 描述
-     */
-    description?: string;
-    /**
      * 新密码
      */
     password: string;
+    /**
+     * 用户id
+     */
+    id: string;
 };
 

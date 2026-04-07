@@ -11,14 +11,17 @@ import com.bgasol.web.system.permission.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "权限管理")
 @RequestMapping("/permission")
+@Validated
 public class PermissionController extends BaseController<
         PermissionEntity,
         BasePageDto<PermissionEntity>,
@@ -32,35 +35,50 @@ public class PermissionController extends BaseController<
     }
 
     @Override
-    @GetMapping()
-    @Operation(summary = "查询所有权限", operationId = "findAllPermission")
-    @SaCheckPermission(value = "permission:findAll", orRole = "admin")
-    public BaseVo<List<PermissionEntity>> findAll() {
-        return super.findAll(true);
+    @PostMapping("/insert")
+    @SaCheckPermission(value = "PermissionController:insert", orRole = "admin")
+    @Operation(summary = "新增权限", operationId = "insertPermissionController")
+    public BaseVo<PermissionEntity> insert(@RequestBody PermissionCreateDto createDto) {
+        return super.insert(createDto);
     }
 
     @Override
-    @DeleteMapping("/{ids}")
-    @Operation(summary = "删除权限", operationId = "deletePermission")
-    @SaCheckPermission(value = "permission:delete", orRole = "admin")
-    public BaseVo<Integer[]> delete(@PathVariable("ids") String ids) {
+    @PostMapping("/apply")
+    @SaCheckPermission(value = "PermissionController:apply", orRole = "admin")
+    @Operation(summary = "更新权限", operationId = "applyPermissionController")
+    public BaseVo<PermissionEntity> apply(@RequestBody PermissionUpdateDto updateDto) {
+        return super.apply(updateDto);
+    }
+
+    @Override
+    @PostMapping("/delete")
+    @SaCheckPermission(value = "PermissionController:delete", orRole = "admin")
+    @Operation(summary = "删除权限", operationId = "deletePermissionController")
+    public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
     }
 
-    @PostMapping("/init")
-    @Operation(summary = "批量初始化系统的权限信息", operationId = "initPermission")
-    @SaCheckPermission(value = "permission:init", orRole = "admin")
-    public BaseVo<PermissionEntity> init(@RequestBody() PermissionEntity entity) {
-        PermissionEntity save = permissionService.init(entity);
-        return BaseVo.success(save, "保存成功");
+    @Override
+    @GetMapping("/{id}/{otherData}")
+    @SaCheckPermission(value = "PermissionController:findById", orRole = "admin")
+    @Operation(summary = "根据ID查询权限", operationId = "findByIdPermissionController")
+    public BaseVo<PermissionEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
+        return super.findById(id, otherData);
     }
 
     @Override
-    @GetMapping("/ids/{ids}")
-    @Operation(summary = "根据id批量查询权限", operationId = "findPermissionByIds")
-    @SaCheckPermission(value = "permission:findByIds", orRole = "admin")
-    public BaseVo<List<PermissionEntity>> findByIds(@PathVariable String ids) {
-        return super.findByIds(ids);
+    @PostMapping("/get/{otherData}")
+    @SaCheckPermission(value = "PermissionController:findByIds", orRole = "admin")
+    @Operation(summary = "根据ID批量查询权限", operationId = "findByIdsPermissionController")
+    public BaseVo<List<PermissionEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
+        return super.findByIds(ids, otherData);
     }
 
+    @Override
+    @GetMapping("/all/{otherData}")
+    @SaCheckPermission(value = "PermissionController:findAll", orRole = "admin")
+    @Operation(summary = "查询所有权限", operationId = "findAllPermissionController")
+    public BaseVo<List<PermissionEntity>> findAll(@PathVariable Boolean otherData) {
+        return super.findAll(otherData);
+    }
 }

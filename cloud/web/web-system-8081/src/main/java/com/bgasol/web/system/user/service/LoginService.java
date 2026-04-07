@@ -66,7 +66,7 @@ public class LoginService {
 
     @Transactional(readOnly = true)
     public SaTokenInfo login(UserLoginDto userLoginDto) {
-        if (captchaIsOpen){
+        if (captchaIsOpen) {
             String verificationCodeKey = userLoginDto.getVerificationCodeKey();
             // 获取验证码并且删除
             String verificationCode = captchaCache.getAndDelete(verificationCodeKey);
@@ -93,7 +93,7 @@ public class LoginService {
         }
 
         if (!ADMIN_USER_ID.equals(userEntity.getId())) {
-            userEntity = this.userService.findById(userEntity.getId());
+            userEntity = this.userService.findById(userEntity.getId(), true);
             if (userEntity.getLocked()) {
                 log.error("用户已锁定");
                 throw new BaseException("用户已锁定");
@@ -109,11 +109,11 @@ public class LoginService {
         return StpUtil.getTokenInfo();
     }
 
-    public List<UserEntity> findOnlineUser() {
+    public List<UserEntity> findOnlineUser(Boolean otherData) {
         List<String> sessionIds = StpUtil.searchSessionId("", 0, -1, false);
         return sessionIds.stream().map(sessionId -> {
             SaSession saSession = StpUtil.getSessionBySessionId(sessionId);
-            return userService.getUserInfo((String) saSession.getLoginId());
+            return userService.findById((String) saSession.getLoginId(), otherData);
         }).toList();
     }
 }

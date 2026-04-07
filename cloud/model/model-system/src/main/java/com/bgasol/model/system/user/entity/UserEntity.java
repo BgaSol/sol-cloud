@@ -61,9 +61,9 @@ public class UserEntity extends BaseEntity {
     @TableField(exist = false)
     @ManyToMany(targetEntity = RoleEntity.class)
     @JoinTable(
-            name = "system_c_user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = UserRoleTable.NAME,
+            joinColumns = @JoinColumn(name = UserRoleTable.USER_ID),
+            inverseJoinColumns = @JoinColumn(name = UserRoleTable.ROLE_ID)
     )
     private List<RoleEntity> roles;
 

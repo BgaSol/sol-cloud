@@ -21,7 +21,7 @@ export { BaseVoPageVoVideoEntity } from './models/BaseVoPageVoVideoEntity';
 export { BaseVoVideoEntity } from './models/BaseVoVideoEntity';
 export { BaseVoVoid } from './models/BaseVoVoid';
 export type { DepartmentEntity } from './models/DepartmentEntity';
-export type { FileCreateDto } from './models/FileCreateDto';
+export { FileCreateDto } from './models/FileCreateDto';
 export { FileEntity } from './models/FileEntity';
 export type { FilePageDto } from './models/FilePageDto';
 export type { FileUpdateDto } from './models/FileUpdateDto';

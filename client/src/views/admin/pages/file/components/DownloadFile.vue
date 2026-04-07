@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { ElButton, ElMessage } from 'element-plus';
-import { getFileUrl } from '~/api/HttpRequest';
+import {ref} from 'vue';
+import {ElButton, ElMessage} from 'element-plus';
+import {getFileUrl} from '~/api/HttpRequest';
 
 const props = defineProps<{ fileId: string; fileName: string }>();
 
@@ -28,11 +28,7 @@ const download = () => {
 </script>
 
 <template>
-  <el-button
-    size="small"
-    type="primary"
-    @click="download"
-    :loading="downloadLoading"
-    >下载</el-button
-  >
+  <el-button size="small" type="primary" @click="download" :loading="downloadLoading">
+    下载
+  </el-button>
 </template>

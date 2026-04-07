@@ -1,6 +1,8 @@
 package com.bgasol.model.file.file.dto;
 
+import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import com.bgasol.model.file.file.entity.FileStaus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -16,8 +18,11 @@ import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_
 @SuperBuilder
 @NoArgsConstructor
 @Schema(description = "创建文件")
-public class FileCreateDto {
-    @Schema(description = "要上传的文件块")
+public class FileCreateDto extends BaseCreateDto<FileEntity> {
+    @Schema(description = "自定义文件id")
+    private String id;
+
+    @Schema(description = "要上传的文件")
     private MultipartFile uploadFile;
 
     @Schema(description = "文件名称(包含文件后缀)")
@@ -27,19 +32,13 @@ public class FileCreateDto {
     private String hash;
 
     @Schema(description = "文件状态")
-    private String status;
+    private FileStaus status;
 
     @Schema(description = "文件后缀")
     private String suffix;
 
     @Schema(description = "文件来源")
     private String source;
-
-    @Schema(description = "排序")
-    private Integer sort;
-
-    @Schema(description = "描述")
-    private String description;
 
     @JsonIgnore
     @Schema(hidden = true)

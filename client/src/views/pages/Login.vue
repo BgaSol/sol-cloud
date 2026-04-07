@@ -17,7 +17,7 @@ const needCaptcha = ref<boolean>(true);
 const imageBase64 = ref<string>();
 const getCaptcha = () => {
   // 获取验证码
-  Service.getVerificationCode().then((res) => {
+  Service.getVerificationCodeUserController().then((res) => {
     if (res.data?.captcha) {
       loginDto.value.verificationCode = res.data?.captcha
       needCaptcha.value = false;
@@ -49,7 +49,7 @@ const loading = ref(false);
 const login = () => {
   resetValidate();
   loading.value = true;
-  Service.login(loginDto.value).then((res) => {
+  Service.loginUserController(loginDto.value).then((res) => {
     if (res.code === 400) {
       validate(res.data as VerificationResult[]);
     } else if (res.code === 200) {

@@ -6,13 +6,15 @@ import BaseDelete from "~/components/BaseDelete.vue";
 import {ElTable as ElTableRefType} from "element-plus/es/components/table";
 import {ElTable, ElTableColumn, ElTag} from "element-plus";
 import BaseBatchDelete from "~/components/BaseBatchDelete.vue";
+import MenuCreate from "~/views/admin/pages/system/menu/MenuCreate.vue";
+import MenuUpdate from "~/views/admin/pages/system/menu/MenuUpdate.vue";
 
 const tableData = ref<MenuEntity[]>([]);
 const tableLoading = ref(true);
 
 const getTable = () => {
   tableLoading.value = true;
-  Service.findAllMenu().then((res) => {
+  Service.findAllMenuController(false).then((res) => {
     tableData.value = res.data as MenuEntity[];
   }).finally(() => {
     tableLoading.value = false;
@@ -28,8 +30,9 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
 <template>
   <div class='main'>
     <div class="controllers">
-      <base-batch-delete v-if="tableRef"
-                         :api="Service.deleteMenu" :table="tableRef" @success='getTable'></base-batch-delete>
+      <menu-create @success="getTable"></menu-create>
+      <base-batch-delete v-if="tableRef" :api="Service.deleteMenuController" :table="tableRef" @success='getTable'>
+      </base-batch-delete>
     </div>
     <div class='table'>
       <div class='table-container'>
@@ -68,9 +71,10 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
           </el-table-column>
           <el-table-column align='center' label='描述' prop='description'>
           </el-table-column>
-          <el-table-column align='center' fixed="right" label='操作' width="90">
+          <el-table-column align='center' fixed="right" label='操作' width="160">
             <template #default='{ row }'>
-              <base-delete :id="row.id" :api="Service.deleteMenu" @success="getTable"/>
+              <menu-update :id="row.id" @success="getTable"></menu-update>
+              <base-delete :id="row.id" :api="Service.deleteMenuController" @success="getTable"/>
             </template>
           </el-table-column>
         </el-table>

@@ -15,6 +15,10 @@ export type RoleCreateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 角色名
      */
     name: string;

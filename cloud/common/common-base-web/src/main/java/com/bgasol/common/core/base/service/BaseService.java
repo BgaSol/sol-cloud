@@ -211,20 +211,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 根据单个 ID 删除实体。
-     *
-     * @param id 要删除的实体 ID
-     * @return 被删除的实体数量（通常为 1）
-     */
-    @Transactional
-    public Integer delete(String id) {
-        return this.commonBaseMapper().deleteById(id);
-    }
-
-    /**
      * 分页查询实体列表，可选择是否加载关联数据。
      *
-     * @param pageDto 分页参数和查询条件封装对象
+     * @param pageDto   分页参数和查询条件封装对象
      * @param otherData 如果为 {@code true}，则为每个实体加载 {@link JoinTable} 关联数据
      * @return 包含实体列表和分页元数据的分页结果对象
      * @see PageVo
@@ -241,9 +230,9 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 分页查询实体列表，可选择是否加载关联数据。
      *
-     * @param page 分页对象，包含当前页码和每页大小
+     * @param page         分页对象，包含当前页码和每页大小
      * @param queryWrapper 查询条件包装器（可为 null，表示无条件查询）
-     * @param otherData 如果为 {@code true}，则为每个实体加载 {@link JoinTable} 关联数据
+     * @param otherData    如果为 {@code true}，则为每个实体加载 {@link JoinTable} 关联数据
      * @return 分页结果，包含实体列表
      * @see Page
      */
@@ -259,7 +248,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 根据 ID 集合查询实体列表，可选择是否加载关联数据。
      *
-     * @param ids 要查询的实体 ID 集合
+     * @param ids       要查询的实体 ID 集合
      * @param otherData 如果为 {@code true}，则为每个实体加载 {@link JoinTable} 关联数据
      * @return 匹配 ID 的实体列表（如果 ID 为 null 或空，则返回空列表）
      * @see BaseEntity
@@ -279,7 +268,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 根据单个 ID 查询实体，可选择是否加载关联数据。
      *
-     * @param id 要查询的实体 ID
+     * @param id        要查询的实体 ID
      * @param otherData 如果为 {@code true}，则为该实体加载 {@link JoinTable} 关联数据
      * @return 如果找到则返回实体对象，否则返回 null
      * @see BaseEntity
@@ -305,7 +294,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 根据查询条件查询所有实体，可选择是否加载关联数据。
      *
-     * @param wrapper 查询条件包装器（可为 null，表示无条件查询）
+     * @param wrapper   查询条件包装器（可为 null，表示无条件查询）
      * @param otherData 如果为 {@code true}，则为每个实体加载 {@link JoinTable} 关联数据
      * @return 匹配查询条件的实体列表
      * @see Wrapper
@@ -327,7 +316,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 否则建议重写 {@link #findOtherTable(BaseEntity)} 方法进行单条记录查询。
      *
      * @param list 要加载关联数据的实体列表
-     *         （如果列表为 null 或空，方法会立即返回）
+     *             （如果列表为 null 或空，方法会立即返回）
      */
     @Transactional(readOnly = true)
     public void findOtherTable(List<ENTITY> list) {
@@ -357,12 +346,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 批量查询中间表（关联表）数据。
      *
-     * @param tableName 中间表/关联表的表名
-     * @param masterName 中间表中主键列的列名
+     * @param tableName    中间表/关联表的表名
+     * @param masterName   中间表中主键列的列名
      * @param masterValues 要查询的主键值列表
-     * @param slaveName 中间表中从键/关联键列的列名
+     * @param slaveName    中间表中从键/关联键列的列名
      * @return 返回 Map 结构，key 为主键值，value 为关联的从键值列表
-     *         （如果 masterValues 为 null 或空，则返回空 Map）
+     * （如果 masterValues 为 null 或空，则返回空 Map）
      * @example 返回格式示例：{主键值 1: [从键值 1, 从键值 2], 主键值 2: [从键值 3]}
      */
     @Transactional(readOnly = true)
@@ -379,11 +368,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 批量插入中间表/关联表数据。
      *
-     * @param tableName 中间表/关联表的表名
+     * @param tableName  中间表/关联表的表名
      * @param masterName 中间表中主键列的列名
-     * @param slaveName 中间表中从键/关联键列的列名
-     * @param values 要插入的主从关系键值对列表
-     *         （如果 values 为 null 或空，方法会立即返回）
+     * @param slaveName  中间表中从键/关联键列的列名
+     * @param values     要插入的主从关系键值对列表
+     *                   （如果 values 为 null 或空，方法会立即返回）
      * @example 键值对格式：Map.entry(主键 ID, 从键 ID)
      */
     @Transactional
@@ -398,12 +387,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 为实体插入中间表/关联表数据。
      *
-     * @param entity 主实体对象，其 ID 将作为主键值使用
-     * @param tableName 中间表/关联表的表名
+     * @param entity     主实体对象，其 ID 将作为主键值使用
+     * @param tableName  中间表/关联表的表名
      * @param masterName 中间表中主键列的列名
-     * @param slaveName 中间表中从键/关联键列的列名
-     * @param value 要关联到主实体的从实体列表
-     *         （每个从实体的 ID 将作为从键值使用）
+     * @param slaveName  中间表中从键/关联键列的列名
+     * @param value      要关联到主实体的从实体列表
+     *                   （每个从实体的 ID 将作为从键值使用）
      */
     @Transactional
     public void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
@@ -423,7 +412,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 为其特定的实体类型提供自定义验证逻辑。
      *
      * @return 用于 Excel 导入验证的 BiPredicate 函数，
-     *         如果未配置验证则返回 {@code null}（默认情况）
+     * 如果未配置验证则返回 {@code null}（默认情况）
      */
     public BiPredicate<ENTITY, List<String>> importValidator() {
         return null;
@@ -540,4 +529,17 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         this.apply(entity);
         return this.findById(entity.getId());
     }
+
+    /**
+     * 根据单个 ID 删除实体。
+     *
+     * @param id 要删除的实体 ID
+     * @return 被删除的实体数量（通常为 1）
+     */
+    @Deprecated
+    @Transactional
+    public Integer delete(String id) {
+        return delete(Set.of(id));
+    }
+
 }

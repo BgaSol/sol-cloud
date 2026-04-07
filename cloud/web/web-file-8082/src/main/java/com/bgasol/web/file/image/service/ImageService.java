@@ -4,7 +4,6 @@ import com.bgasol.common.core.base.service.BaseService;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.image.dto.ImagePageDto;
 import com.bgasol.model.file.image.entity.ImageEntity;
-import com.bgasol.model.file.video.entity.VideoEntity;
 import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.image.mapper.ImageMapper;
@@ -49,17 +48,29 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
 
     @Override
     @Transactional
-    public ImageEntity save(ImageEntity entity) {
-        // 获取图片文件详情
+    public void insert(ImageEntity entity) {
         if (ObjectUtils.isNotEmpty(entity.getFileId())) {
-            FileEntity file = fileService.findById(entity.getFileId());
+            FileEntity file = fileService.findById(entity.getFileId(), false);
             try {
                 getImageWidthAndHeight(file, entity);
             } catch (IOException e) {
                 entity.setDescription(e.getMessage());
             }
         }
-        return super.save(entity);
+        super.insert(entity);
+    }
+
+    @Override
+    public void apply(ImageEntity entity) {
+        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+            FileEntity file = fileService.findById(entity.getFileId(), false);
+            try {
+                getImageWidthAndHeight(file, entity);
+            } catch (IOException e) {
+                entity.setDescription(e.getMessage());
+            }
+        }
+        super.apply(entity);
     }
 
     /// 获取图片宽高
@@ -73,39 +84,16 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     @Override
-    @Transactional
-    public ImageEntity update(ImageEntity entity) {
-        // 获取图片文件详情
-        if (ObjectUtils.isNotEmpty(entity.getFileId())) {
-            FileEntity file = fileService.findById(entity.getFileId());
-            try {
-                getImageWidthAndHeight(file, entity);
-            } catch (IOException e) {
-                entity.setDescription(e.getMessage());
-            }
-        }
-        return super.update(entity);
-    }
-
-    /**
-     * 读取图片文件流
-     */
-    @Transactional(readOnly = true)
-    public InputStream imageStreamFindById(String id) {
-        ImageEntity imageEntity = this.findById(id);
-        FileEntity file = imageEntity.getFile();
-        return ossService.readFileStream(file);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public void findOtherTable(List<ImageEntity> list) {
-        Set<String> fileIds = list.stream()
+        Set<String> fileIds = list
+                .stream()
                 .map(ImageEntity::getFileId)
-                .filter(ObjectUtils::isNotEmpty).collect(Collectors.toSet());
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
 
         Map<String, FileEntity> fileMap = fileService
-                .findByIds(fileIds.toArray(String[]::new))
+                .findById(fileIds, true)
                 .stream()
                 .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
 
@@ -116,17 +104,15 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
         });
     }
 
-    /**
-     * 删除图片
-     */
     @Override
-    @Transactional()
-    public Integer delete(String id) {
-        ImageEntity imageEntity = this.findById(id);
-        if (ObjectUtils.isNotEmpty(imageEntity.getFile())) {
-            FileEntity file = imageEntity.getFile();
-            fileService.delete(file.getId());
-        }
-        return super.delete(id);
+    @Transactional(readOnly = true)
+    public Integer delete(Set<String> ids) {
+        Set<String> fileIds = this.findById(ids, false)
+                .stream()
+                .map(ImageEntity::getFileId)
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+        fileService.delete(fileIds);
+        return super.delete(ids);
     }
 }

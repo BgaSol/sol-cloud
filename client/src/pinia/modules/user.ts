@@ -20,7 +20,7 @@ export const useUser = defineStore('user', () => {
 
     // 获取部门信息
     const getDepartment = async () => {
-        return Service.getMyDepartment().then((res) => {
+        return Service.findDefaultDepartmentController(true).then((res) => {
             defaultDepartment.value = res.data as DepartmentEntity;
         });
     };
@@ -65,7 +65,7 @@ export const useUser = defineStore('user', () => {
     // 获取用户信息
     const getUser = async () => {
         if (userToken.value) {
-            const {data} = await Service.getUserInfo();
+            const {data} = await Service.getInfoUserController();
             user.value = data;
         }
         const routes = useRoutes()
@@ -108,7 +108,7 @@ export const useUser = defineStore('user', () => {
  * @param fun 退出登录后的回调
  */
 const logOut = async (fun?: () => void) => {
-    await Service.logout();
+    await Service.logoutUserController();
     localStorage.setItem(authorization, "");
     fun && fun();
 }

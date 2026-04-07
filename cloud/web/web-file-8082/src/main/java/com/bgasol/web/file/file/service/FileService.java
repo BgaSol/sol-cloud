@@ -8,11 +8,10 @@ import com.bgasol.model.file.file.entity.FileStaus;
 import com.bgasol.plugin.minio.config.MinioConfig;
 import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.mapper.FileMapper;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.redisson.api.RedissonClient;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +32,6 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
 
     private final OssService ossService;
 
-    private final RedissonClient redissonClient;
-
-    @Override
-    public RedissonClient commonBaseRedissonClient() {
-        return redissonClient;
-    }
-
     @Override
     public FileMapper commonBaseMapper() {
         return fileMapper;
@@ -49,8 +41,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
      * 通过文件流保存文件
      */
     @Transactional
-    public FileEntity save(MultipartFile multipartFile, FileEntity fileEntity) {
-        fileEntity.setCreateTime(new Date());
+    public FileEntity insert(MultipartFile multipartFile, FileEntity fileEntity) {
         fileEntity.setBucket(minioConfig.getBucket());
         if (ObjectUtils.isEmpty(fileEntity.getSource())) {
             fileEntity.setSource("default");
@@ -71,7 +62,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
             }
 
             fileEntity.setStatus(FileStaus.LOADING);
-            return this.save(fileEntity);
+            this.insert(fileEntity);
         } else {
 
             fileEntity.setName(multipartFile.getOriginalFilename());
@@ -89,7 +80,7 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
 
             // 保存文件实体
             fileEntity.setStatus(FileStaus.SUCCESS);
-            fileEntity = this.save(fileEntity);
+            this.insert(fileEntity);
 
             // 上传文件
             try (InputStream inputStream = multipartFile.getInputStream()) {
@@ -97,8 +88,8 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
             } catch (IOException e) {
                 throw new BaseException("上传文件失败");
             }
-            return fileEntity;
         }
+        return fileEntity;
     }
 
     /**
@@ -129,29 +120,12 @@ public class FileService extends BaseService<FileEntity, FilePageDto> {
         return fileName;
     }
 
-    /**
-     * 删除文件
-     *
-     * @param id 文件id
-     * @return 删除数量
-     */
     @Override
     @Transactional
-    public Integer delete(String id) {
-        FileEntity fileEntity = this.findById(id);
-        if (fileEntity == null) {
-            return 0;
+    public Integer delete(Set<String> ids) {
+        for (FileEntity fileEntity : this.findById(ids, false)) {
+            ossService.removeFile(fileEntity);
         }
-        ossService.removeFile(fileEntity);
-        return super.delete(id);
-    }
-
-    /**
-     * 读取文件流
-     */
-    @Transactional(readOnly = true)
-    public InputStream fileStreamFindById(String id) {
-        FileEntity file = this.findById(id);
-        return ossService.readFileStream(file);
+        return super.delete(ids);
     }
 }

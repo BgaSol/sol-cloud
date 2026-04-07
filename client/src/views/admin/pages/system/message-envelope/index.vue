@@ -74,7 +74,7 @@ const tableLoading = ref(true);
 
 const getTable = async () => {
   tableLoading.value = true;
-  return Service.findPageMessageEnvelope(requestData.value)
+  return Service.findByPageMessageEnvelopeController(true, requestData.value)
       .then((res) => {
         tableData.value = res.data as PageVoMessageEnvelopeEntityObject;
       })

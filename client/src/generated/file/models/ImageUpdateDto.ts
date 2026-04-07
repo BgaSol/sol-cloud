@@ -19,6 +19,10 @@ export type ImageUpdateDto = {
      */
     description?: string;
     /**
+     * 类型
+     */
+    type?: string;
+    /**
      * 图片名称
      */
     name?: string;
