@@ -7,6 +7,7 @@ import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.api.UserApi;
 import com.bgasol.model.system.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,8 @@ public class StpInterfaceImpl implements StpInterface {
         Set<String> permissions = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {
             for (PermissionEntity permission : role.getPermissions()) {
-                if (permission.getMicroService().equals(contextPath)) {
+                if (ObjectUtils.isEmpty(permission.getMicroService())
+                        || permission.getMicroService().equals(contextPath)) {
                     permissions.add(permission.getCode());
                 }
             }
