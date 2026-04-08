@@ -4,11 +4,14 @@ import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.menu.entity.MenuEntity;
 import com.bgasol.model.system.menu.entity.MenuType;
+import com.bgasol.model.system.permission.dto.PermissionCreateDto;
+import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
 import com.bgasol.web.system.department.service.DepartmentService;
 import com.bgasol.web.system.menu.service.MenuService;
+import com.bgasol.web.system.permission.service.PermissionService;
 import com.bgasol.web.system.role.service.RoleService;
 import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
-import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
+import static com.bgasol.common.constant.value.SystemConfigValues.*;
 
 @Slf4j
 @Component
@@ -31,6 +33,7 @@ public class SystemInitData implements ApplicationRunner {
     private final UserService userService;
     private final DepartmentService departmentService;
     private final RoleService roleService;
+    private final PermissionService permissionService;
 
     @Value("${system.title}")
     private String systemTitle;
@@ -43,6 +46,8 @@ public class SystemInitData implements ApplicationRunner {
         initMenus();
         // 创建部门
         initDepartment();
+        // 创建权限
+        initPermission();
         // 创建角色
         initRole();
         // 创建用户
@@ -150,11 +155,28 @@ public class SystemInitData implements ApplicationRunner {
 
     }
 
+    public void initPermission() {
+        PermissionEntity permission = PermissionCreateDto.builder()
+                .id(ADMIN_PERMISSION_ID)
+                .code(ADMIN_PERMISSION_ID)
+                .name("系统最高权限")
+                .description("系统全接口访问权限")
+                .build().toEntity();
+        if (ObjectUtils.isEmpty(this.permissionService.findById(permission.getId(), false))) {
+            this.permissionService.insert(permission);
+            log.info("save permission {}", permission.getName());
+        } else {
+            this.permissionService.apply(permission);
+            log.info("apply permission {}", permission.getName());
+        }
+    }
+
     private void initRole() {
         RoleEntity role = RoleCreateDto.builder()
                 .code(ADMIN_ROLE_ID)
                 .name("超级管理员")
                 .description("系统默认超级管理员角色")
+                .permissionIds(List.of(ADMIN_PERMISSION_ID))
                 .build().toEntity();
         if (ObjectUtils.isEmpty(this.roleService.findById(role.getId(), false))) {
             this.roleService.insert(role);
@@ -177,7 +199,7 @@ public class SystemInitData implements ApplicationRunner {
                 .departmentId(DEFAULT_DEPARTMENT_ID)
                 .build();
         if (ObjectUtils.isEmpty(this.userService.findById(user.getId(), false))) {
-            this.userService.save(user);
+            this.userService.insert(user);
             log.info("save user {}", user.getId());
         } else {
             user.setPassword(null);
