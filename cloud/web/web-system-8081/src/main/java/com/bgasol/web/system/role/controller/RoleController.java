@@ -105,13 +105,6 @@ public class RoleController extends BaseController<
         return super.findAll(otherData);
     }
 
-    @GetMapping("/all")
-    @SaCheckPermission(value = "RoleController:findAll")
-    @Operation(summary = "查询所有角色(支持设置otherData)", operationId = "findAllWithParamRoleController")
-    public BaseVo<List<RoleEntity>> findAllByParam(@RequestParam(defaultValue = "false") Boolean otherData) {
-        return super.findAll(otherData);
-    }
-
     @GetMapping("/template-download")
     @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
     @SaCheckPermission(value = "role:downloadImportTemplate")

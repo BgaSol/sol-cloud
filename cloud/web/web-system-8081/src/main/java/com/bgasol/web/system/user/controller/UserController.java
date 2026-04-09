@@ -96,13 +96,6 @@ public class UserController extends BaseController<
         return super.findAll(otherData);
     }
 
-    @GetMapping("/all")
-    @SaCheckPermission(value = "UserController:findAll")
-    @Operation(summary = "查询所有用户(支持设置otherData)", operationId = "findAllWithParamUserController")
-    public BaseVo<List<UserEntity>> findAllByParam(@RequestParam(defaultValue = "false") Boolean otherData) {
-        return super.findAll(otherData);
-    }
-
     @SaIgnore
     @GetMapping("/get/verification/code")
     @Operation(summary = "获取验证码", operationId = "getVerificationCodeUserController")
