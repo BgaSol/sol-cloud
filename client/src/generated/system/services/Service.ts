@@ -926,29 +926,6 @@ export class Service {
         });
     }
     /**
-     * 查询所有用户(支持设置otherData)
-     * @param otherData
-     * @returns BaseVoListUserEntity OK
-     * @throws ApiError
-     */
-    public static findAllWithParamUserController(
-        otherData: boolean = false,
-    ): CancelablePromise<BaseVoListUserEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/user/all',
-            query: {
-                'otherData': otherData,
-            },
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
      * 查询所有用户
      * @param otherData
      * @returns BaseVoListUserEntity OK
@@ -1029,29 +1006,6 @@ export class Service {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/role/template-download',
-            errors: {
-                400: `参数校验异常`,
-                401: `未登录异常`,
-                403: `无权限异常`,
-                500: `业务异常`,
-            },
-        });
-    }
-    /**
-     * 查询所有角色(支持设置otherData)
-     * @param otherData
-     * @returns BaseVoListRoleEntity OK
-     * @throws ApiError
-     */
-    public static findAllWithParamRoleController(
-        otherData: boolean = false,
-    ): CancelablePromise<BaseVoListRoleEntity> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/role/all',
-            query: {
-                'otherData': otherData,
-            },
             errors: {
                 400: `参数校验异常`,
                 401: `未登录异常`,
