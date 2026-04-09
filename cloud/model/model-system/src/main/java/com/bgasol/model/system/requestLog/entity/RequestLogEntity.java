@@ -28,12 +28,15 @@ public class RequestLogEntity extends BaseTreeEntity<RequestLogEntity> implement
     private String traceId;
 
     @Schema(description = "服务名")
+    @TableField("service_name")
     private String serviceName;
 
     @Schema(description = "节点名")
+    @TableField("node_name")
     private String nodeName;
 
     @Schema(description = "节点IP")
+    @TableField("node_ip")
     private String nodeIp;
 
     @Schema(description = "HTTP方法")

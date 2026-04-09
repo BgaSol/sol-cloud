@@ -2,6 +2,7 @@ package com.bgasol.common.core.base.handler;
 
 import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DynamicTableNameHandler implements TableNameHandler {
     public final static String DynamicTableNameUnderscore = "_d_";
     private final List<BaseTableNameHandler> baseTableNameHandlers;
@@ -32,11 +34,12 @@ public class DynamicTableNameHandler implements TableNameHandler {
                     return targetTable;
                 }
 
-                // 建表并缓存表名
-                String createSql = "CREATE TABLE IF NOT EXISTS %s (LIKE %s INCLUDING ALL)".formatted(targetTable, tableName);
+                // 建表
+                String createSql = "CREATE TABLE IF NOT EXISTS %s (LIKE %s INCLUDING ALL)"
+                        .formatted(targetTable, tableName);
                 jdbcTemplate.execute(createSql);
-                createdTableNameMap.put(tableName, true);
 
+                createdTableNameMap.put(targetTable, true);
                 return targetTable;
             } else {
                 // 如果目标表是缓存过的，直接用缓存的结果
