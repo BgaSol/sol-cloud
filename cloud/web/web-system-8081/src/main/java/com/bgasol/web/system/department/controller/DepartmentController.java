@@ -41,7 +41,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PostMapping("/insert")
-    @SaCheckPermission(value = "DepartmentController:insert", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:insert")
     @Operation(summary = "新增部门", operationId = "insertDepartmentController")
     public BaseVo<DepartmentEntity> insert(@RequestBody DepartmentCreateDto createDto) {
         return super.insert(createDto);
@@ -49,7 +49,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "DepartmentController:apply", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:apply")
     @Operation(summary = "更新部门", operationId = "applyDepartmentController")
     public BaseVo<DepartmentEntity> apply(@RequestBody DepartmentUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -57,7 +57,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "DepartmentController:delete", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:delete")
     @Operation(summary = "删除部门", operationId = "deleteDepartmentController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -65,7 +65,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "DepartmentController:findById", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:findById")
     @Operation(summary = "根据ID查询部门", operationId = "findByIdDepartmentController")
     public BaseVo<DepartmentEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -73,7 +73,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "DepartmentController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:findByIds")
     @Operation(summary = "根据ID批量查询部门", operationId = "findByIdsDepartmentController")
     public BaseVo<List<DepartmentEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -81,7 +81,7 @@ public class DepartmentController extends BaseController<
 
     @Override
     @GetMapping("/all/{otherData}")
-    @SaCheckPermission(value = "DepartmentController:findAll", orRole = "admin")
+    @SaCheckPermission(value = "DepartmentController:findAll")
     @Operation(summary = "查询所有部门", operationId = "findAllDepartmentController")
     public BaseVo<List<DepartmentEntity>> findAll(@PathVariable Boolean otherData) {
         return super.findAll(otherData);

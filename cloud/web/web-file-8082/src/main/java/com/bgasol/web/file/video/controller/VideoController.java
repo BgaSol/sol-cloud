@@ -52,14 +52,14 @@ public class VideoController extends BaseController<
     @Override
     @PostMapping("/insert")
     @Operation(summary = "创建视频", operationId = "insertVideoController")
-    @SaCheckPermission(value = "VideoController:insert", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:insert")
     public BaseVo<VideoEntity> insert(@RequestBody VideoCreateDto createDto) {
         return super.insert(createDto);
     }
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "VideoController:apply", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:apply")
     @Operation(summary = "更新视频", operationId = "applyVideoController")
     public BaseVo<VideoEntity> apply(@RequestBody VideoUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -67,7 +67,7 @@ public class VideoController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "VideoController:delete", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:delete")
     @Operation(summary = "删除视频", operationId = "deleteVideoController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -75,7 +75,7 @@ public class VideoController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "VideoController:findById", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:findById")
     @Operation(summary = "根据ID查询视频", operationId = "findByIdVideoController")
     public BaseVo<VideoEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -83,7 +83,7 @@ public class VideoController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "VideoController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:findByIds")
     @Operation(summary = "根据ID批量查询视频", operationId = "findByIdsVideoController")
     public BaseVo<List<VideoEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -91,7 +91,7 @@ public class VideoController extends BaseController<
 
     @Override
     @PostMapping("/page/{otherData}")
-    @SaCheckPermission(value = "VideoController:findByPage", orRole = "admin")
+    @SaCheckPermission(value = "VideoController:findByPage")
     @Operation(summary = "分页查询视频", operationId = "findByPageVideoController")
     public BaseVo<PageVo<VideoEntity>> findByPage(@RequestBody VideoPageDto pageDto, @PathVariable Boolean otherData) {
         return super.findByPage(pageDto, otherData);
@@ -100,7 +100,7 @@ public class VideoController extends BaseController<
     @SneakyThrows
     @GetMapping("/play/{id}")
     @Operation(summary = "在线播放视频", operationId = "playVideo")
-    @SaCheckPermission(value = "video:playVideo", orRole = "admin")
+    @SaCheckPermission(value = "video:playVideo")
     public ResponseEntity<Resource> playVideo(@PathVariable String id, @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
         FileEntity file = videoService.findById(id, true).getFile();

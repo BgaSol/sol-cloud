@@ -36,7 +36,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @PostMapping("/insert")
-    @SaCheckPermission(value = "PermissionController:insert", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:insert")
     @Operation(summary = "新增权限", operationId = "insertPermissionController")
     public BaseVo<PermissionEntity> insert(@RequestBody PermissionCreateDto createDto) {
         return super.insert(createDto);
@@ -44,7 +44,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "PermissionController:apply", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:apply")
     @Operation(summary = "更新权限", operationId = "applyPermissionController")
     public BaseVo<PermissionEntity> apply(@RequestBody PermissionUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -52,7 +52,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "PermissionController:delete", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:delete")
     @Operation(summary = "删除权限", operationId = "deletePermissionController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -60,7 +60,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "PermissionController:findById", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:findById")
     @Operation(summary = "根据ID查询权限", operationId = "findByIdPermissionController")
     public BaseVo<PermissionEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -68,7 +68,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "PermissionController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:findByIds")
     @Operation(summary = "根据ID批量查询权限", operationId = "findByIdsPermissionController")
     public BaseVo<List<PermissionEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -76,7 +76,7 @@ public class PermissionController extends BaseController<
 
     @Override
     @GetMapping("/all/{otherData}")
-    @SaCheckPermission(value = "PermissionController:findAll", orRole = "admin")
+    @SaCheckPermission(value = "PermissionController:findAll")
     @Operation(summary = "查询所有权限", operationId = "findAllPermissionController")
     public BaseVo<List<PermissionEntity>> findAll(@PathVariable Boolean otherData) {
         return super.findAll(otherData);

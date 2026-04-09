@@ -39,7 +39,7 @@ public class PoiExportHistoryController extends BaseController<
     @Override
     @PostMapping("/page")
     @Operation(summary = "分页查询POI导出记录", operationId = "findPagePoiExportHistory")
-    @SaCheckPermission(value = "poiExportHistory:findByPage", orRole = "admin")
+    @SaCheckPermission(value = "poiExportHistory:findByPage")
     public BaseVo<PageVo<PoiExportHistoryEntity>> findByPage(@RequestBody @Valid PoiExportHistoryPageDto pageDto) {
         return super.findByPage(pageDto);
     }

@@ -42,7 +42,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @PostMapping("/insert")
     @Operation(summary = "新增消息", operationId = "insertMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:insert", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:insert")
     public BaseVo<MessageEnvelopeEntity<?>> insert(@RequestBody MessageEnvelopeCreateDto createDto) {
         return super.insert(createDto);
     }
@@ -50,7 +50,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @PostMapping("/apply")
     @Operation(summary = "更新消息", operationId = "applyMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:apply", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:apply")
     public BaseVo<MessageEnvelopeEntity<?>> apply(@RequestBody MessageEnvelopeUpdateDto updateDto) {
         return super.apply(updateDto);
     }
@@ -58,7 +58,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @PostMapping("/delete")
     @Operation(summary = "删除消息", operationId = "deleteMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:delete", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:delete")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
     }
@@ -66,7 +66,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @GetMapping("/{id}/{otherData}")
     @Operation(summary = "根据ID查询消息", operationId = "findByIdMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:findById", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:findById")
     public BaseVo<MessageEnvelopeEntity<?>> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
     }
@@ -74,7 +74,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @PostMapping("/get/{otherData}")
     @Operation(summary = "根据ID批量查询消息", operationId = "findByIdsMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:findByIds")
     public BaseVo<List<MessageEnvelopeEntity<?>>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
     }
@@ -82,7 +82,7 @@ public class MessageEnvelopeController extends BaseController<
     @Override
     @PostMapping("/page/{otherData}")
     @Operation(summary = "分页查询消息", operationId = "findByPageMessageEnvelopeController")
-    @SaCheckPermission(value = "MessageEnvelopeController:findByPage", orRole = "admin")
+    @SaCheckPermission(value = "MessageEnvelopeController:findByPage")
     public BaseVo<PageVo<MessageEnvelopeEntity<?>>> findByPage(@RequestBody MessageEnvelopePageDto pageDto,
                                                                @PathVariable Boolean otherData) {
         return super.findByPage(pageDto, otherData);
@@ -90,7 +90,7 @@ public class MessageEnvelopeController extends BaseController<
 
     @PostMapping("/read")
     @Operation(summary = "批量已读消息", operationId = "readMessageEnvelopeController")
-    @SaCheckPermission(value = "messageEnvelope:read", orRole = "admin")
+    @SaCheckPermission(value = "messageEnvelope:read")
     public BaseVo<Integer> read(@RequestBody @Valid @NotEmpty(message = "ids列表不能为空") Set<String> ids) {
         return BaseVo.success(messageEnvelopeService.read(ids));
     }

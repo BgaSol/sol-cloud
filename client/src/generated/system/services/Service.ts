@@ -402,7 +402,7 @@ export class Service {
      * @returns BaseVoPageVoRequestLogEntity OK
      * @throws ApiError
      */
-    public static findPageRequestLog(
+    public static findByPageRequestLogController(
         otherData: boolean,
         requestBody: RequestLogPageDto,
     ): CancelablePromise<BaseVoPageVoRequestLogEntity> {

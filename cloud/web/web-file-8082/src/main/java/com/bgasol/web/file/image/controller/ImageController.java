@@ -53,14 +53,14 @@ public class ImageController extends BaseController<
     @Override
     @PostMapping("/insert")
     @Operation(summary = "创建图片", operationId = "insertImageController")
-    @SaCheckPermission(value = "ImageController:insert", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:insert")
     public BaseVo<ImageEntity> insert(@RequestBody ImageCreateDto createDto) {
         return super.insert(createDto);
     }
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "ImageController:apply", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:apply")
     @Operation(summary = "更新图片", operationId = "applyImageController")
     public BaseVo<ImageEntity> apply(@RequestBody ImageUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -68,7 +68,7 @@ public class ImageController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "ImageController:delete", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:delete")
     @Operation(summary = "删除图片", operationId = "deleteImageController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -76,7 +76,7 @@ public class ImageController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "ImageController:findById", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:findById")
     @Operation(summary = "根据ID查询图片", operationId = "findByIdImageController")
     public BaseVo<ImageEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -84,7 +84,7 @@ public class ImageController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "ImageController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:findByIds")
     @Operation(summary = "根据ID批量查询图片", operationId = "findByIdsImageController")
     public BaseVo<List<ImageEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -92,7 +92,7 @@ public class ImageController extends BaseController<
 
     @Override
     @PostMapping("/page/{otherData}")
-    @SaCheckPermission(value = "ImageController:findByPage", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:findByPage")
     @Operation(summary = "分页查询图片", operationId = "findByPageImageController")
     public BaseVo<PageVo<ImageEntity>> findByPage(@RequestBody ImagePageDto pageDto, @PathVariable Boolean otherData) {
         return super.findByPage(pageDto, otherData);
@@ -101,7 +101,7 @@ public class ImageController extends BaseController<
     @SneakyThrows
     @GetMapping("/download/{id}")
     @Operation(summary = "下载图片", operationId = "downloadImageController")
-    @SaCheckPermission(value = "ImageController:download", orRole = "admin")
+    @SaCheckPermission(value = "ImageController:download")
     public ResponseEntity<InputStreamResource> download(@PathVariable String id) {
         ImageEntity imageEntity = imageService.findById(id, true);
         FileEntity file = imageEntity.getFile();

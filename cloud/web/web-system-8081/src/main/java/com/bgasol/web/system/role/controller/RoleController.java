@@ -51,7 +51,7 @@ public class RoleController extends BaseController<
 
     @Override
     @PostMapping("/insert")
-    @SaCheckPermission(value = "RoleController:insert", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:insert")
     @Operation(summary = "新增角色", operationId = "insertRoleController")
     public BaseVo<RoleEntity> insert(@RequestBody RoleCreateDto createDto) {
         return super.insert(createDto);
@@ -59,7 +59,7 @@ public class RoleController extends BaseController<
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "RoleController:apply", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:apply")
     @Operation(summary = "更新角色", operationId = "applyRoleController")
     public BaseVo<RoleEntity> apply(@RequestBody RoleUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -67,7 +67,7 @@ public class RoleController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "RoleController:delete", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:delete")
     @Operation(summary = "删除角色", operationId = "deleteRoleController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -75,7 +75,7 @@ public class RoleController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "RoleController:findById", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:findById")
     @Operation(summary = "根据ID查询角色", operationId = "findByIdRoleController")
     public BaseVo<RoleEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -83,7 +83,7 @@ public class RoleController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "RoleController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:findByIds")
     @Operation(summary = "根据ID批量查询角色", operationId = "findByIdsRoleController")
     public BaseVo<List<RoleEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -91,7 +91,7 @@ public class RoleController extends BaseController<
 
     @Override
     @PostMapping("/page/{otherData}")
-    @SaCheckPermission(value = "RoleController:findByPage", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:findByPage")
     @Operation(summary = "分页查询角色", operationId = "findByPageRoleController")
     public BaseVo<PageVo<RoleEntity>> findByPage(@RequestBody BasePageDto<RoleEntity> pageDto, @PathVariable Boolean otherData) {
         return super.findByPage(pageDto, otherData);
@@ -99,14 +99,14 @@ public class RoleController extends BaseController<
 
     @Override
     @GetMapping("/all/{otherData}")
-    @SaCheckPermission(value = "RoleController:findAll", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:findAll")
     @Operation(summary = "查询所有角色", operationId = "findAllRoleController")
     public BaseVo<List<RoleEntity>> findAll(@PathVariable Boolean otherData) {
         return super.findAll(otherData);
     }
 
     @GetMapping("/all")
-    @SaCheckPermission(value = "RoleController:findAll", orRole = "admin")
+    @SaCheckPermission(value = "RoleController:findAll")
     @Operation(summary = "查询所有角色(支持设置otherData)", operationId = "findAllWithParamRoleController")
     public BaseVo<List<RoleEntity>> findAllByParam(@RequestParam(defaultValue = "false") Boolean otherData) {
         return super.findAll(otherData);
@@ -114,14 +114,14 @@ public class RoleController extends BaseController<
 
     @GetMapping("/template-download")
     @Operation(summary = "下载角色导入模板", operationId = "downloadRoleImportTemplate")
-    @SaCheckPermission(value = "role:downloadImportTemplate", orRole = "admin")
+    @SaCheckPermission(value = "role:downloadImportTemplate")
     public ResponseEntity<InputStreamResource> downloadImportTemplate() {
         return super.downloadImportTemplate();
     }
 
     @PostMapping(value = "/import", consumes = {"multipart/form-data"})
     @Operation(summary = "导入角色", operationId = "importRole")
-    @SaCheckPermission(value = "role:importExcel", orRole = "admin")
+    @SaCheckPermission(value = "role:importExcel")
     public BaseVo<ImportResult> importExcel(@RequestPart("file") MultipartFile file) {
         return super.importFromExcel(file);
     }

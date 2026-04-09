@@ -36,7 +36,7 @@ public class MenuController extends BaseController<
 
     @Override
     @PostMapping("/insert")
-    @SaCheckPermission(value = "MenuController:insert", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:insert")
     @Operation(summary = "新增菜单", operationId = "insertMenuController")
     public BaseVo<MenuEntity> insert(@RequestBody MenuCreateDto createDto) {
         return super.insert(createDto);
@@ -44,7 +44,7 @@ public class MenuController extends BaseController<
 
     @Override
     @PostMapping("/apply")
-    @SaCheckPermission(value = "MenuController:apply", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:apply")
     @Operation(summary = "更新菜单", operationId = "applyMenuController")
     public BaseVo<MenuEntity> apply(@RequestBody MenuUpdateDto updateDto) {
         return super.apply(updateDto);
@@ -52,7 +52,7 @@ public class MenuController extends BaseController<
 
     @Override
     @PostMapping("/delete")
-    @SaCheckPermission(value = "MenuController:delete", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:delete")
     @Operation(summary = "删除菜单", operationId = "deleteMenuController")
     public BaseVo<Integer> delete(@RequestBody Set<String> ids) {
         return super.delete(ids);
@@ -60,7 +60,7 @@ public class MenuController extends BaseController<
 
     @Override
     @GetMapping("/{id}/{otherData}")
-    @SaCheckPermission(value = "MenuController:findById", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:findById")
     @Operation(summary = "根据ID查询菜单", operationId = "findByIdMenuController")
     public BaseVo<MenuEntity> findById(@PathVariable String id, @PathVariable Boolean otherData) {
         return super.findById(id, otherData);
@@ -68,7 +68,7 @@ public class MenuController extends BaseController<
 
     @Override
     @PostMapping("/get/{otherData}")
-    @SaCheckPermission(value = "MenuController:findByIds", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:findByIds")
     @Operation(summary = "根据ID批量查询菜单", operationId = "findByIdsMenuController")
     public BaseVo<List<MenuEntity>> findByIds(@RequestBody Set<String> ids, @PathVariable Boolean otherData) {
         return super.findByIds(ids, otherData);
@@ -76,7 +76,7 @@ public class MenuController extends BaseController<
 
     @Override
     @GetMapping("/all/{otherData}")
-    @SaCheckPermission(value = "MenuController:findAll", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:findAll")
     @Operation(summary = "查询所有菜单", operationId = "findAllMenuController")
     public BaseVo<List<MenuEntity>> findAll(@PathVariable Boolean otherData) {
         return super.findAll(otherData);
@@ -90,14 +90,14 @@ public class MenuController extends BaseController<
 
     @GetMapping("/get/menu-group/{group}")
     @Operation(summary = "查询指定菜单组下的菜单", operationId = "findByGroupMenuController")
-    @SaCheckPermission(value = "MenuController:findByGroup", orRole = "admin")
+    @SaCheckPermission(value = "MenuController:findByGroup")
     public BaseVo<List<MenuEntity>> findByGroup(@PathVariable String group) {
         return BaseVo.success(this.menuService.findByMenuGroup(group));
     }
 
     @PostMapping("/init")
     @Operation(summary = "批量初始化系统的菜单信息", operationId = "initMenu")
-    @SaCheckPermission(value = "menu:init", orRole = "admin")
+    @SaCheckPermission(value = "menu:init")
     public BaseVo<Void> init(@RequestBody() MenuEntity entity) {
         menuService.init(entity);
         return BaseVo.success(null, "保存成功");

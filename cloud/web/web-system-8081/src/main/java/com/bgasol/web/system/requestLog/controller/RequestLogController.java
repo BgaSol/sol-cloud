@@ -34,8 +34,8 @@ public class RequestLogController extends BaseController<
 
     @Override
     @PostMapping("/page/{otherData}")
-    @Operation(summary = "分页查询请求日志", operationId = "findPageRequestLog")
-    @SaCheckPermission(value = "requestLog:findByPage", orRole = "admin")
+    @Operation(summary = "分页查询请求日志", operationId = "findByPageRequestLogController")
+    @SaCheckPermission(value = "RequestLogController:findByPage")
     public BaseVo<PageVo<RequestLogEntity>> findByPage(@RequestBody RequestLogPageDto pageDto,
                                                        @PathVariable Boolean otherData) {
         return super.findByPage(pageDto, otherData);
