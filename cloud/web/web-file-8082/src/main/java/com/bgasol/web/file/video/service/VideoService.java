@@ -42,14 +42,21 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
     @Override
     @Transactional(readOnly = true)
     public void findOtherTable(List<VideoEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
         Set<String> fileIds = list
                 .stream()
                 .map(VideoEntity::getFileId)
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        Map<String, FileEntity> fileMap = fileService
-                .findById(fileIds, true)
+        if (ObjectUtils.isEmpty(fileIds)) {
+            return;
+        }
+
+        Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
                 .stream()
                 .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
 

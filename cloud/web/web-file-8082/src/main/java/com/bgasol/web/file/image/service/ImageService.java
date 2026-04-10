@@ -86,14 +86,21 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     @Override
     @Transactional(readOnly = true)
     public void findOtherTable(List<ImageEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
         Set<String> fileIds = list
                 .stream()
                 .map(ImageEntity::getFileId)
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        Map<String, FileEntity> fileMap = fileService
-                .findById(fileIds, true)
+        if (ObjectUtils.isNotEmpty(fileIds)) {
+            return;
+        }
+
+        Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
                 .stream()
                 .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
 

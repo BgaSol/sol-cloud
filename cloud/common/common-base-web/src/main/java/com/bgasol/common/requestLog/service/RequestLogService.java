@@ -45,15 +45,19 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
                 .collect(Collectors.toSet());
 
         if (ObjectUtils.isNotEmpty(userIds)) {
-            Map<String, UserEntity> userEntityMap = userApi.findByIds(userIds, true).getData().stream().collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+            List<UserEntity> userEntityList = userApi.findByIds(userIds, true).getData();
+            if (ObjectUtils.isNotEmpty(userEntityList)) {
+                Map<String, UserEntity> userEntityMap = userEntityList.stream()
+                        .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
 
-            list.forEach(requestLogEntity -> {
-                if (ObjectUtils.isEmpty(requestLogEntity.getUserId())) {
-                    return;
-                }
-                UserEntity userEntity = userEntityMap.get(requestLogEntity.getUserId());
-                requestLogEntity.setUser(userEntity);
-            });
+                list.forEach(requestLogEntity -> {
+                    if (ObjectUtils.isEmpty(requestLogEntity.getUserId())) {
+                        return;
+                    }
+                    UserEntity userEntity = userEntityMap.get(requestLogEntity.getUserId());
+                    requestLogEntity.setUser(userEntity);
+                });
+            }
         }
     }
 

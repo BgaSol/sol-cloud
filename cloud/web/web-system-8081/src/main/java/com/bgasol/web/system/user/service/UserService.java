@@ -103,10 +103,19 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
     @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<UserEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
         List<String> userIds = list.stream()
                 .map(UserEntity::getId)
                 .filter(ObjectUtils::isNotEmpty)
                 .toList();
+
+        if (ObjectUtils.isEmpty(userIds)) {
+            return;
+        }
+
         Map<String, List<String>> roleIdGroup = this.findFromTableBatch(
                 UserRoleTable.NAME, UserRoleTable.USER_ID, userIds, UserRoleTable.ROLE_ID);
 
@@ -116,24 +125,32 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
                 .flatMap(List::stream)
                 .collect(Collectors.toSet());
 
-        Map<String, RoleEntity> roleMap = roleService
-                .findById(roleIds, true)
-                .stream()
-                .collect(Collectors.toMap(RoleEntity::getId, Function.identity()));
+        final Map<String, RoleEntity> roleMap = ObjectUtils.isNotEmpty(roleIds)
+                ? roleService.findById(roleIds, true)
+                  .stream()
+                  .collect(Collectors.toMap(RoleEntity::getId, Function.identity()))
+                : Map.of();
 
-        Set<String> departmentIds = list.stream().map(UserEntity::getDepartmentId).collect(Collectors.toSet());
-        Map<String, DepartmentEntity> collect = departmentService
-                .findById(departmentIds, true)
-                .stream()
-                .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()));
+        Set<String> departmentIds = list.stream()
+                .map(UserEntity::getDepartmentId)
+                .filter(ObjectUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+
+        final Map<String, DepartmentEntity> departmentMap = ObjectUtils.isNotEmpty(departmentIds)
+                ? departmentService.findById(departmentIds, true)
+                  .stream()
+                  .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()))
+                : Map.of();
+
         for (UserEntity userEntity : list) {
             userEntity.setRoles(roleIdGroup
                     .getOrDefault(userEntity.getId(), List.of())
                     .stream()
                     .map(roleMap::get)
+                    .filter(ObjectUtils::isNotEmpty)
                     .toList());
             if (ObjectUtils.isNotEmpty(userEntity.getDepartmentId())) {
-                userEntity.setDepartment(collect.get(userEntity.getDepartmentId()));
+                userEntity.setDepartment(departmentMap.get(userEntity.getDepartmentId()));
             }
         }
     }

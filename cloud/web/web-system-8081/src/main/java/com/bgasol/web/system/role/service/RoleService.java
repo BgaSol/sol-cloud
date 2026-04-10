@@ -11,10 +11,8 @@ import com.bgasol.model.system.role.entity.RolePermissionTable;
 import com.bgasol.web.system.menu.service.MenuService;
 import com.bgasol.web.system.permission.service.PermissionService;
 import com.bgasol.web.system.role.mapper.RoleMapper;
-import com.bgasol.web.system.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,10 +42,18 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
     @Transactional(readOnly = true)
     @Override
     public void findOtherTable(List<RoleEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
         List<String> roleIds = list.stream()
                 .map(RoleEntity::getId)
                 .filter(ObjectUtils::isNotEmpty)
                 .toList();
+
+        if (ObjectUtils.isEmpty(roleIds)) {
+            return;
+        }
 
         Map<String, List<String>> menuIdGroup = this.findFromTableBatch(
                 RoleMenuTable.NAME, RoleMenuTable.ROLE_ID, roleIds, RoleMenuTable.MENU_ID
@@ -67,14 +73,17 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
                 .flatMap(List::stream)
                 .collect(Collectors.toSet());
 
-        Map<String, MenuEntity> menuMap = menuService
-                .findById(allMenuIds, true)
-                .stream()
-                .collect(Collectors.toMap(MenuEntity::getId, Function.identity()));
-        Map<String, PermissionEntity> permissionMap = permissionService
-                .findById(allPermissionIds, true)
-                .stream()
-                .collect(Collectors.toMap(PermissionEntity::getId, Function.identity()));
+        final Map<String, MenuEntity> menuMap = ObjectUtils.isNotEmpty(allMenuIds)
+                ? menuService.findById(allMenuIds, true)
+                  .stream()
+                  .collect(Collectors.toMap(MenuEntity::getId, Function.identity()))
+                : Map.of();
+
+        final Map<String, PermissionEntity> permissionMap = ObjectUtils.isNotEmpty(allPermissionIds)
+                ? permissionService.findById(allPermissionIds, true)
+                  .stream()
+                  .collect(Collectors.toMap(PermissionEntity::getId, Function.identity()))
+                : Map.of();
 
         list.forEach(roleEntity -> {
             roleEntity.setMenus(menuIdGroup

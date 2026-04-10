@@ -48,15 +48,16 @@ public class MessageEnvelopeService extends BaseService<MessageEnvelopeEntity<?>
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
         if (ObjectUtils.isNotEmpty(userIds)) {
-            Map<String, UserEntity> userEntityMap = userApi.findByIds(userIds, true)
-                    .getData()
-                    .stream()
-                    .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
-            list.forEach(e -> {
-                if (ObjectUtils.isNotEmpty(e.getUserId())) {
-                    e.setUser(userEntityMap.get(e.getUserId()));
-                }
-            });
+            List<UserEntity> userEntityList = userApi.findByIds(userIds, true).getData();
+            if (ObjectUtils.isNotEmpty(userEntityList)) {
+                Map<String, UserEntity> userEntityMap = userEntityList.stream()
+                        .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+                list.forEach(e -> {
+                    if (ObjectUtils.isNotEmpty(e.getUserId())) {
+                        e.setUser(userEntityMap.get(e.getUserId()));
+                    }
+                });
+            }
         }
         super.findOtherTable(list);
     }
