@@ -53,7 +53,7 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
                 .collect(Collectors.toSet());
 
         if (ObjectUtils.isNotEmpty(fileIds)) {
-            Map<String, FileEntity> fileMap = fileService.findById(fileIds, false)
+            Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
                     .stream()
                     .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
 
