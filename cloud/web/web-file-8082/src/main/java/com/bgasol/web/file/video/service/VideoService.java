@@ -52,19 +52,17 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        if (ObjectUtils.isEmpty(fileIds)) {
-            return;
+        if (ObjectUtils.isNotEmpty(fileIds)) {
+            Map<String, FileEntity> fileMap = fileService.findById(fileIds, false)
+                    .stream()
+                    .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
+
+            list.forEach(entity -> {
+                if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+                    entity.setFile(fileMap.get(entity.getFileId()));
+                }
+            });
         }
-
-        Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
-                .stream()
-                .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
-
-        list.forEach(imageEntity -> {
-            if (ObjectUtils.isNotEmpty(imageEntity.getFileId())) {
-                imageEntity.setFile(fileMap.get(imageEntity.getFileId()));
-            }
-        });
     }
 
     @Override

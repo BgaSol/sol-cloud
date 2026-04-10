@@ -96,19 +96,17 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        if (ObjectUtils.isNotEmpty(fileIds)) {
-            return;
+        if (ObjectUtils.isEmpty(fileIds)) {
+            Map<String, FileEntity> fileMap = fileService.findById(fileIds, false)
+                    .stream()
+                    .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
+
+            list.forEach(entity -> {
+                if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+                    entity.setFile(fileMap.get(entity.getFileId()));
+                }
+            });
         }
-
-        Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
-                .stream()
-                .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
-
-        list.forEach(imageEntity -> {
-            if (ObjectUtils.isNotEmpty(imageEntity.getFileId())) {
-                imageEntity.setFile(fileMap.get(imageEntity.getFileId()));
-            }
-        });
     }
 
     @Override
