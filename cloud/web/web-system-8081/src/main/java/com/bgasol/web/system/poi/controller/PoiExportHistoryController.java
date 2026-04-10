@@ -34,7 +34,7 @@ public class PoiExportHistoryController extends BaseController<
     }
 
     @Override
-    @PostMapping("/page")
+    @PostMapping("/page/{otherData}")
     @Operation(summary = "分页查询POI导出记录", operationId = "findByPagePoiExportHistoryController")
     @SaCheckPermission(value = "PoiExportHistoryController:findByPage")
     public BaseVo<PageVo<PoiExportHistoryEntity>> findByPage(@RequestBody PoiExportHistoryPageDto pageDto, @PathVariable Boolean otherData) {
