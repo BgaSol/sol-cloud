@@ -4,7 +4,6 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.bgasol.common.core.base.capability.PoiCapability;
 import com.bgasol.common.core.base.controller.BaseController;
 import com.bgasol.common.core.base.dto.BasePageDto;
-import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.common.core.base.vo.ImportResult;
 import com.bgasol.common.core.base.vo.PageVo;

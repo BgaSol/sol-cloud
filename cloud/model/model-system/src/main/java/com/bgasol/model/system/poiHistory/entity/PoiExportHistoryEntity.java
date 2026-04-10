@@ -1,7 +1,8 @@
-package com.bgasol.common.core.base.entity;
+package com.bgasol.model.system.poiHistory.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
 import com.bgasol.model.system.user.bo.ScopeField;
 import io.swagger.v3.oas.annotations.media.Schema;

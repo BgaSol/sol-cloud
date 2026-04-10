@@ -1,6 +1,7 @@
-package com.bgasol.common.core.base.mapper;
+package com.bgasol.common.poiHistory.mapper;
 
-import com.bgasol.common.core.base.entity.PoiExportHistoryEntity;
+import com.bgasol.model.system.poiHistory.entity.PoiExportHistoryEntity;
+import com.bgasol.common.core.base.mapper.MyBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
