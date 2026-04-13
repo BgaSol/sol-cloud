@@ -119,13 +119,6 @@ public abstract class BaseController<
     }
 
     @Deprecated
-    public BaseVo<Integer[]> delete(@Valid @NotBlank String ids) {
-        String[] idsArr = ids.split(",");
-        Integer[] delete = commonBaseService().delete(idsArr);
-        return BaseVo.success(delete, "删除成功");
-    }
-
-    @Deprecated
     public BaseVo<ENTITY> findById(@Valid @NotBlank String id) {
         ENTITY entity = commonBaseService().findById(id);
         return BaseVo.success(entity);
