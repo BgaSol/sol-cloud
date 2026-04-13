@@ -419,16 +419,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     }
 
     /**
-     * 删除实体
-     * 有关联查询
-     */
-    @Deprecated
-    @Transactional
-    public Integer[] delete(String... ids) {
-        return new Integer[this.delete(Arrays.stream(ids).collect(Collectors.toSet()))];
-    }
-
-    /**
      * 根据id查询实体
      * 有关联查询
      */
@@ -528,18 +518,6 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public ENTITY update(ENTITY entity) {
         this.apply(entity);
         return this.findById(entity.getId());
-    }
-
-    /**
-     * 根据单个 ID 删除实体。
-     *
-     * @param id 要删除的实体 ID
-     * @return 被删除的实体数量（通常为 1）
-     */
-    @Deprecated
-    @Transactional
-    public Integer delete(String id) {
-        return delete(Set.of(id));
     }
 
 }
