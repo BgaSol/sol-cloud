@@ -14,6 +14,7 @@ import io.minio.MinioClient;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,7 +50,7 @@ public class FileController extends BaseController<
         return fileService;
     }
 
-    @PostMapping("/insert")
+    @PostMapping(value = "/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "保存|上传文件", operationId = "insertFileController")
     @SaCheckPermission(value = "FileController:insert")
     public BaseVo<FileEntity> insert(@ModelAttribute FileCreateDto fileCreateDto) {
