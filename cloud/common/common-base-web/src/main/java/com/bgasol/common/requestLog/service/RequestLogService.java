@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +92,7 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
         try {
             Map<String, List<String>> roleUserGroup = this.findFromTableBatch(
                     UserRoleTable.NAME, UserRoleTable.ROLE_ID, List.of(ADMIN_ROLE_ID), UserRoleTable.USER_ID);
-            List<String> userIds = roleUserGroup.getOrDefault(ADMIN_ROLE_ID, List.of());
+            List<String> userIds = roleUserGroup.getOrDefault(ADMIN_ROLE_ID, List.of(ADMIN_USER_ID));
             for (String userId : userIds) {
                 MessageEnvelopeEntity<RequestLogEntity> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
                 messageEnvelopeEntity.setBusinessType(BUSINESS_TYPE);
