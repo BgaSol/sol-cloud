@@ -2,13 +2,16 @@ package com.bgasol.common.requestLog.service;
 
 import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.common.core.base.vo.PageVo;
+import com.bgasol.common.message.service.MessageEnvelopeService;
 import com.bgasol.common.requestLog.handler.RequestLogTableNameHandler;
 import com.bgasol.common.requestLog.mapper.RequestLogMapper;
+import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
+import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
 import com.bgasol.model.system.requestLog.dto.RequestLogPageDto;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import com.bgasol.model.system.user.api.UserApi;
-import com.bgasol.model.system.user.dto.UserPageDto;
 import com.bgasol.model.system.user.entity.UserEntity;
+import com.bgasol.model.system.user.entity.UserRoleTable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,6 +26,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +35,8 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd");
     private final RequestLogMapper requestLogMapper;
     private final UserApi userApi;
+    private final MessageEnvelopeService messageEnvelopeService;
+    public final static String BUSINESS_TYPE = "REQUEST_LOG";
 
     @Override
     public RequestLogMapper commonBaseMapper() {
@@ -82,7 +89,20 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
             return;
         }
         try {
-            userApi.findByPage(UserPageDto.builder().build(), true);
+            Map<String, List<String>> roleUserGroup = this.findFromTableBatch(
+                    UserRoleTable.NAME, UserRoleTable.ROLE_ID, List.of(ADMIN_ROLE_ID), UserRoleTable.USER_ID);
+            List<String> userIds = roleUserGroup.getOrDefault(ADMIN_ROLE_ID, List.of());
+            for (String userId : userIds) {
+                MessageEnvelopeEntity<RequestLogEntity> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
+                messageEnvelopeEntity.setBusinessType(BUSINESS_TYPE);
+                messageEnvelopeEntity.setUserId(userId);
+                messageEnvelopeEntity.setTitle(entity.getBusinessController() + entity.getBusinessMethod());
+                messageEnvelopeEntity.setDescription(entity.getErrorLog());
+                messageEnvelopeEntity.setMetadata(entity.getId());
+                messageEnvelopeEntity.setStatus(MessageEnvelopeStatusEnum.UNREAD);
+                messageEnvelopeEntity.setBody(entity);
+                messageEnvelopeService.insert(messageEnvelopeEntity);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
