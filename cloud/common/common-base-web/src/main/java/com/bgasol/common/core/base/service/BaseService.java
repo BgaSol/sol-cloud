@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bgasol.common.core.base.dto.BasePageDto;
+import com.bgasol.common.core.base.dto.RelationRow;
 import com.bgasol.common.core.base.entity.BaseEntity;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.common.core.base.mapper.MyBaseMapper;
@@ -100,7 +101,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                 }
                 if (value != null) {
                     @SuppressWarnings("unchecked") List<BaseEntity> entities = (List<BaseEntity>) value;
-                    insertIntoTable(entity, tableName, masterName, slaveName, entities);
+                    insertIntoTableBatch(tableName, masterName, slaveName, entities
+                            .stream()
+                            .map(e -> RelationRow.of(entity.getId(), e.getId()))
+                            .toList()
+                    );
                 }
             }
         }
@@ -193,7 +198,11 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
                     commonBaseMapper().deleteFromTable(tableName, masterName, entity.getId());
                     @SuppressWarnings("unchecked") List<BaseEntity> entities = (List<BaseEntity>) value;
                     // 重新插入中间表数据
-                    insertIntoTable(entity, tableName, masterName, slaveName, entities);
+                    insertIntoTableBatch(tableName, masterName, slaveName, entities
+                            .stream()
+                            .map(e -> RelationRow.of(entity.getId(), e.getId()))
+                            .toList()
+                    );
                 }
             }
         }
@@ -343,26 +352,21 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
         // 暂时什么也不用做
     }
 
-    /**
-     * 批量查询中间表（关联表）数据。
-     *
-     * @param tableName    中间表/关联表的表名
-     * @param masterName   中间表中主键列的列名
-     * @param masterValues 要查询的主键值列表
-     * @param slaveName    中间表中从键/关联键列的列名
-     * @return 返回 Map 结构，key 为主键值，value 为关联的从键值列表
-     * （如果 masterValues 为 null 或空，则返回空 Map）
-     * @example 返回格式示例：{主键值 1: [从键值 1, 从键值 2], 主键值 2: [从键值 3]}
-     */
     @Transactional(readOnly = true)
-    public Map<String, List<String>> findFromTableBatch(String tableName, String masterName, List<String> masterValues, String slaveName) {
+    public Map<String, Set<String>> findFromTableBatch(String tableName, String masterName, Set<String> masterValues, String slaveName) {
         // 检查 masterValues 空值
         if (ObjectUtils.isEmpty(masterValues)) {
             return new HashMap<>();
         }
-        List<Map<String, String>> fromTableBatch = this.commonBaseMapper().findFromTableBatch(tableName, masterName, masterValues, slaveName);
+        List<RelationRow> fromTableBatch = this.commonBaseMapper().findFromTableBatch(tableName, masterName, masterValues, slaveName);
         // 根据主键值分组
-        return fromTableBatch.stream().collect(Collectors.groupingBy(map -> map.get(masterName), Collectors.mapping(map -> map.get(slaveName), Collectors.toList())));
+        return fromTableBatch.stream().collect(Collectors.groupingBy(
+                RelationRow::getSourceId,
+                Collectors.mapping(
+                        RelationRow::getTargetId,
+                        Collectors.toSet()
+                )
+        ));
     }
 
     /**
@@ -373,32 +377,13 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param slaveName  中间表中从键/关联键列的列名
      * @param values     要插入的主从关系键值对列表
      *                   （如果 values 为 null 或空，方法会立即返回）
-     * @example 键值对格式：Map.entry(主键 ID, 从键 ID)
      */
     @Transactional
-    public void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<Map.Entry<String, String>> values) {
+    public void insertIntoTableBatch(String tableName, String masterName, String slaveName, List<RelationRow> values) {
         if (ObjectUtils.isEmpty(values)) {
             return;
         }
-        List<Map<String, String>> inserList = values.stream().map(entry -> Map.of("masterValue", entry.getKey(), "slaveValue", entry.getValue())).toList();
-        this.commonBaseMapper().insertIntoTableBatch(tableName, masterName, slaveName, inserList);
-    }
-
-    /**
-     * 为实体插入中间表/关联表数据。
-     *
-     * @param entity     主实体对象，其 ID 将作为主键值使用
-     * @param tableName  中间表/关联表的表名
-     * @param masterName 中间表中主键列的列名
-     * @param slaveName  中间表中从键/关联键列的列名
-     * @param value      要关联到主实体的从实体列表
-     *                   （每个从实体的 ID 将作为从键值使用）
-     */
-    @Transactional
-    public void insertIntoTable(ENTITY entity, String tableName, String masterName, String slaveName, List<BaseEntity> value) {
-        List<Map.Entry<String, String>> insertList = value.stream().map(childrenEntity -> new AbstractMap.SimpleEntry<>(entity.getId(), childrenEntity.getId())).collect(Collectors.toList());
-
-        insertIntoTableBatch(tableName, masterName, slaveName, insertList);
+        this.commonBaseMapper().insertIntoTableBatch(tableName, masterName, slaveName, values);
     }
 
     /**
@@ -453,7 +438,12 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     public PageVo<ENTITY> findByPage(Page<ENTITY> page, Wrapper<ENTITY> queryWrapper) {
         // 查询关联的数据
         Page<ENTITY> entityPage = this.findByPage(new Page<>(page.getPages(), page.getSize()), queryWrapper, true);
-        return PageVo.<ENTITY>builder().total(entityPage.getTotal()).page(entityPage.getCurrent()).size(entityPage.getSize()).result(entityPage.getRecords()).build();
+        return PageVo.<ENTITY>builder()
+                .total(entityPage.getTotal())
+                .page(entityPage.getCurrent())
+                .size(entityPage.getSize())
+                .result(entityPage.getRecords())
+                .build();
     }
 
     @Deprecated

@@ -46,31 +46,31 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
             return;
         }
 
-        List<String> roleIds = list.stream()
+        Set<String> roleIds = list.stream()
                 .map(RoleEntity::getId)
                 .filter(ObjectUtils::isNotEmpty)
-                .toList();
+                .collect(Collectors.toSet());
 
         if (ObjectUtils.isEmpty(roleIds)) {
             return;
         }
 
-        Map<String, List<String>> menuIdGroup = this.findFromTableBatch(
+        Map<String, Set<String>> menuIdGroup = this.findFromTableBatch(
                 RoleMenuTable.NAME, RoleMenuTable.ROLE_ID, roleIds, RoleMenuTable.MENU_ID
         );
-        Map<String, List<String>> permissionIdGroup = this.findFromTableBatch(
+        Map<String, Set<String>> permissionIdGroup = this.findFromTableBatch(
                 RolePermissionTable.NAME, RolePermissionTable.ROLE_ID, roleIds, RolePermissionTable.PERMISSION_ID
         );
 
         Set<String> allMenuIds = menuIdGroup
                 .values()
                 .stream()
-                .flatMap(List::stream)
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet());
         Set<String> allPermissionIds = permissionIdGroup
                 .values()
                 .stream()
-                .flatMap(List::stream)
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet());
 
         final Map<String, MenuEntity> menuMap = ObjectUtils.isNotEmpty(allMenuIds)
@@ -87,13 +87,13 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
 
         list.forEach(roleEntity -> {
             roleEntity.setMenus(menuIdGroup
-                    .getOrDefault(roleEntity.getId(), List.of())
+                    .getOrDefault(roleEntity.getId(), Set.of())
                     .stream()
                     .map(menuMap::get)
                     .filter(ObjectUtils::isNotEmpty)
                     .toList());
             roleEntity.setPermissions(permissionIdGroup
-                    .getOrDefault(roleEntity.getId(), List.of())
+                    .getOrDefault(roleEntity.getId(), Set.of())
                     .stream()
                     .map(permissionMap::get)
                     .filter(ObjectUtils::isNotEmpty)

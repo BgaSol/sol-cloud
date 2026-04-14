@@ -10,16 +10,21 @@ import { request as __request } from '../core/request';
 export class PoiService {
     /**
      * 分页查询POI导出记录
+     * @param otherData
      * @param requestBody
      * @returns BaseVoPageVoPoiExportHistoryEntity OK
      * @throws ApiError
      */
-    public static findPagePoiExportHistory(
+    public static findByPagePoiExportHistoryController(
+        otherData: boolean,
         requestBody: PoiExportHistoryPageDto,
     ): CancelablePromise<BaseVoPageVoPoiExportHistoryEntity> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/poi-export-history/page',
+            url: '/poi-export-history/page/{otherData}',
+            path: {
+                'otherData': otherData,
+            },
             body: requestBody,
             mediaType: 'application/json',
             errors: {

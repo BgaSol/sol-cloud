@@ -107,22 +107,21 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
             return;
         }
 
-        List<String> userIds = list.stream()
+        Set<String> userIds = list.stream()
                 .map(UserEntity::getId)
                 .filter(ObjectUtils::isNotEmpty)
-                .toList();
+                .collect(Collectors.toSet());
 
         if (ObjectUtils.isEmpty(userIds)) {
             return;
         }
 
-        Map<String, List<String>> roleIdGroup = this.findFromTableBatch(
-                UserRoleTable.NAME, UserRoleTable.USER_ID, userIds, UserRoleTable.ROLE_ID);
+        Map<String, Set<String>> roleIdGroup = this.findFromTableBatch(UserRoleTable.NAME, UserRoleTable.USER_ID, userIds, UserRoleTable.ROLE_ID);
 
         Set<String> roleIds = roleIdGroup
                 .values()
                 .stream()
-                .flatMap(List::stream)
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet());
 
         final Map<String, RoleEntity> roleMap = ObjectUtils.isNotEmpty(roleIds)
@@ -144,7 +143,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
         for (UserEntity userEntity : list) {
             userEntity.setRoles(roleIdGroup
-                    .getOrDefault(userEntity.getId(), List.of())
+                    .getOrDefault(userEntity.getId(), Set.of())
                     .stream()
                     .map(roleMap::get)
                     .filter(ObjectUtils::isNotEmpty)

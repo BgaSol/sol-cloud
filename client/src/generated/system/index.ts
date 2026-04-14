@@ -21,6 +21,7 @@ export { BaseVoListVerificationResult } from './models/BaseVoListVerificationRes
 export { BaseVoMenuEntity } from './models/BaseVoMenuEntity';
 export { BaseVoMessageEnvelopeEntityObject } from './models/BaseVoMessageEnvelopeEntityObject';
 export { BaseVoPageVoMessageEnvelopeEntityObject } from './models/BaseVoPageVoMessageEnvelopeEntityObject';
+export { BaseVoPageVoPoiExportHistoryEntity } from './models/BaseVoPageVoPoiExportHistoryEntity';
 export { BaseVoPageVoRequestLogEntity } from './models/BaseVoPageVoRequestLogEntity';
 export { BaseVoPageVoRoleEntity } from './models/BaseVoPageVoRoleEntity';
 export { BaseVoPageVoUserEntity } from './models/BaseVoPageVoUserEntity';
@@ -43,12 +44,15 @@ export { MessageEnvelopeEntityObject } from './models/MessageEnvelopeEntityObjec
 export { MessageEnvelopePageDto } from './models/MessageEnvelopePageDto';
 export { MessageEnvelopeUpdateDto } from './models/MessageEnvelopeUpdateDto';
 export type { PageVoMessageEnvelopeEntityObject } from './models/PageVoMessageEnvelopeEntityObject';
+export type { PageVoPoiExportHistoryEntity } from './models/PageVoPoiExportHistoryEntity';
 export type { PageVoRequestLogEntity } from './models/PageVoRequestLogEntity';
 export type { PageVoRoleEntity } from './models/PageVoRoleEntity';
 export type { PageVoUserEntity } from './models/PageVoUserEntity';
 export type { PermissionCreateDto } from './models/PermissionCreateDto';
 export type { PermissionEntity } from './models/PermissionEntity';
 export type { PermissionUpdateDto } from './models/PermissionUpdateDto';
+export type { PoiExportHistoryEntity } from './models/PoiExportHistoryEntity';
+export type { PoiExportHistoryPageDto } from './models/PoiExportHistoryPageDto';
 export type { RequestLogEntity } from './models/RequestLogEntity';
 export type { RequestLogPageDto } from './models/RequestLogPageDto';
 export type { RoleCreateDto } from './models/RoleCreateDto';
@@ -66,3 +70,4 @@ export type { VerificationResult } from './models/VerificationResult';
 export type { VerificationVo } from './models/VerificationVo';
 
 export { Service } from './services/Service';
+export { PoiService } from './services/PoiService';

@@ -90,9 +90,8 @@ public class RequestLogService extends BaseTreeService<RequestLogEntity, Request
             return;
         }
         try {
-            Map<String, List<String>> roleUserGroup = this.findFromTableBatch(
-                    UserRoleTable.NAME, UserRoleTable.ROLE_ID, List.of(ADMIN_ROLE_ID), UserRoleTable.USER_ID);
-            List<String> userIds = roleUserGroup.getOrDefault(ADMIN_ROLE_ID, List.of(ADMIN_USER_ID));
+            Map<String, Set<String>> roleUserGroup = this.findFromTableBatch(UserRoleTable.NAME, UserRoleTable.ROLE_ID, Set.of(ADMIN_ROLE_ID), UserRoleTable.USER_ID);
+            Set<String> userIds = roleUserGroup.getOrDefault(ADMIN_ROLE_ID, Set.of(ADMIN_USER_ID));
             for (String userId : userIds) {
                 MessageEnvelopeEntity<RequestLogEntity> messageEnvelopeEntity = new MessageEnvelopeEntity<>();
                 messageEnvelopeEntity.setBusinessType(BUSINESS_TYPE);

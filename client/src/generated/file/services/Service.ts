@@ -294,19 +294,18 @@ export class Service {
     }
     /**
      * 保存|上传文件
-     * @param fileCreateDto
+     * @param formData
      * @returns BaseVoFileEntity OK
      * @throws ApiError
      */
     public static insertFileController(
-        fileCreateDto: FileCreateDto,
+        formData?: FileCreateDto,
     ): CancelablePromise<BaseVoFileEntity> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/file/insert',
-            query: {
-                'fileCreateDto': fileCreateDto,
-            },
+            formData: formData,
+            mediaType: 'multipart/form-data',
             errors: {
                 400: `参数校验异常`,
                 401: `未登录异常`,
