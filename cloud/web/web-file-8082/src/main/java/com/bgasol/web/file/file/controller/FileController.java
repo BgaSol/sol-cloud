@@ -14,7 +14,6 @@ import io.minio.MinioClient;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
