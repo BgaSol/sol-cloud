@@ -230,7 +230,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(PAGE_DTO pageDto, boolean otherData) {
         // 构件分页查询条件
-        Page<ENTITY> page = new Page<>(pageDto.getPage(), pageDto.getSize());
+        Page<ENTITY> page = Page.of(pageDto.getPage(), pageDto.getSize());
         // 查询关联的数据
         Page<ENTITY> entityPage = this.findByPage(page, pageDto.getQueryWrapper(), otherData);
         return PageVo.<ENTITY>builder().total(entityPage.getTotal()).page(entityPage.getCurrent()).size(entityPage.getSize()).result(entityPage.getRecords()).build();
@@ -437,7 +437,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Transactional(readOnly = true)
     public PageVo<ENTITY> findByPage(Page<ENTITY> page, Wrapper<ENTITY> queryWrapper) {
         // 查询关联的数据
-        Page<ENTITY> entityPage = this.findByPage(new Page<>(page.getPages(), page.getSize()), queryWrapper, true);
+        Page<ENTITY> entityPage = this.findByPage(Page.of(page.getCurrent(), page.getSize()), queryWrapper, true);
         return PageVo.<ENTITY>builder()
                 .total(entityPage.getTotal())
                 .page(entityPage.getCurrent())
