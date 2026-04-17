@@ -52,6 +52,10 @@ public class DepartmentService extends BaseTreeService<DepartmentEntity, BasePag
     @Override
     @Transactional(readOnly = true)
     public List<DepartmentEntity> findAll(boolean otherData) {
+        if (!StpUtil.isLogin()) {
+            // 未登录，可能是服务远程调用，直接返回全部
+            return super.findAll(otherData);
+        }
         List<String> roleList = StpUtil.getRoleList();
         if (roleList.contains(ADMIN_ROLE_ID)) {
             return super.findAll(otherData);

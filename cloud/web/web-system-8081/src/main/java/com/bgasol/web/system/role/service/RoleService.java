@@ -105,6 +105,10 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
     @Override
     @Transactional(readOnly = true)
     public List<RoleEntity> findAll(boolean otherData) {
+        if (!StpUtil.isLogin()) {
+            // 未登录，可能是服务远程调用，直接返回全部
+            return super.findAll(otherData);
+        }
         List<String> roleList = StpUtil.getRoleList();
         if (roleList.contains(ADMIN_ROLE_ID)) {
             return super.findAll(otherData);
