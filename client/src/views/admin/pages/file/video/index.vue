@@ -123,7 +123,7 @@ const tableRef = ref<InstanceType<typeof ElTableRefType>>();
             prop="createTime"
             width="180"
             :formatter="
-              (row) => dayjs(row.createTime).format('YYYY-DD-MM HH:mm:ss')
+              (row) => dayjs(row.createTime).format('YYYY-MM-DD HH:mm:ss')
             "
           ></el-table-column>
           <el-table-column
