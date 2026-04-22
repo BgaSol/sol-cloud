@@ -5,3 +5,22 @@ mybatis-plus:
     local-cache-scope: STATEMENT
     cache-enabled: false
     log-impl: org.apache.ibatis.logging.commons.JakartaCommonsLoggingImpl
+
+spring:
+  datasource:
+    dynamic:
+      primary: master #设置默认的数据源或者数据源组,默认值即为 master
+      strict: true #严格匹配数据源,默认false. true未匹配到指定数据源时抛异常,false使用默认数据源
+      grace-destroy: false #是否优雅关闭数据源，默认为false，设置为true时，关闭数据源时如果数据源中还存在活跃连接，至多等待10s后强制关闭
+      datasource:
+        master:
+          driver-class-name: ${DB_DRIVER_CLASS_NAME:org.postgresql.Driver}
+          url: ${DB_JDBC_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/cloud}
+          username: ${DB_USERNAME:${POSTGRES_USER:postgres}}
+          password: ${DB_PASSWORD:${POSTGRES_PASSWORD:postgrespwd}}
+          seata: false
+          p6spy: false
+          hikari:
+            maximum-pool-size: 5
+            minimum-idle: 2
+            connection-timeout: 5000

@@ -36,10 +36,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.bgasol</groupId>
             <artifactId>plugin-websocket</artifactId>
             <version>${project.version}</version>

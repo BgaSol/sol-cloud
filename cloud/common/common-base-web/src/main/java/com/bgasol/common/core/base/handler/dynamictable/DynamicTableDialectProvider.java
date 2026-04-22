@@ -1,7 +1,9 @@
 package com.bgasol.common.core.base.handler.dynamictable;
 
+import com.baomidou.mybatisplus.annotation.DbType;
+
 public interface DynamicTableDialectProvider {
-    String dialect();
+    boolean supports(DbType dbType);
 
     boolean tableExists(String tableName);
 

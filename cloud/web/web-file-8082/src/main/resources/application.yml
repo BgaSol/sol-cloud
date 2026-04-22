@@ -16,7 +16,6 @@ spring:
       - micrometer
       - minio
       - feign
-      - pg-m1
       - redis
       - sa-token
       - swagger

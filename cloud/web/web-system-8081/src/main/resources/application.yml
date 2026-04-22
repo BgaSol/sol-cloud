@@ -22,7 +22,6 @@ spring:
       - logger
       - micrometer
       - feign
-      - pg-m1
       - redis
       - sa-token
       - swagger
