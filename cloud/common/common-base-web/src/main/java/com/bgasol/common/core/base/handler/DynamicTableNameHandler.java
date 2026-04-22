@@ -1,9 +1,10 @@
 package com.bgasol.common.core.base.handler;
 
 import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
+import com.bgasol.common.core.base.handler.dynamictable.DynamicTableDialectManager;
+import com.bgasol.common.core.base.handler.dynamictable.DynamicTableRuleHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,19 +15,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class DynamicTableNameHandler implements TableNameHandler {
     public final static String DynamicTableNameUnderscore = "_d_";
-    private final List<BaseTableNameHandler> baseTableNameHandlers;
+    private final List<DynamicTableRuleHandler> dynamicTableRuleHandlers;
     private final ConcurrentHashMap<String, Boolean> createdTableNameMap = new ConcurrentHashMap<>();
-    private final JdbcTemplate jdbcTemplate;
+    private final DynamicTableDialectManager dynamicTableDialectManager;
 
     @Override
     public String dynamicTableName(String sql, String tableName) {
-        for (BaseTableNameHandler baseTableNameHandler : baseTableNameHandlers) {
+        for (DynamicTableRuleHandler dynamicTableRuleHandler : dynamicTableRuleHandlers) {
 
-            if (!baseTableNameHandler.use(tableName)) {
+            if (!dynamicTableRuleHandler.use(tableName)) {
                 continue;
             }
 
-            String targetTable = tableName + DynamicTableNameUnderscore + baseTableNameHandler.dynamicTableName(sql, tableName);
+            String targetTable = tableName + DynamicTableNameUnderscore + dynamicTableRuleHandler.dynamicTableName(sql, tableName);
 
             if (sql.startsWith("INSERT")) {
                 // 检查表是否缓存过
@@ -35,9 +36,7 @@ public class DynamicTableNameHandler implements TableNameHandler {
                 }
 
                 // 建表
-                String createSql = "CREATE TABLE IF NOT EXISTS %s (LIKE %s INCLUDING ALL)"
-                        .formatted(targetTable, tableName);
-                jdbcTemplate.execute(createSql);
+                dynamicTableDialectManager.ensureTableExists(tableName, targetTable);
 
                 createdTableNameMap.put(targetTable, true);
                 return targetTable;
@@ -51,9 +50,7 @@ public class DynamicTableNameHandler implements TableNameHandler {
                     }
                 } else {
                     // 去数据库检查一下表是不是存在
-                    Boolean exists = jdbcTemplate.queryForObject("SELECT to_regclass(?) IS NOT NULL", Boolean.class, targetTable);
-                    if (exists) {
-                        // 表存在 缓存表名
+                    if (dynamicTableDialectManager.tableExists(targetTable)) {
                         createdTableNameMap.put(targetTable, true);
                         return targetTable;
                     } else {

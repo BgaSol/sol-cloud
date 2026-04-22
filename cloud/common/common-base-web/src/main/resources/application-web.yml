@@ -10,3 +10,6 @@ spring:
       - optional:classpath:META-INF/build-info.properties
       - optional:file:./META-INF/build-info.properties
       - optional:file:./application/META-INF/build-info.properties
+app:
+  database:
+    dialect: ${APP_DATABASE_DIALECT:postgres}
