@@ -97,11 +97,4 @@ public interface MyBaseMapper<T extends BaseEntity> extends BaseMapper<T> {
                          @Param("masterName") String masterName,
                          @Param("masterValue") String masterValue);
 
-    /**
-     * 清空指定表数据（TRUNCATE）。
-     *
-     * @param tableName 目标表名
-     */
-    @Delete("TRUNCATE TABLE ${tableName} CASCADE")
-    void truncateTable(@Param("tableName") String tableName);
 }
