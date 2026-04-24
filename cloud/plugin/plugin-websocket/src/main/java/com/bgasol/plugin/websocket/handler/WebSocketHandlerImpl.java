@@ -1,5 +1,6 @@
 package com.bgasol.plugin.websocket.handler;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.bgasol.common.core.base.exception.BaseException;
 import com.bgasol.plugin.websocket.dto.SendMessageChunkDto;
 import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
 import static com.bgasol.common.util.WSUtils.GetWSTopic;
 import static com.bgasol.plugin.websocket.interceptor.PlusWebSocketInterceptor.USER_ID;
 
@@ -102,22 +104,32 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     private void onMessage(Map.Entry<String, WebSocketSession> entry, WsSendMessageDto msg) {
         String sessionId = entry.getKey();
         WebSocketSession session = entry.getValue();
+        String userId = (String) session.getAttributes().get(USER_ID);
         boolean send = true;
-        if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
-            String userId = (String) session.getAttributes().get(USER_ID);
-            // 筛选用户
-            if (!msg.getUserIds().contains(userId)) {
-                send = false;
-            }
-        } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
-            // 筛选会话
-            if (!msg.getSessionIds().contains(sessionId)) {
-                send = false;
+
+        if (ObjectUtils.isEmpty(userId)
+                && StpUtil.isLogin(userId)
+                && StpUtil.getRoleList().contains(ADMIN_ROLE_ID)
+        ) {
+            send = true;
+        } else {
+            if (ObjectUtils.isNotEmpty(msg.getUserIds())) {
+                // 筛选用户
+                if (!msg.getUserIds().contains(userId)) {
+                    send = false;
+                }
+            } else if (ObjectUtils.isNotEmpty(msg.getSessionIds())) {
+                // 筛选会话
+                if (!msg.getSessionIds().contains(sessionId)) {
+                    send = false;
+                }
             }
         }
+
         if (!send) {
             return;
         }
+
         String uuid = UUID.randomUUID().toString();
         String sendData;
         try {

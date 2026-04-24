@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_USER_ID;
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
 import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.InWebRequest;
 
 @Slf4j
@@ -82,13 +82,13 @@ public class DataScopeHandler implements MultiDataPermissionHandler {
             // 当前上下文没有用户信息
             return null;
         }
-        String userId = StpUtil.getLoginIdAsString();
-        if (ADMIN_USER_ID.equals(userId)) {
+        if (StpUtil.getRoleList().contains(ADMIN_ROLE_ID)) {
             // 管理员不需要做数据范围限制
             return null;
         }
         Expression finalExpression = null;
 
+        String userId = StpUtil.getLoginIdAsString();
         if (scopeOption.isUser()) {
             EqualsTo equalsTo = new EqualsTo();
             equalsTo.setLeftExpression(new Column(table, scopeOption.getUserColumnName()));

@@ -3,7 +3,6 @@ package com.bgasol.web.system.menu.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.dto.BasePageDto;
 import com.bgasol.common.core.base.service.BaseTreeService;
 import com.bgasol.model.system.menu.entity.MenuEntity;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
@@ -52,8 +53,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
                         .eq(MenuEntity::getParentId, ""));
         List<MenuEntity> menuEntityList = this.findAll(nested, false);
         // 查询左侧菜单的树
-        String userId = StpUtil.getLoginIdAsString();
-        if (userId.equals(SystemConfigValues.ADMIN_USER_ID)) {
+        if (StpUtil.getRoleList().contains(ADMIN_ROLE_ID)) {
             return menuEntityList;
         }
         Set<String> menuIds = getUserMenuIds();
@@ -110,8 +110,7 @@ public class MenuService extends BaseTreeService<MenuEntity, BasePageDto<MenuEnt
         lambdaQueryWrapper.isNotNull(MenuEntity::getRouteName);
         List<MenuEntity> menuEntityList = menuMapper.selectList(lambdaQueryWrapper);
 
-        String userId = StpUtil.getLoginIdAsString();
-        if (userId.equals(SystemConfigValues.ADMIN_USER_ID)) {
+        if (StpUtil.getRoleList().contains(ADMIN_ROLE_ID)) {
             return menuEntityList;
         }
         Set<String> menuIds = getUserMenuIds();
