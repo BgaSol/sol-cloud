@@ -39,7 +39,7 @@ public class BaseEntity implements Serializable {
     @OrderBy(sort = 31)
     private Date createTime;
 
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "更新时间")
     @OrderBy(sort = 32)
     private Date updateTime;

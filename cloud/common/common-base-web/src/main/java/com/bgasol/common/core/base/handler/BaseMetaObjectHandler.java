@@ -23,6 +23,9 @@ public class BaseMetaObjectHandler implements MetaObjectHandler {
         if (ObjectUtils.isEmpty(getFieldValByName("createTime", metaObject))) {
             this.setFieldValByName("createTime", new Date(), metaObject);
         }
+        if (ObjectUtils.isEmpty(getFieldValByName("updateTime", metaObject))) {
+            this.setFieldValByName("updateTime", new Date(), metaObject);
+        }
     }
 
     /**
