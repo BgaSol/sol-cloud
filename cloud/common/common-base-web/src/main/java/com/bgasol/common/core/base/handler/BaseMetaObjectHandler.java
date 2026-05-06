@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-/**
- * mybatis-plus 的元数据拦截器
- */
 @Component()
 public class BaseMetaObjectHandler implements MetaObjectHandler {
 
@@ -20,11 +17,12 @@ public class BaseMetaObjectHandler implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
+        Date now = new Date();
         if (ObjectUtils.isEmpty(getFieldValByName("createTime", metaObject))) {
-            this.setFieldValByName("createTime", new Date(), metaObject);
+            this.setFieldValByName("createTime", now, metaObject);
         }
         if (ObjectUtils.isEmpty(getFieldValByName("updateTime", metaObject))) {
-            this.setFieldValByName("updateTime", new Date(), metaObject);
+            this.setFieldValByName("updateTime", now, metaObject);
         }
     }
 
@@ -35,6 +33,7 @@ public class BaseMetaObjectHandler implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        Date now = new Date();
+        this.setFieldValByName("updateTime", now, metaObject);
     }
 }
