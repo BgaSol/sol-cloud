@@ -25,10 +25,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -71,10 +68,48 @@ public class ControllerScanner {
                 .stream()
                 .collect(Collectors.toMap(PermissionEntity::getId, Function.identity()));
 
+
         // 老数据中有的则更新，没有的新增
-        permissions.forEach((key, value) -> {
+        Map<String, PermissionEntity> pending = new HashMap<>(permissions);
+
+        // 已存在 + 已处理
+        Set<String> resolved = new HashSet<>(oldPermissions.keySet());
+
+        // 构建 parent -> children 索引（关键优化点）
+        Map<String, List<String>> childrenMap = new HashMap<>();
+
+        for (var entry : pending.entrySet()) {
+            String key = entry.getKey();
+            String parentId = entry.getValue().getParentId();
+            childrenMap.computeIfAbsent(parentId, k -> new ArrayList<>()).add(key);
+        }
+
+        // 队列：可以被处理的节点
+        Queue<String> queue = new ArrayDeque<>();
+
+        // 初始化：parent=null 或 parent 已存在
+        for (var entry : pending.entrySet()) {
+            String key = entry.getKey();
+            String parentId = entry.getValue().getParentId();
+
+            if (parentId == null || resolved.contains(parentId)) {
+                queue.add(key);
+            }
+        }
+
+        int processedCount = 0;
+
+        while (!queue.isEmpty()) {
+            String key = queue.poll();
+            PermissionEntity value = pending.remove(key);
+
+            if (value == null)
+                continue; // 已处理过（避免重复入队）
+
+            PermissionEntity permission;
+
             if (oldPermissions.containsKey(key)) {
-                PermissionEntity permission = permissionApi.apply(
+                permission = permissionApi.apply(
                         PermissionUpdateDto.builder()
                                 .id(value.getId())
                                 .type(value.getType())
@@ -89,7 +124,7 @@ public class ControllerScanner {
                 log.info("apply permission:{}", permission.getName());
 
             } else {
-                PermissionEntity permission = permissionApi.insert(
+                permission = permissionApi.insert(
                         PermissionCreateDto.builder()
                                 .id(value.getId())
                                 .type(value.getType())
@@ -102,9 +137,31 @@ public class ControllerScanner {
                                 .build()
                 ).getData();
                 log.info("insert permission:{}", permission.getName());
-
             }
-        });
+
+            resolved.add(key);
+            processedCount++;
+
+            // 推进子节点（核心：只影响直接 children，不扫全表）
+            List<String> children = childrenMap.get(key);
+            if (children != null) {
+                for (String childKey : children) {
+                    PermissionEntity child = pending.get(childKey);
+                    if (child != null) {
+                        String parentId = child.getParentId();
+                        if (parentId == null || resolved.contains(parentId)) {
+                            queue.add(childKey);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 🚨 兜底：检测异常数据
+        if (!pending.isEmpty()) {
+            throw new IllegalStateException("存在无法处理的权限数据（可能 parentId 不存在或循环依赖）: " + pending.keySet());
+        }
+
         Map<String, RoleEntity> oldRoles = roleApi.findByIds(roles.keySet(), true)
                 .getData()
                 .stream()
@@ -121,14 +178,14 @@ public class ControllerScanner {
                         .id(value.getId())
                         .code(value.getId())
                         .name(oldRole.getName())
-                        .menuIds(oldRole.getMenus()
+                        .menuIds(new ArrayList<>(oldRole.getMenus()
                                 .stream()
                                 .map(MenuEntity::getId)
-                                .collect(Collectors.toList()))
-                        .permissionIds(oldRole.getPermissions()
+                                .collect(Collectors.toSet())))
+                        .permissionIds(new ArrayList<>(oldRole.getPermissions()
                                 .stream()
                                 .map(PermissionEntity::getId)
-                                .collect(Collectors.toList()))
+                                .collect(Collectors.toSet())))
                         .build()).getData();
                 log.info("apply role:{}", role.getCode());
 
