@@ -193,10 +193,10 @@ public class ControllerScanner {
                 RoleEntity role = roleApi.insert(RoleCreateDto.builder()
                         .code(value.getId())
                         .name(value.getId())
-                        .permissionIds(value.getPermissions()
+                        .permissionIds(new ArrayList<>(value.getPermissions()
                                 .stream()
                                 .map(PermissionEntity::getId)
-                                .collect(Collectors.toList()))
+                                .collect(Collectors.toSet())))
                         .menuIds(List.of())
                         .build()).getData();
                 log.info("insert role:{}", role.getCode());
