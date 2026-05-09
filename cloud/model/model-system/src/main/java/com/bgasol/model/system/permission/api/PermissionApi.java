@@ -1,6 +1,5 @@
 package com.bgasol.model.system.permission.api;
 
-import ch.qos.logback.core.spi.ConfigurationEvent;
 import com.bgasol.common.constant.value.SystemConfigValues;
 import com.bgasol.common.core.base.vo.BaseVo;
 import com.bgasol.model.system.permission.dto.PermissionCreateDto;
