@@ -82,13 +82,12 @@ public class OssService {
      * @return 文件流
      */
     public InputStream readFileStream(FileEntity file) {
+        GetObjectArgs build = GetObjectArgs
+                .builder()
+                .bucket(file.getBucket())
+                .object(buildObjectPath(file))
+                .build();
         try {
-            GetObjectArgs build = GetObjectArgs
-                    .builder()
-                    .bucket(file.getBucket())
-                    .object(buildObjectPath(file))
-                    .build();
-            // 获取文件流
             return minioClient.getObject(build);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
