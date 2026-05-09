@@ -1,11 +1,10 @@
 package com.bgasol.plugin.minio.service;
 
 import com.bgasol.common.core.base.exception.BaseException;
+import com.bgasol.model.file.file.api.FileApi;
+import com.bgasol.model.file.file.dto.FileUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
-import io.minio.GetObjectArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,31 +24,56 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class OssService {
     private final MinioClient minioClient;
+    private final FileApi fileApi;
 
     /// 写入文件流到对象存储
     public void writeFileStream(InputStream inputStream, FileEntity file) {
+        String objectPath = buildObjectPath(file);
+        // 创建上传文件参数
+        PutObjectArgs.Builder pubBuilder = PutObjectArgs
+                .builder()
+                .bucket(file.getBucket())
+                .object(objectPath)
+                .contentType(file.getType());
+        if (ObjectUtils.isEmpty(file.getSize())) {
+            pubBuilder.stream(inputStream, -1, 64 * 1024 * 1024);
+        } else {
+            pubBuilder.stream(inputStream, file.getSize(), -1);
+        }
+        PutObjectArgs putObj = pubBuilder.build();
+        // 上传文件到minio id 相同会覆盖
         try {
-            // 创建上传文件参数
-            PutObjectArgs.Builder builder = PutObjectArgs
-                    .builder()
-                    .bucket(file.getBucket())
-                    .object(buildObjectPath(file));
-            if (ObjectUtils.isNotEmpty(file.getSize())) {
-                builder.stream(inputStream, file.getSize(), -1);
-            } else {
-                builder.stream(inputStream, -1, 64 * 1024 * 1024);
-            }
-            builder.contentType(file.getType());
-            PutObjectArgs objectArgs = builder.build();
-            // 上传文件到minio id 相同会覆盖
-            minioClient.putObject(objectArgs);
+            minioClient.putObject(putObj);
             inputStream.close();
+        } catch (ErrorResponseException | InternalException | InvalidKeyException | InvalidResponseException |
+                 IOException | NoSuchAlgorithmException | ServerException | XmlParserException |
+                 InsufficientDataException e) {
+            throw new BaseException("文件写入失败", e);
+        }
+
+        // 回填文件大小
+        if (ObjectUtils.isNotEmpty(file.getSize())) {
+            return;
+        }
+        StatObjectArgs statObj = StatObjectArgs.builder()
+                .bucket(file.getBucket())
+                .object(objectPath)
+                .build();
+        // 上传完成后获取对象信息
+        StatObjectResponse stat;
+        try {
+            stat = minioClient.statObject(statObj);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error("文件写入失败", e);
-            throw new BaseException("文件写入失败");
+            throw new BaseException("获取文件大小失败", e);
         }
+
+        fileApi.apply(FileUpdateDto.builder()
+                .id(file.getId())
+                .size(stat.size())
+                .build());
+
     }
 
     /**
@@ -79,12 +103,12 @@ public class OssService {
      * 从对象存储中移除文件
      */
     public void removeFile(FileEntity file) {
+        RemoveObjectArgs build = RemoveObjectArgs
+                .builder()
+                .bucket(file.getBucket())
+                .object(buildObjectPath(file))
+                .build();
         try {
-            RemoveObjectArgs build = RemoveObjectArgs
-                    .builder()
-                    .bucket(file.getBucket())
-                    .object(buildObjectPath(file))
-                    .build();
             minioClient.removeObject(build);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |

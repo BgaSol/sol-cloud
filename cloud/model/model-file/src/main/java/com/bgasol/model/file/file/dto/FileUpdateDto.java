@@ -18,6 +18,9 @@ import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_
 @Schema(description = "更新文件")
 public class FileUpdateDto extends BaseUpdateDto<FileEntity> {
 
+    @Schema(description = "文件大小")
+    private Long size;
+
     @Schema(description = "文件状态")
     private String status;
 

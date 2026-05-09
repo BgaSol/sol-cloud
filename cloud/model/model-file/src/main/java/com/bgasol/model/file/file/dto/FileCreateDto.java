@@ -40,6 +40,9 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
     @Schema(description = "文件来源")
     private String source;
 
+    @Schema(description = "文件大小")
+    private Long size;
+
     @JsonIgnore
     @Schema(hidden = true)
     public FileEntity toEntity() {
