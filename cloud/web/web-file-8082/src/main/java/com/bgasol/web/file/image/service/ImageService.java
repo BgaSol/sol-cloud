@@ -51,11 +51,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     public void insert(ImageEntity entity) {
         if (ObjectUtils.isNotEmpty(entity.getFileId())) {
             FileEntity file = fileService.findById(entity.getFileId(), false);
-            try {
-                getImageWidthAndHeight(file, entity);
-            } catch (IOException e) {
-                entity.setDescription(e.getMessage());
-            }
+            getImageWidthAndHeight(file, entity);
         }
         super.insert(entity);
     }
@@ -64,23 +60,20 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     public void apply(ImageEntity entity) {
         if (ObjectUtils.isNotEmpty(entity.getFileId())) {
             FileEntity file = fileService.findById(entity.getFileId(), false);
-            try {
-                getImageWidthAndHeight(file, entity);
-            } catch (IOException e) {
-                entity.setDescription(e.getMessage());
-            }
+            getImageWidthAndHeight(file, entity);
         }
         super.apply(entity);
     }
 
     /// 获取图片宽高
-    public void getImageWidthAndHeight(FileEntity fileEntity, ImageEntity imageEntity) throws IOException {
-        // 获取图片文件流
-        InputStream imageStream = ossService.readFileStream(fileEntity);
-        BufferedImage image = ImageIO.read(imageStream);
-        imageStream.close();
-        imageEntity.setWidth(image.getWidth());
-        imageEntity.setHeight(image.getHeight());
+    public void getImageWidthAndHeight(FileEntity fileEntity, ImageEntity imageEntity) {
+        try (InputStream imageStream = ossService.readFileStream(fileEntity)) {
+            BufferedImage image = ImageIO.read(imageStream);
+            imageEntity.setWidth(image.getWidth());
+            imageEntity.setHeight(image.getHeight());
+        } catch (IOException e) {
+            log.error("获取图片宽高失败", e);
+        }
     }
 
     @Override

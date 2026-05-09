@@ -28,12 +28,11 @@ public class OssService {
 
     /// 写入文件流到对象存储
     public void writeFileStream(InputStream inputStream, FileEntity file) {
-        String objectPath = buildObjectPath(file);
         // 创建上传文件参数
         PutObjectArgs.Builder pubBuilder = PutObjectArgs
                 .builder()
                 .bucket(file.getBucket())
-                .object(objectPath)
+                .object(buildObjectPath(file))
                 .contentType(file.getType());
         if (ObjectUtils.isEmpty(file.getSize())) {
             pubBuilder.stream(inputStream, -1, 64 * 1024 * 1024);
@@ -55,19 +54,8 @@ public class OssService {
         if (ObjectUtils.isNotEmpty(file.getSize())) {
             return;
         }
-        StatObjectArgs statObj = StatObjectArgs.builder()
-                .bucket(file.getBucket())
-                .object(objectPath)
-                .build();
         // 上传完成后获取对象信息
-        StatObjectResponse stat;
-        try {
-            stat = minioClient.statObject(statObj);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
-                 InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
-                 XmlParserException e) {
-            throw new BaseException("获取文件大小失败", e);
-        }
+        StatObjectResponse stat = statFile(file);
 
         fileApi.apply(FileUpdateDto.builder()
                 .id(file.getId())
@@ -76,12 +64,27 @@ public class OssService {
 
     }
 
+    public StatObjectResponse statFile(FileEntity file) {
+        StatObjectArgs build = StatObjectArgs
+                .builder()
+                .bucket(file.getBucket())
+                .object(buildObjectPath(file))
+                .build();
+        try {
+            return minioClient.statObject(build);
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
+                 InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                 XmlParserException e) {
+            throw new BaseException("获取文件信息失败", e);
+        }
+    }
+
     /**
      * 从对象存储获取文件流
      *
      * @return 文件流
      */
-    public InputStream readFileStream(FileEntity file) {
+    public InputStream readFileStream(FileEntity file) throws IOException {
         GetObjectArgs build = GetObjectArgs
                 .builder()
                 .bucket(file.getBucket())
@@ -90,13 +93,11 @@ public class OssService {
         try {
             return minioClient.getObject(build);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
-                 InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                 InvalidResponseException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error("文件读取失败", e);
-            throw new BaseException("文件读取失败");
+            throw new BaseException("文件读取失败", e);
         }
     }
-
 
     /**
      * 从对象存储中移除文件
@@ -112,8 +113,7 @@ public class OssService {
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            log.error("文件删除失败", e);
-            throw new BaseException("文件删除失败");
+            throw new BaseException("文件删除失败", e);
         }
     }
 
@@ -142,7 +142,7 @@ public class OssService {
             hash = DigestUtils.sha256Hex(inputStream);
             inputStream.close();
         } catch (IOException e) {
-            throw new BaseException("获取文件HASH失败");
+            throw new BaseException("获取文件HASH失败", e);
         }
         return hash;
     }

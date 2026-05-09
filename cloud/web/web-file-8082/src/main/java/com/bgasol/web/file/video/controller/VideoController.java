@@ -10,15 +10,16 @@ import com.bgasol.model.file.video.dto.VideoPageDto;
 import com.bgasol.model.file.video.dto.VideoUpdateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
 import com.bgasol.plugin.minio.service.OssService;
+import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.video.service.VideoService;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
-import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +41,7 @@ public class VideoController extends BaseController<
         VideoUpdateDto> {
     private final VideoService videoService;
     private final OssService ossService;
+    private final FileService fileService;
 
     private final MinioClient minioClient;
 
@@ -103,16 +104,18 @@ public class VideoController extends BaseController<
     @SaCheckPermission(value = "video:playVideo")
     public ResponseEntity<Resource> playVideo(@PathVariable String id, @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
-        FileEntity file = videoService.findById(id, true).getFile();
-        String contentType = file.getType();
-        String bucket = file.getBucket();
-        String objectName = ossService.buildObjectPath(file);
+        VideoEntity video = videoService.findById(id, true);
+        FileEntity file = video.getFile();
+        if (ObjectUtils.isEmpty(file.getSize())) {
+            StatObjectResponse stat = ossService.statFile(file);
+            file.setSize(stat.size());
+            fileService.apply(FileEntity.builder()
+                    .id(file.getId())
+                    .size(stat.size())
+                    .build());
+        }
 
-        StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
-                .bucket(bucket)
-                .object(objectName)
-                .build());
-        long fileSize = stat.size();
+        long fileSize = file.getSize();
 
         // 默认返回整个文件
         long rangeStart = 0L;
@@ -162,25 +165,19 @@ public class VideoController extends BaseController<
 
         // 从 MinIO 获取分片或全量流
         GetObjectArgs.Builder getArgsBuilder = GetObjectArgs.builder()
-                .bucket(bucket)
-                .object(objectName);
+                .bucket(file.getBucket())
+                .object(ossService.buildObjectPath(file));
         if (isPartial) {
             getArgsBuilder.offset(rangeStart).length(contentLength);
         }
-        InputStream objectStream = minioClient.getObject(getArgsBuilder.build());
-        InputStreamResource resource = new InputStreamResource(objectStream);
+        InputStreamResource resource = new InputStreamResource(minioClient.getObject(getArgsBuilder.build()));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_TYPE, contentType);
+        headers.set(HttpHeaders.CONTENT_TYPE, file.getType());
         headers.set(HttpHeaders.ACCEPT_RANGES, "bytes");
         headers.set(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength));
-        // 可选：ETag/Last-Modified 如果需要缓存或断点续传
-        if (stat.etag() != null) {
-            headers.set(HttpHeaders.ETAG, stat.etag());
-        }
         if (isPartial) {
-            headers.set(HttpHeaders.CONTENT_RANGE,
-                    "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
+            headers.set(HttpHeaders.CONTENT_RANGE, "bytes " + rangeStart + "-" + rangeEnd + "/" + fileSize);
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).headers(headers).body(resource);
         } else {
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(resource);

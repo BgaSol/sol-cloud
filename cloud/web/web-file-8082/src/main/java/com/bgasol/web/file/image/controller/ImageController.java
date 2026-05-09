@@ -13,12 +13,12 @@ import com.bgasol.plugin.minio.service.OssService;
 import com.bgasol.web.file.file.service.FileService;
 import com.bgasol.web.file.image.service.ImageService;
 import io.minio.MinioClient;
-import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -105,15 +105,18 @@ public class ImageController extends BaseController<
     public ResponseEntity<InputStreamResource> download(@PathVariable String id) {
         ImageEntity imageEntity = imageService.findById(id, true);
         FileEntity file = imageEntity.getFile();
-        String bucket = file.getBucket();
-        String objectName = ossService.buildObjectPath(file);
 
-        StatObjectResponse stat = minioClient.statObject(StatObjectArgs.builder()
-                .bucket(bucket)
-                .object(objectName)
-                .build());
+        if (ObjectUtils.isEmpty(file.getSize())) {
+            StatObjectResponse stat = ossService.statFile(file);
+            file.setSize(stat.size());
+            fileService.apply(FileEntity.builder()
+                    .id(file.getId())
+                    .size(stat.size())
+                    .build());
+        }
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(stat.size()))
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(file.getSize()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + URLEncoder.encode(
                         fileService.getFileName(file),
                         StandardCharsets.UTF_8
