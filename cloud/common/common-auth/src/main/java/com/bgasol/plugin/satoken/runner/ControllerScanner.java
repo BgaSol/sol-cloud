@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,12 +42,8 @@ public class ControllerScanner {
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    @EventListener(InstanceRegisteredEvent.class)
-    public void scanControllers() throws InterruptedException {
-        Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-
-        log.info("Scanning controllers...");
-
+    @EventListener(ApplicationReadyEvent.class)
+    public void scanControllers() {
         Map<String, RoleEntity> roles = new HashMap<>();
         Map<String, PermissionEntity> permissions = new HashMap<>();
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
