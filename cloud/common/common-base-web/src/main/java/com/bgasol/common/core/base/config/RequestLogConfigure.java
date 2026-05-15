@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class RequestLogConfigure implements WebMvcConfigurer {
 
+    @NonNull
     private final RequestLoggingInterceptor requestLoggingInterceptor;
 
     @Override

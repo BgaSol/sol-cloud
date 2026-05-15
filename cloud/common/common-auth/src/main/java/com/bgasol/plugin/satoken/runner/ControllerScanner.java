@@ -92,8 +92,6 @@ public class ControllerScanner {
             }
         }
 
-        int processedCount = 0;
-
         while (!queue.isEmpty()) {
             String key = queue.poll();
             PermissionEntity value = pending.remove(key);
@@ -135,7 +133,6 @@ public class ControllerScanner {
             }
 
             resolved.add(key);
-            processedCount++;
 
             // 推进子节点（核心：只影响直接 children，不扫全表）
             List<String> children = childrenMap.get(key);
