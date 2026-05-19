@@ -3,8 +3,8 @@
 set -e
 cd ..
 
-VOLUMES=( pg-data redis-data )
-FORCE_RECREATE_VOLUMES=( redis-data )
+VOLUMES=( pg-data )
+FORCE_RECREATE_VOLUMES=( )
 
 BLUE='\033[0;34m'
 GREEN='\033[0;32m'

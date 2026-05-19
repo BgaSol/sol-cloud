@@ -4,8 +4,6 @@ networks:
 volumes:
   pg-data:
     external: true
-  redis-data:
-    external: true
 services:
   # Nacos
   cloud-app-nacos:

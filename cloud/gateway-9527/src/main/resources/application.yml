@@ -1,5 +1,7 @@
 server:
   port: 9527
+  compression:
+    enabled: true
 spring:
   application:
     name: gateway
