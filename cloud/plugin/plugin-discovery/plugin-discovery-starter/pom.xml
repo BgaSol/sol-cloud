@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.bgasol</groupId>
             <artifactId>plugin-redis</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <profiles>
