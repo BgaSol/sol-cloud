@@ -11,7 +11,6 @@ import com.bgasol.model.system.role.dto.RoleCreateDto;
 import com.bgasol.model.system.role.dto.RoleUpdateDto;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.web.system.role.service.RoleService;
-import com.bgasol.web.system.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ public class RoleController extends BaseController<
         RoleCreateDto,
         RoleUpdateDto> {
     private final RoleService roleService;
-    private final UserService userService;
     private final PoiCapability poiCapability;
 
     @Override

@@ -18,6 +18,7 @@ spring:
       - web
       - database
       - discovery
+      - discovery-impl
       - loadbalancer
       - logger
       - micrometer

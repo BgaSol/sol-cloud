@@ -15,6 +15,7 @@ spring:
     active:
       - actuator
       - discovery
+      - discovery-impl
       - logger
       - micrometer
       - redis

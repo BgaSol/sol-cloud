@@ -30,7 +30,7 @@ public class SystemConfigValues {
 
     public final static String NODE_IP_KEY = "node-ip";
 
-    public final static String TRACE_INFO_KEY = "Trace-Info";
+    public final static String NODE_ROLE_KEY = "node-role";
 
     public final static String REQUEST_EXCEPTION = "REQUEST_EXCEPTION";
 

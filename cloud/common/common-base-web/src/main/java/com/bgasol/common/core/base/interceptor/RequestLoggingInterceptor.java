@@ -1,6 +1,7 @@
 package com.bgasol.common.core.base.interceptor;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.bgasol.common.core.base.model.NodeConfig;
 import com.bgasol.common.requestLog.service.RequestLogService;
 import com.bgasol.model.system.requestLog.entity.RequestLogEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
@@ -38,13 +38,7 @@ import static com.bgasol.plugin.openfeign.interceptor.FeignInterceptor.*;
 @Configuration
 @RequiredArgsConstructor(onConstructor_ = {@Lazy})
 public class RequestLoggingInterceptor implements HandlerInterceptor {
-
-    @Value("${spring.application.name}")
-    private String serviceName;
-    @Value("${system.node-name}")
-    private String nodeName;
-    @Value("${system.node-ip}")
-    private String nodeIp;
+    private final NodeConfig nodeConfig;
 
     private static final String BUSINESS_CONTROLLER = "BUSINESS_CONTROLLER";
     private static final String BUSINESS_METHOD = "BUSINESS_METHOD";
@@ -130,9 +124,9 @@ public class RequestLoggingInterceptor implements HandlerInterceptor {
                     .createTime(new Date(startTime))
                     .updateTime(new Date(endTime))
                     .traceId(traceId)
-                    .serviceName(serviceName)
-                    .nodeName(nodeName)
-                    .nodeIp(nodeIp)
+                    .serviceName(nodeConfig.getAppName())
+                    .nodeName(nodeConfig.getName())
+                    .nodeIp(nodeConfig.getIp())
                     .method(method)
                     .uri(uri)
                     .queryString(queryString)

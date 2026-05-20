@@ -20,10 +20,5 @@
             <artifactId>bcpkix-jdk18on</artifactId>
             <version>1.78.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.bgasol</groupId>
-            <artifactId>plugin-redis</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

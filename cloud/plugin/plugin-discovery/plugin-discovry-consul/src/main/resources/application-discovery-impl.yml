@@ -1,6 +1,3 @@
-system:
-  node-name: ${NODE_NAME:local}
-  node-ip: ${NODE_IP:127.0.0.1}
 spring:
   cloud:
     consul:
@@ -9,4 +6,6 @@ spring:
       discovery:
         management-port: ${management.server.port}
         metadata:
-          node-name: ${system.node-name}
+          node-name: ${system.node.name}
+          node-ip: ${system.node.ip}
+          node-role: ${system.node.role}

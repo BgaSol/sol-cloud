@@ -1,0 +1,6 @@
+system:
+  node:
+    name: ${NODE_NAME:local}
+    ip: ${NODE_IP:127.0.0.1}
+    role: ${NODE_ROLE:master}
+    app-name: ${spring.application.name}
