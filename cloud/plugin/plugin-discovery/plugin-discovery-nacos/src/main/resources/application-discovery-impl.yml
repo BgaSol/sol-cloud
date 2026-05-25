@@ -5,6 +5,7 @@ spring:
       username: ${NACOS_USER:nacos}
       password: ${NACOS_PASSWORD:nacospwd}
       discovery:
+        fail-fast: true
         ip: ${system.node.ip}
         cluster-name: DEFAULT
         metadata:
