@@ -95,7 +95,7 @@ public class OssService {
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                  InvalidResponseException | NoSuchAlgorithmException | ServerException |
                  XmlParserException e) {
-            throw new BaseException("文件读取失败", e);
+            throw new BaseException("文件读取失败 id: " + file.getId(), e);
         }
     }
 
