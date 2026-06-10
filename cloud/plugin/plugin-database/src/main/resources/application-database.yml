@@ -22,7 +22,7 @@ spring:
           p6spy: false
           hikari:
             data-source-properties:
-              ApplicationName: ${spring.application.name}
+              ApplicationName: ${system.node.name}:${spring.application.name}
             maximum-pool-size: 5
             minimum-idle: 2
             connection-timeout: 5000
