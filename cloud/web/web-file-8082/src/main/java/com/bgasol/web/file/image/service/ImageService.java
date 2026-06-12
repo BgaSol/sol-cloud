@@ -66,7 +66,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     /// 获取图片宽高
-    public void getImageWidthAndHeight(FileEntity fileEntity, ImageEntity imageEntity) {
+    private void getImageWidthAndHeight(FileEntity fileEntity, ImageEntity imageEntity) {
         try (InputStream imageStream = ossService.readFileStream(fileEntity)) {
             BufferedImage image = ImageIO.read(imageStream);
             imageEntity.setWidth(image.getWidth());
@@ -103,7 +103,7 @@ public class ImageService extends BaseService<ImageEntity, ImagePageDto> {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Integer delete(Set<String> ids) {
         Set<String> fileIds = this.findById(ids, false)
                 .stream()

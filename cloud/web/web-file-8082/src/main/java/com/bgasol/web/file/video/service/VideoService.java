@@ -52,21 +52,23 @@ public class VideoService extends BaseService<VideoEntity, VideoPageDto> {
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        if (ObjectUtils.isNotEmpty(fileIds)) {
-            Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
-                    .stream()
-                    .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
-
-            list.forEach(entity -> {
-                if (ObjectUtils.isNotEmpty(entity.getFileId())) {
-                    entity.setFile(fileMap.get(entity.getFileId()));
-                }
-            });
+        if (ObjectUtils.isEmpty(fileIds)) {
+            return;
         }
+
+        Map<String, FileEntity> fileMap = fileService.findById(fileIds, true)
+                .stream()
+                .collect(Collectors.toMap(FileEntity::getId, Function.identity()));
+
+        list.forEach(entity -> {
+            if (ObjectUtils.isNotEmpty(entity.getFileId())) {
+                entity.setFile(fileMap.get(entity.getFileId()));
+            }
+        });
     }
 
+    @Transactional
     @Override
-    @Transactional(readOnly = true)
     public Integer delete(Set<String> ids) {
         Set<String> fileIds = this.findById(ids, false)
                 .stream()
