@@ -5,14 +5,13 @@ spring:
       port: ${CONSUL_PORT:8500}
       discovery:
         prefer-ip-address: true
-        ip-address: ${system.node.ip}
+        ip-address: 192.168.1.139
         instance-id: ${spring.application.name}-${system.node.name}-${server.port}
-        health-check-critical-timeout: 10s
-        health-check-timeout: 10s
-        heartbeat:
-          ttl: 10s
-          enabled: true
-          use-actuator-health: true
+
+        health-check-interval: 10s
+        health-check-timeout: 3s
+        health-check-critical-timeout: 1m
+
         metadata:
           node-name: ${system.node.name}
           node-ip: ${system.node.ip}
