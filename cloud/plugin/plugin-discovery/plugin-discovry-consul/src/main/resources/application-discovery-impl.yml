@@ -7,9 +7,12 @@ spring:
         prefer-ip-address: true
         ip-address: ${system.node.ip}
         instance-id: ${spring.application.name}-${system.node.name}-${server.port}
+        health-check-critical-timeout: 10s
+        health-check-timeout: 10s
         heartbeat:
           ttl: 10s
           enabled: true
+          use-actuator-health: true
         metadata:
           node-name: ${system.node.name}
           node-ip: ${system.node.ip}
