@@ -5,7 +5,7 @@ spring:
       port: ${CONSUL_PORT:8500}
       discovery:
         prefer-ip-address: true
-        ip-address: 192.168.1.139
+        ip-address: ${system.node.ip}
         instance-id: ${spring.application.name}-${system.node.name}-${server.port}
 
         health-check-interval: 10s
