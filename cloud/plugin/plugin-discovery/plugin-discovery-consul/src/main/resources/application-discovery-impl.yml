@@ -17,3 +17,4 @@ spring:
           node-name: ${system.node.name}
           node-ip: ${system.node.ip}
           node-role: ${system.node.role}
+          hint: ${system.node.name}

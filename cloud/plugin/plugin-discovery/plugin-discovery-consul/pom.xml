@@ -7,7 +7,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>plugin-discovry-consul</artifactId>
+    <artifactId>plugin-discovery-consul</artifactId>
 
     <dependencies>
         <dependency>

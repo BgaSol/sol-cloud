@@ -64,7 +64,7 @@
             <dependencies>
                 <dependency>
                     <groupId>com.bgasol</groupId>
-                    <artifactId>plugin-discovry-consul</artifactId>
+                    <artifactId>plugin-discovery-consul</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

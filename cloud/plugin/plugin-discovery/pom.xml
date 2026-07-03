@@ -13,6 +13,6 @@
         <module>plugin-discovery-k8s</module>
         <module>plugin-discovery-nacos</module>
         <module>plugin-discovery-starter</module>
-        <module>plugin-discovry-consul</module>
+        <module>plugin-discovery-consul</module>
     </modules>
 </project>
