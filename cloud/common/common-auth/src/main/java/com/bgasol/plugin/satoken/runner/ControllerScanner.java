@@ -18,6 +18,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
@@ -26,6 +27,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,10 +42,16 @@ public class ControllerScanner {
 
     private final PermissionApi permissionApi;
     private final RoleApi roleApi;
+    private final ThreadPoolTaskExecutor ioThreadPool;
 
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @EventListener(ApplicationReadyEvent.class)
+    public void run() {
+        CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS, ioThreadPool.getThreadPoolExecutor())
+                .execute(this::scanControllers);
+    }
+
     public void scanControllers() {
         Map<String, RoleEntity> roles = new HashMap<>();
         Map<String, PermissionEntity> permissions = new HashMap<>();

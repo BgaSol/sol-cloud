@@ -16,6 +16,7 @@ spring:
       - actuator
       - discovery
       - discovery-impl
+      - loadbalancer
       - logger
       - micrometer
       - redis

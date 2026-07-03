@@ -11,7 +11,8 @@ spring:
         health-check-interval: 10s
         health-check-timeout: 3s
         health-check-critical-timeout: 1m
-
+        heartbeat:
+          enabled: false
         metadata:
           node-name: ${system.node.name}
           node-ip: ${system.node.ip}
