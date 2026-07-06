@@ -7,6 +7,7 @@ system:
 spring:
   profiles:
     active:
+      - amqp
       - actuator
       - web
       - database
@@ -17,7 +18,6 @@ spring:
       - micrometer
       - minio
       - feign
-      - amqp
       - redis
       - sa-token
       - swagger

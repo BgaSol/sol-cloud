@@ -3,10 +3,8 @@ spring:
     addresses: ${RABBITMQ_ADDRESSES:${RABBITMQ_HOST:localhost}:${RABBITMQ_PORT:5672}}
     username: ${RABBITMQ_USERNAME:rabbitmq}
     password: ${RABBITMQ_PASSWORD:rabbitmqpwd}
-
     publisher-confirm-type: correlated
     publisher-returns: true
-
     template:
       mandatory: true
     cache:

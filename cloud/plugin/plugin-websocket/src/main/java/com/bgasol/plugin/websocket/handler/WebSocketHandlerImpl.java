@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
-import static com.bgasol.plugin.websocket.config.WebSocketRabbitConfig.WEBSOCKET_QUEUE_NAME;
 import static com.bgasol.plugin.websocket.interceptor.PlusWebSocketInterceptor.USER_ID;
 
 @Slf4j
@@ -83,7 +82,7 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return false;
     }
 
-    @RabbitListener(queues = "#{" + WEBSOCKET_QUEUE_NAME + ".name}")
+    @RabbitListener(queues = "#{webSocketQueue.name}")
     public void onMessage(WsSendMessageDto msg) {
         sessions.entrySet().forEach(entry -> {
             try {

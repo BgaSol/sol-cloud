@@ -13,6 +13,7 @@ spring:
       - optional:file:./application/META-INF/build-info.properties
   profiles:
     active:
+      - amqp
       - actuator
       - discovery
       - discovery-impl

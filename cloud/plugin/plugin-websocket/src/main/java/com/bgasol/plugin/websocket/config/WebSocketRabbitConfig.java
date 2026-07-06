@@ -1,8 +1,7 @@
 package com.bgasol.plugin.websocket.config;
 
+import com.bgasol.common.core.base.model.NodeConfig;
 import org.springframework.amqp.core.*;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,29 +10,23 @@ import static com.bgasol.common.util.WSUtils.GetWSTopic;
 @Configuration
 public class WebSocketRabbitConfig {
 
-    public static final String WEBSOCKET_EXCHANGE_NAME = "webSocketExchange";
-    public static final String WEBSOCKET_QUEUE_NAME = "webSocketQueue";
-
-    @Value("${spring.application.name}")
-    private String serviceName;
-
-    @Bean(WEBSOCKET_EXCHANGE_NAME)
-    public FanoutExchange webSocketExchange() {
-        return ExchangeBuilder.fanoutExchange(GetWSTopic(serviceName))
+    @Bean("webSocketExchange")
+    public FanoutExchange webSocketExchange(NodeConfig nodeConfig) {
+        return ExchangeBuilder.fanoutExchange(GetWSTopic(nodeConfig.getAppName()))
                 .durable(true)
                 .build();
     }
 
-    @Bean(WEBSOCKET_QUEUE_NAME)
-    public Queue webSocketQueue() {
-        return new AnonymousQueue();
+    @Bean("webSocketQueue")
+    public Queue webSocketQueue(NodeConfig nodeConfig) {
+        String queueName = new Base64UrlNamingStrategy(
+                nodeConfig.getName() + "." + nodeConfig.getAppName() + "." + GetWSTopic(nodeConfig.getAppName()) + "."
+        ).generateName();
+        return new Queue(queueName, false, true, true);
     }
 
-    @Bean
-    public Binding webSocketBinding(
-            @Qualifier(WEBSOCKET_QUEUE_NAME) Queue webSocketQueue,
-            @Qualifier(WEBSOCKET_EXCHANGE_NAME) FanoutExchange webSocketExchange
-    ) {
+    @Bean("webSocketBinding")
+    public Binding webSocketBinding(Queue webSocketQueue, FanoutExchange webSocketExchange) {
         return BindingBuilder
                 .bind(webSocketQueue)
                 .to(webSocketExchange);

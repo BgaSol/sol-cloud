@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.bgasol</groupId>
-            <artifactId>plugin-redis</artifactId>
+            <artifactId>plugin-amqp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
