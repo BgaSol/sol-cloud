@@ -4,8 +4,7 @@ import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.redisson.api.RTopic;
-import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
@@ -19,7 +18,7 @@ import static com.bgasol.common.util.WSUtils.GetWSTopic;
 @RequiredArgsConstructor
 public class PingMessageHandler implements MyMessageHandler {
 
-    private final RedissonClient redissonClient;
+    private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
     @Value("${spring.application.name}")
@@ -31,8 +30,7 @@ public class PingMessageHandler implements MyMessageHandler {
     @SneakyThrows
     @Override
     public void handle(WebSocketSession session, String payload) {
-        RTopic ws = redissonClient.getTopic(GetWSTopic(serviceName));
-        ws.publish(WsSendMessageDto.builder()
+        rabbitTemplate.convertAndSend(GetWSTopic(serviceName), "", WsSendMessageDto.builder()
                 .json(objectMapper.writeValueAsString(PingResponse))
                 .type(PING)
                 .sessionIds(List.of(session.getId()))

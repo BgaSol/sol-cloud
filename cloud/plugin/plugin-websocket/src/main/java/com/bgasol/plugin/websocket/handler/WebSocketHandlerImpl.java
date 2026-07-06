@@ -7,14 +7,11 @@ import com.bgasol.plugin.websocket.dto.WsSendMessageDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.redisson.api.RTopic;
-import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 
@@ -25,23 +22,19 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.bgasol.common.constant.value.SystemConfigValues.ADMIN_ROLE_ID;
-import static com.bgasol.common.util.WSUtils.GetWSTopic;
+import static com.bgasol.plugin.websocket.config.WebSocketRabbitConfig.WEBSOCKET_QUEUE_NAME;
 import static com.bgasol.plugin.websocket.interceptor.PlusWebSocketInterceptor.USER_ID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandlerImpl implements WebSocketHandler {
-    private final RedissonClient redissonClient;
 
     private final List<MyMessageHandler> myMessageHandlers;
 
     private final ObjectMapper objectMapper;
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
-
-    @Value("${spring.application.name}")
-    private String serviceName;
 
     // 在 WebSocket 协商成功且 WebSocket 连接打开并可供使用后调用。
     @Override
@@ -90,15 +83,16 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return false;
     }
 
-    @PostConstruct
-    public void subscribeToTopic() {
-        RTopic topic = redissonClient.getTopic(GetWSTopic(serviceName));
-
-        topic.addListener(WsSendMessageDto.class, this::onMessage);
-    }
-
-    private void onMessage(CharSequence channel, WsSendMessageDto msg) {
-        sessions.entrySet().forEach(entry -> onMessage(entry, msg));
+    @RabbitListener(queues = "#{" + WEBSOCKET_QUEUE_NAME + ".name}")
+    public void onMessage(WsSendMessageDto msg) {
+        sessions.entrySet().forEach(entry -> {
+            try {
+                onMessage(entry, msg);
+            } catch (Exception e) {
+                log.error("发送websocket消息失败,sessionId:{},userId:{}",
+                        entry.getKey(), entry.getValue().getAttributes().get(USER_ID), e);
+            }
+        });
     }
 
     private void onMessage(Map.Entry<String, WebSocketSession> entry, WsSendMessageDto msg) {

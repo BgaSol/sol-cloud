@@ -9,13 +9,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 public class ThreadPoolConfig {
-
+    public static final String CPU_THREAD_POOL = "cpuThreadPool";
+    public static final String IO_THREAD_POOL = "ioThreadPool";
     /**
      * CPU 密集型线程池
      * 核心线程 = 物理核心数 * 0.8
      * 队列适中，适合计算类任务
      */
-    @Bean("cpuThreadPool")
+    @Bean(CPU_THREAD_POOL)
     public ThreadPoolTaskExecutor cpuThreadPool() {
         int cores = Runtime.getRuntime().availableProcessors();
         int corePoolSize = Math.max(1, (int) (cores * 0.8));
@@ -35,7 +36,7 @@ public class ThreadPoolConfig {
      * 线程数 = CPU物理核心 * 2
      */
     @Primary
-    @Bean("ioThreadPool")
+    @Bean(IO_THREAD_POOL)
     public ThreadPoolTaskExecutor ioThreadPool() {
         int cores = Runtime.getRuntime().availableProcessors();
         int corePoolSize = cores * 2;

@@ -23,6 +23,7 @@ spring:
       - logger
       - micrometer
       - feign
+      - amqp
       - redis
       - sa-token
       - swagger

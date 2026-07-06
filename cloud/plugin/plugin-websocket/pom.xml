@@ -33,6 +33,11 @@
         </dependency>
         <dependency>
             <groupId>com.bgasol</groupId>
+            <artifactId>plugin-amqp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bgasol</groupId>
             <artifactId>plugin-swagger</artifactId>
             <version>${project.version}</version>
         </dependency>

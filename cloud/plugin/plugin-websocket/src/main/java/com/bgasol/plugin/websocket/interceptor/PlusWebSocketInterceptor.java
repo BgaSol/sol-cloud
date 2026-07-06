@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -24,7 +25,7 @@ public class PlusWebSocketInterceptor implements HandshakeInterceptor {
 
     // WebSocket握手之前执行的前置处理方法
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+    public boolean beforeHandshake(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response, @NonNull WebSocketHandler wsHandler, Map<String, Object> attributes) {
         try {
             String userId = StpUtil.getLoginIdAsString();
             attributes.put(USER_ID, userId);
@@ -37,7 +38,7 @@ public class PlusWebSocketInterceptor implements HandshakeInterceptor {
 
     // WebSocket握手成功后执行的后置处理方法
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
+    public void afterHandshake(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response, @NonNull WebSocketHandler wsHandler, Exception exception) {
 
     }
 
