@@ -54,6 +54,7 @@ services:
       REDIS_HOST: cloud-app-redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-cloud-app-rabbitmq}
 
       TEMPO_HOST: cloud-monitor-grafana-tempo
       LOKI_HOST: cloud-monitor-grafana-loki
@@ -107,6 +108,8 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
 
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-cloud-app-rabbitmq}
+
       TEMPO_HOST: cloud-monitor-grafana-tempo
       LOKI_HOST: cloud-monitor-grafana-loki
 
@@ -156,6 +159,8 @@ services:
       REDIS_HOST: cloud-app-redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-cloud-app-rabbitmq}
 
       ENABLE_SWAGGER: ${ENABLE_SWAGGER}
 
