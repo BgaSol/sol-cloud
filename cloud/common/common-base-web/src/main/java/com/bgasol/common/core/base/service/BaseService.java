@@ -248,6 +248,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Transactional(readOnly = true)
     public Page<ENTITY> findByPage(Page<ENTITY> page, Wrapper<ENTITY> queryWrapper, boolean otherData) {
         Page<ENTITY> entityPage = commonBaseMapper().selectPage(page, queryWrapper);
+        this.findRequiredTable(entityPage.getRecords());
         if (otherData) {
             this.findOtherTable(entityPage.getRecords());
         }
@@ -268,6 +269,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
             return new ArrayList<>();
         }
         List<ENTITY> entities = commonBaseMapper().selectByIds(ids);
+        this.findRequiredTable(entities);
         if (otherData) {
             this.findOtherTable(entities);
         }
@@ -311,6 +313,7 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     @Transactional(readOnly = true)
     public List<ENTITY> findAll(Wrapper<ENTITY> wrapper, Boolean otherData) {
         List<ENTITY> entities = commonBaseMapper().selectList(wrapper);
+        this.findRequiredTable(entities);
         if (otherData) {
             this.findOtherTable(entities);
         }
@@ -327,29 +330,20 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * @param list 要加载关联数据的实体列表
      *             （如果列表为 null 或空，方法会立即返回）
      */
-    @Transactional(readOnly = true)
     public void findOtherTable(List<ENTITY> list) {
-        if (ObjectUtils.isEmpty(list)) {
-            return;
-        }
-        list.parallelStream().forEach(this::findOtherTable);
     }
 
     /**
-     * 为单个实体加载关联数据。
+     * 为批量查询到的实体加载必须的关联数据。
      * <p>
-     * 当子类需要查询关联表数据时应重写此方法。
-     * 在批处理过程中，此方法会被每个实体调用。
-     * <p>
-     * <strong>性能提示：</strong> 重写此方法时要注意性能影响，
-     * 特别是在处理大量数据时。
-     * 尽可能考虑使用批量操作或优化查询策略。
+     * 此方法不受 {@code otherData} 参数控制，每次查询完成后都会执行。
+     * 子类如有性能优化需求可重写此方法；否则建议重写
+     * {@link #findRequiredTable(BaseEntity)} 方法处理单条记录。
      *
-     * @param entity 要加载关联数据的实体对象
+     * @param list 要加载必须关联数据的实体列表
+     *             （如果列表为 null 或空，方法会立即返回）
      */
-    @Transactional(readOnly = true)
-    public void findOtherTable(ENTITY entity) {
-        // 暂时什么也不用做
+    public void findRequiredTable(List<ENTITY> list) {
     }
 
     @Transactional(readOnly = true)
