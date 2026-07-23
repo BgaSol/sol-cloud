@@ -3,6 +3,8 @@ package com.bgasol.model.system.message.dto;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.message.entity.MessageEnvelopeEntity;
 import com.bgasol.model.system.message.entity.MessageEnvelopeStatusEnum;
+import com.bgasol.model.system.message.mapstruct.MessageEnvelopeMapstruct;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,15 +42,9 @@ public class MessageEnvelopeCreateDto extends BaseCreateDto<MessageEnvelopeEntit
     private String description;
 
     @Override
+    @JsonIgnore
+    @Schema(hidden = true)
     public MessageEnvelopeEntity<?> toEntity() {
-        MessageEnvelopeEntity<?> entity = new MessageEnvelopeEntity<>();
-        entity.setBusinessType(this.businessType);
-        entity.setUserId(this.userId);
-        entity.setTitle(this.title);
-        entity.setContent(this.content);
-        entity.setHandler(this.handler);
-        entity.setMetadata(this.metadata);
-        entity.setStatus(this.status);
-        return entity;
+        return MessageEnvelopeMapstruct.INSTANCE.toEntity(this);
     }
 }

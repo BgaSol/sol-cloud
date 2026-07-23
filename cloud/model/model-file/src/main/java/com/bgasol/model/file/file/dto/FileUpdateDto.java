@@ -2,14 +2,13 @@ package com.bgasol.model.file.file.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
+import com.bgasol.model.file.file.mapstruct.FileMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_IMPL;
 
 @Setter
 @Getter
@@ -32,8 +31,9 @@ public class FileUpdateDto extends BaseUpdateDto<FileEntity> {
 
     @JsonIgnore
     @Schema(hidden = true)
+    @Override
     public FileEntity toEntity() {
-        return FILE_MAPSTRUCT_IMPL.toEntity(this);
+        return FileMapstruct.INSTANCE.toEntity(this);
     }
 
 }

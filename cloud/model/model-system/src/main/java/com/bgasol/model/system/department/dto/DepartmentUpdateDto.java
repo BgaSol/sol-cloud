@@ -2,14 +2,13 @@ package com.bgasol.model.system.department.dto;
 
 import com.bgasol.common.core.base.dto.BaseUpdateDto;
 import com.bgasol.model.system.department.entity.DepartmentEntity;
+import com.bgasol.model.system.department.mapstruct.DepartmentMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import static com.bgasol.model.system.department.mapstruct.DepartmentMapstruct.DEPARTMENT_MAPSTRUCT_IMPL;
 
 @Setter
 @Getter
@@ -45,6 +44,6 @@ public class DepartmentUpdateDto extends BaseUpdateDto<DepartmentEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public DepartmentEntity toEntity() {
-        return super.toEntity(DEPARTMENT_MAPSTRUCT_IMPL.toEntity(this));
+        return DepartmentMapstruct.INSTANCE.toEntity(this);
     }
 }

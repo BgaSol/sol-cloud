@@ -26,7 +26,6 @@ public class ImageUpdateDto extends BaseUpdateDto<ImageEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public ImageEntity toEntity() {
-        ImageEntity imageEntity = ImageMapstruct.IMAGE_MAPSTRUCT.toEntity(this);
-        return this.toEntity(imageEntity);
+        return ImageMapstruct.INSTANCE.toEntity(this);
     }
 }

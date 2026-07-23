@@ -26,7 +26,6 @@ public class ImageCreateDto extends BaseCreateDto<ImageEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public ImageEntity toEntity() {
-        ImageEntity imageEntity = ImageMapstruct.IMAGE_MAPSTRUCT.toEntity(this);
-        return this.toEntity(imageEntity);
+        return ImageMapstruct.INSTANCE.toEntity(this);
     }
 }

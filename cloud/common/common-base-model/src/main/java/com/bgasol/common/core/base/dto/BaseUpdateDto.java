@@ -32,14 +32,4 @@ public abstract class BaseUpdateDto<ENTITY extends BaseEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public abstract ENTITY toEntity();
-
-    @JsonIgnore
-    @Schema(hidden = true)
-    public ENTITY toEntity(ENTITY entity) {
-        entity.setId(this.getId());
-        entity.setSort(this.getSort());
-        entity.setDescription(this.getDescription());
-        entity.setType(this.getType());
-        return entity;
-    }
 }

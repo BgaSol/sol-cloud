@@ -3,6 +3,7 @@ package com.bgasol.model.file.file.dto;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.file.entity.FileEntity;
 import com.bgasol.model.file.file.entity.FileStaus;
+import com.bgasol.model.file.file.mapstruct.FileMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -10,8 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.bgasol.model.file.file.mapstruct.FileMapstruct.FILE_MAPSTRUCT_IMPL;
 
 @Setter
 @Getter
@@ -45,7 +44,8 @@ public class FileCreateDto extends BaseCreateDto<FileEntity> {
 
     @JsonIgnore
     @Schema(hidden = true)
+    @Override
     public FileEntity toEntity() {
-        return FILE_MAPSTRUCT_IMPL.toEntity(this);
+        return FileMapstruct.INSTANCE.toEntity(this);
     }
 }

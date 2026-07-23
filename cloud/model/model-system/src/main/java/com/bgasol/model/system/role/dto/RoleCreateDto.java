@@ -3,9 +3,8 @@ package com.bgasol.model.system.role.dto;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.bgasol.common.core.base.converter.StringToStringListConverter;
 import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.model.system.menu.entity.MenuEntity;
-import com.bgasol.model.system.permission.entity.PermissionEntity;
 import com.bgasol.model.system.role.entity.RoleEntity;
+import com.bgasol.model.system.role.mapstruct.RoleMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -15,10 +14,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.bgasol.model.system.role.mapstruct.RoleMapstruct.ROLE_MAPSTRUCT_IMPL;
 
 @Setter
 @Getter
@@ -47,29 +42,6 @@ public class RoleCreateDto extends BaseCreateDto<RoleEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public RoleEntity toEntity() {
-        RoleEntity roleEntity = ROLE_MAPSTRUCT_IMPL.toEntity(this);
-
-        roleEntity.setId(code);
-
-        if (permissionIds != null) {
-            Stream<PermissionEntity> permissionEntityStream = permissionIds.stream().map((id) -> {
-                PermissionEntity permissionEntity = new PermissionEntity();
-                permissionEntity.setId(id);
-                return permissionEntity;
-            });
-            List<PermissionEntity> collect = permissionEntityStream.collect(Collectors.toList());
-            roleEntity.setPermissions(collect);
-        }
-
-        if (menuIds != null) {
-            Stream<MenuEntity> menuEntityStream = menuIds.stream().map((id) -> {
-                MenuEntity menuEntity = new MenuEntity();
-                menuEntity.setId(id);
-                return menuEntity;
-            });
-            List<MenuEntity> collect = menuEntityStream.collect(Collectors.toList());
-            roleEntity.setMenus(collect);
-        }
-        return this.toEntity(roleEntity);
+        return RoleMapstruct.INSTANCE.toEntity(this);
     }
 }

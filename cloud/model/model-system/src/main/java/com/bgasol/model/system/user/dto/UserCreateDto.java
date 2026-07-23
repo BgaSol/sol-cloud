@@ -1,8 +1,8 @@
 package com.bgasol.model.system.user.dto;
 
 import com.bgasol.common.core.base.dto.BaseCreateDto;
-import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.entity.UserEntity;
+import com.bgasol.model.system.user.mapstruct.UserMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -11,13 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.bgasol.common.constant.value.SystemConfigValues.DEFAULT_DEPARTMENT_ID;
 
 @Setter
 @Getter
@@ -56,27 +51,6 @@ public class UserCreateDto extends BaseCreateDto<UserEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public UserEntity toEntity() {
-        UserEntity user = new UserEntity();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setNickname(nickname);
-        user.setEmail(email);
-        user.setPhone(phone);
-        user.setLocked(locked);
-        if (ObjectUtils.isNotEmpty(departmentId)) {
-            user.setDepartmentId(departmentId);
-        } else {
-            user.setDepartmentId(DEFAULT_DEPARTMENT_ID);
-        }
-        if (roleIds != null) {
-            Stream<RoleEntity> roleEntityStream = roleIds.stream().map((id) -> {
-                RoleEntity roleEntity = new RoleEntity();
-                roleEntity.setId(id);
-                return roleEntity;
-            });
-            List<RoleEntity> collect = roleEntityStream.collect(Collectors.toList());
-            user.setRoles(collect);
-        }
-        return this.toEntity(user);
+        return UserMapstruct.INSTANCE.toEntity(this);
     }
 }

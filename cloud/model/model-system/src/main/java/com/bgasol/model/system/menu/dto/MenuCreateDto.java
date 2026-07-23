@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import static com.bgasol.model.system.menu.mapstruct.MenuMapstruct.MENU_MAPSTRUCT_IMPL;
-
 @Setter
 @Getter
 @SuperBuilder
@@ -66,7 +64,6 @@ public class MenuCreateDto extends BaseCreateDto<MenuEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public MenuEntity toEntity() {
-        MenuEntity entity = MENU_MAPSTRUCT_IMPL.toEntity(this);
-        return super.toEntity(entity);
+        return MenuMapstruct.INSTANCE.toEntity(this);
     }
 }

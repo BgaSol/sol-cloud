@@ -27,13 +27,4 @@ public abstract class BaseCreateDto<ENTITY extends BaseEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public abstract ENTITY toEntity();
-
-    @JsonIgnore
-    @Schema(hidden = true)
-    public ENTITY toEntity(ENTITY entity) {
-        entity.setSort(this.getSort());
-        entity.setDescription(this.getDescription());
-        entity.setType(this.getType());
-        return entity;
-    }
 }

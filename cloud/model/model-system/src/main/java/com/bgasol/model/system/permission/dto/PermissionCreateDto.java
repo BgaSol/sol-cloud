@@ -2,14 +2,13 @@ package com.bgasol.model.system.permission.dto;
 
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
+import com.bgasol.model.system.permission.mapstruct.PermissionMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import static com.bgasol.model.system.permission.mapstruct.PermissionMapstruct.PERMISSION_MAPSTRUCT_IMPL;
 
 @Setter
 @Getter
@@ -39,7 +38,6 @@ public class PermissionCreateDto extends BaseCreateDto<PermissionEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public PermissionEntity toEntity() {
-        PermissionEntity entity = PERMISSION_MAPSTRUCT_IMPL.toEntity(this);
-        return super.toEntity(entity);
+        return PermissionMapstruct.INSTANCE.toEntity(this);
     }
 }

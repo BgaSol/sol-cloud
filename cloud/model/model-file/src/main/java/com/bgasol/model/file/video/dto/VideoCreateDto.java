@@ -2,14 +2,13 @@ package com.bgasol.model.file.video.dto;
 
 import com.bgasol.common.core.base.dto.BaseCreateDto;
 import com.bgasol.model.file.video.entity.VideoEntity;
+import com.bgasol.model.file.video.mapstruct.VideoMapstruct;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import static com.bgasol.model.file.video.mapstruct.VideoMapstruct.VIDEO_MAPSTRUCT;
 
 @Setter
 @Getter
@@ -48,7 +47,6 @@ public class VideoCreateDto extends BaseCreateDto<VideoEntity> {
     @JsonIgnore
     @Schema(hidden = true)
     public VideoEntity toEntity() {
-        VideoEntity videoEntity = VIDEO_MAPSTRUCT.toEntity(this);
-        return this.toEntity(videoEntity);
+        return VideoMapstruct.INSTANCE.toEntity(this);
     }
 }
