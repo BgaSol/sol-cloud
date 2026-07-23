@@ -188,7 +188,7 @@ public class ControllerScanner {
                                 .map(PermissionEntity::getId)
                                 .collect(Collectors.toSet())))
                         .build()).getData();
-                log.info("apply role:{}", role.getCode());
+                log.info("apply role:{}", role.getId());
 
             } else {
                 RoleEntity role = roleApi.insert(RoleCreateDto.builder()
@@ -200,7 +200,7 @@ public class ControllerScanner {
                                 .collect(Collectors.toSet())))
                         .menuIds(List.of())
                         .build()).getData();
-                log.info("insert role:{}", role.getCode());
+                log.info("insert role:{}", role.getId());
 
             }
         });
