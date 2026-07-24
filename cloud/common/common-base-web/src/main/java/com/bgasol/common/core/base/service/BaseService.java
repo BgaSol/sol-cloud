@@ -323,12 +323,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
     /**
      * 为批量的实体加载关联数据。
      * <p>
-     * 此方法使用流式并行处理实体列表。
-     * 子类如有性能优化需求可重写此方法。
-     * 否则建议重写 {@link #findOtherTable(BaseEntity)} 方法进行单条记录查询。
      *
      * @param list 要加载关联数据的实体列表
-     *             （如果列表为 null 或空，方法会立即返回）
      */
     public void findOtherTable(List<ENTITY> list) {
     }
@@ -337,11 +333,8 @@ public abstract class BaseService<ENTITY extends BaseEntity, PAGE_DTO extends Ba
      * 为批量查询到的实体加载必须的关联数据。
      * <p>
      * 此方法不受 {@code otherData} 参数控制，每次查询完成后都会执行。
-     * 子类如有性能优化需求可重写此方法；否则建议重写
-     * {@link #findRequiredTable(BaseEntity)} 方法处理单条记录。
      *
      * @param list 要加载必须关联数据的实体列表
-     *             （如果列表为 null 或空，方法会立即返回）
      */
     public void findRequiredTable(List<ENTITY> list) {
     }

@@ -102,7 +102,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
     @Transactional(readOnly = true)
     @Override
-    public void findOtherTable(List<UserEntity> list) {
+    public void findRequiredTable(List<UserEntity> list) {
         if (ObjectUtils.isEmpty(list)) {
             return;
         }
@@ -118,10 +118,31 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
         Map<String, Set<String>> roleIdGroup = this.findFromTableBatch(UserRoleTable.NAME, UserRoleTable.USER_ID, userIds, UserRoleTable.ROLE_ID);
 
-        Set<String> roleIds = roleIdGroup
-                .values()
+        list.forEach(userEntity -> userEntity.setRoles(roleIdGroup
+                .getOrDefault(userEntity.getId(), Set.of())
                 .stream()
-                .flatMap(Set::stream)
+                .map(roleId -> {
+                    RoleEntity roleEntity = new RoleEntity();
+                    roleEntity.setId(roleId);
+                    return roleEntity;
+                })
+                .toList()));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void findOtherTable(List<UserEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
+        Set<String> roleIds = list
+                .stream()
+                .map(UserEntity::getRoles)
+                .filter(ObjectUtils::isNotEmpty)
+                .flatMap(List::stream)
+                .map(RoleEntity::getId)
+                .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
         final Map<String, RoleEntity> roleMap = ObjectUtils.isNotEmpty(roleIds)
@@ -142,9 +163,10 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
                 : Map.of();
 
         for (UserEntity userEntity : list) {
-            userEntity.setRoles(roleIdGroup
-                    .getOrDefault(userEntity.getId(), Set.of())
+            List<RoleEntity> roles = ObjectUtils.defaultIfNull(userEntity.getRoles(), List.of());
+            userEntity.setRoles(roles
                     .stream()
+                    .map(RoleEntity::getId)
                     .map(roleMap::get)
                     .filter(ObjectUtils::isNotEmpty)
                     .toList());
