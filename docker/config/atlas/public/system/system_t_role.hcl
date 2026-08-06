@@ -29,11 +29,6 @@ table "system_t_role" {
     null = true
   }
 
-  column "parent_id" {
-    type = varchar(50)
-    null = true
-  }
-
   column "name" {
     type = varchar(255)
     null = false
@@ -50,9 +45,6 @@ table "system_t_role" {
 
   index "idx_role_create_time" {
     columns = [column.create_time]
-  }
-  index "idx_role_parent_id" {
-    columns = [column.parent_id]
   }
 
   index "uk_role_name" {
