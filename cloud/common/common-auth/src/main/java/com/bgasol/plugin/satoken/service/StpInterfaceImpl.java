@@ -1,20 +1,17 @@
 package com.bgasol.plugin.satoken.service;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.bgasol.common.core.base.vo.BaseVo;
+import com.bgasol.common.core.base.model.NodeConfig;
 import com.bgasol.model.system.permission.entity.PermissionEntity;
+import com.bgasol.model.system.role.api.RoleApi;
 import com.bgasol.model.system.role.entity.RoleEntity;
 import com.bgasol.model.system.user.api.UserApi;
-import com.bgasol.model.system.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /// 权限数据加载源
 @Component
@@ -22,39 +19,36 @@ import java.util.Set;
 public class StpInterfaceImpl implements StpInterface {
 
     private final UserApi userApi;
-
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
-
-    public UserEntity getUser(String userId, String loginType) {
-        BaseVo<UserEntity> userEntityBaseVo = userApi.findById(userId, true);
-        return userEntityBaseVo.getData();
-    }
+    private final RoleApi roleApi;
+    private final NodeConfig nodeConfig;
 
     /// 返回一个账号所拥有的权限码集合
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        UserEntity user = this.getUser((String) loginId, loginType);
-        Set<String> permissions = new HashSet<>();
-        for (RoleEntity role : user.getRoles()) {
-            for (PermissionEntity permission : role.getPermissions()) {
-                if (ObjectUtils.isEmpty(permission.getMicroService())
-                        || permission.getMicroService().equals(contextPath)) {
-                    permissions.add(permission.getCode());
-                }
-            }
-        }
-        return new ArrayList<>(permissions);
+        Set<String> roleIds = userApi.findById((String) loginId, false)
+                .getData()
+                .getRoles()
+                .stream()
+                .map(RoleEntity::getId)
+                .collect(Collectors.toSet());
+        return roleApi.findByIds(roleIds, false)
+                .getData()
+                .stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .filter(permission -> nodeConfig.getAppName().equals(permission.getMicroService()))
+                .map(PermissionEntity::getCode)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     /// 返回一个账号所拥有的角色标识集合 (权限与角色可分开校验)
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        UserEntity user = this.getUser((String) loginId, loginType);
-        Set<String> roles = new HashSet<>();
-        for (RoleEntity role : user.getRoles()) {
-            roles.add(role.getCode());
-        }
-        return new ArrayList<>(roles);
+        return userApi.findById((String) loginId, false)
+                .getData()
+                .getRoles()
+                .stream()
+                .map(RoleEntity::getId)
+                .toList();
     }
 }

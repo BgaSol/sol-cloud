@@ -106,7 +106,7 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
     @Transactional(readOnly = true)
     public List<RoleEntity> findAll(boolean otherData) {
         if (!StpUtil.isLogin()) {
-            // 未登录，可能是服务远程调用，直接返回全部
+            // 未登录，一定是服务内部远程调用，直接返回全部
             return super.findAll(otherData);
         }
         List<String> roleList = StpUtil.getRoleList();
@@ -122,11 +122,6 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
 
             if (entity.getName() == null) {
                 errors.add("角色名称不能为空");
-                return false;
-            }
-
-            if (entity.getCode() == null) {
-                errors.add("角色编码不能为空");
                 return false;
             }
 

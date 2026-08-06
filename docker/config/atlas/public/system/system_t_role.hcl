@@ -38,10 +38,6 @@ table "system_t_role" {
     type = varchar(255)
     null = false
   }
-  column "code" {
-    type = varchar(255)
-    null = true
-  }
   column "status" {
     type    = int
     null    = true
@@ -63,8 +59,5 @@ table "system_t_role" {
     unique = true
     columns = [column.name]
   }
-  index "uk_role_code" {
-    unique = true
-    columns = [column.code]
-  }
+
 }

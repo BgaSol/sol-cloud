@@ -29,10 +29,6 @@ public class RoleEntity extends BaseEntity {
     @TableField("name")
     private String name;
 
-    @Schema(description = "角色编码")
-    @TableField("code")
-    private String code;
-
     @Schema(description = "角色状态")
     @TableField("status")
     private Integer status;

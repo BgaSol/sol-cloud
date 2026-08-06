@@ -26,11 +26,6 @@ public class RoleUpdateDto extends BaseUpdateDto<RoleEntity> {
     @Schema(description = "角色名")
     private String name;
 
-    @Pattern(regexp = "^[^" + ADMIN_ROLE_ID + "]+$", message = "角色编码不能包含*")
-    @NotBlank(message = "角色编码不能为空")
-    @Schema(description = "角色编码")
-    private String code;
-
     @Schema(description = "角色权限ID列表")
     private List<String> permissionIds;
 
