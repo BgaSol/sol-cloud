@@ -177,7 +177,6 @@ public class ControllerScanner {
 
                 RoleEntity role = roleApi.apply(RoleUpdateDto.builder()
                         .id(value.getId())
-                        .code(value.getId())
                         .name(oldRole.getName())
                         .menuIds(new ArrayList<>(oldRole.getMenus()
                                 .stream()
