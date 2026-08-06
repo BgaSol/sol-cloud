@@ -38,10 +38,6 @@ table "system_t_permission" {
     type = varchar(255)
     null = false
   }
-  column "code" {
-    type = varchar(255)
-    null = true
-  }
   column "path" {
     type = varchar(1000)
     null = true
@@ -64,19 +60,11 @@ table "system_t_permission" {
   index "idx_permission_name" {
     columns = [column.name]
   }
-  index "idx_permission_code" {
-    columns = [column.code]
-  }
   index "idx_permission_path" {
     columns = [column.path]
   }
   index "idx_permission_micro_service" {
     columns = [column.micro_service]
-  }
-
-  index "uk_permission_code" {
-    unique = true
-    columns = [column.code]
   }
 
   // 添加外键约束，实现删除父权限时级联删除子权限

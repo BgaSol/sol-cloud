@@ -23,9 +23,6 @@ public class PermissionUpdateDto extends BaseUpdateDto<PermissionEntity> {
     @Schema(description = "权限名")
     private String name;
 
-    @Schema(description = "权限编码")
-    private String code;
-
     @Schema(description = "权限路径")
     private String path;
 

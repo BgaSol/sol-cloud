@@ -22,10 +22,6 @@ public class PermissionEntity extends BaseTreeEntity<PermissionEntity> {
     @TableField("name")
     private String name;
 
-    @Schema(description = "权限编码")
-    @TableField("code")
-    private String code;
-
     @Schema(description = "权限路径")
     @TableField("path")
     private String path;

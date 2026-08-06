@@ -158,7 +158,6 @@ public class SystemInitData implements ApplicationRunner {
     public void initPermission() {
         PermissionEntity permission = PermissionCreateDto.builder()
                 .id(ADMIN_PERMISSION_ID)
-                .code(ADMIN_PERMISSION_ID)
                 .name("系统最高权限")
                 .description("系统全接口访问权限")
                 .build().toEntity();

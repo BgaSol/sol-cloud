@@ -35,8 +35,7 @@ public class StpInterfaceImpl implements StpInterface {
                 .getData()
                 .stream()
                 .flatMap(role -> role.getPermissions().stream())
-                .filter(permission -> nodeConfig.getAppName().equals(permission.getMicroService()))
-                .map(PermissionEntity::getCode)
+                .map(PermissionEntity::getId)
                 .distinct()
                 .collect(Collectors.toList());
     }
