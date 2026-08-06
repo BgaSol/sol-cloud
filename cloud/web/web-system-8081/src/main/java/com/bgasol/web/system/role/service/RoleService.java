@@ -41,7 +41,7 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
 
     @Transactional(readOnly = true)
     @Override
-    public void findOtherTable(List<RoleEntity> list) {
+    public void findRequiredTable(List<RoleEntity> list) {
         if (ObjectUtils.isEmpty(list)) {
             return;
         }
@@ -62,15 +62,43 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
                 RolePermissionTable.NAME, RolePermissionTable.ROLE_ID, roleIds, RolePermissionTable.PERMISSION_ID
         );
 
-        Set<String> allMenuIds = menuIdGroup
-                .values()
+        list.forEach(roleEntity -> {
+            roleEntity.setMenus(menuIdGroup
+                    .getOrDefault(roleEntity.getId(), Set.of())
+                    .stream()
+                    .<MenuEntity>map(menuId -> MenuEntity.builder().id(menuId).build())
+                    .toList());
+            roleEntity.setPermissions(permissionIdGroup
+                    .getOrDefault(roleEntity.getId(), Set.of())
+                    .stream()
+                    .<PermissionEntity>map(permissionId -> PermissionEntity.builder().id(permissionId).build())
+                    .toList());
+        });
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void findOtherTable(List<RoleEntity> list) {
+        if (ObjectUtils.isEmpty(list)) {
+            return;
+        }
+
+        Set<String> allMenuIds = list
                 .stream()
-                .flatMap(Set::stream)
+                .map(RoleEntity::getMenus)
+                .filter(ObjectUtils::isNotEmpty)
+                .flatMap(List::stream)
+                .map(MenuEntity::getId)
+                .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
-        Set<String> allPermissionIds = permissionIdGroup
-                .values()
+
+        Set<String> allPermissionIds = list
                 .stream()
-                .flatMap(Set::stream)
+                .map(RoleEntity::getPermissions)
+                .filter(ObjectUtils::isNotEmpty)
+                .flatMap(List::stream)
+                .map(PermissionEntity::getId)
+                .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
         final Map<String, MenuEntity> menuMap = ObjectUtils.isNotEmpty(allMenuIds)
@@ -86,19 +114,20 @@ public class RoleService extends BaseService<RoleEntity, BasePageDto<RoleEntity>
                 : Map.of();
 
         list.forEach(roleEntity -> {
-            roleEntity.setMenus(menuIdGroup
-                    .getOrDefault(roleEntity.getId(), Set.of())
+            List<MenuEntity> menus = ObjectUtils.defaultIfNull(roleEntity.getMenus(), List.of());
+            roleEntity.setMenus(menus
                     .stream()
+                    .map(MenuEntity::getId)
                     .map(menuMap::get)
                     .filter(ObjectUtils::isNotEmpty)
                     .toList());
-            roleEntity.setPermissions(permissionIdGroup
-                    .getOrDefault(roleEntity.getId(), Set.of())
+            List<PermissionEntity> permissions = ObjectUtils.defaultIfNull(roleEntity.getPermissions(), List.of());
+            roleEntity.setPermissions(permissions
                     .stream()
+                    .map(PermissionEntity::getId)
                     .map(permissionMap::get)
                     .filter(ObjectUtils::isNotEmpty)
-                    .toList()
-            );
+                    .toList());
         });
     }
 

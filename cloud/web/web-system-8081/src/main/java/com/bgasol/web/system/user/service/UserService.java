@@ -121,11 +121,7 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
         list.forEach(userEntity -> userEntity.setRoles(roleIdGroup
                 .getOrDefault(userEntity.getId(), Set.of())
                 .stream()
-                .map(roleId -> {
-                    RoleEntity roleEntity = new RoleEntity();
-                    roleEntity.setId(roleId);
-                    return roleEntity;
-                })
+                .<RoleEntity>map(roleId -> RoleEntity.builder().id(roleId).build())
                 .toList()));
     }
 
@@ -147,8 +143,8 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
         final Map<String, RoleEntity> roleMap = ObjectUtils.isNotEmpty(roleIds)
                 ? roleService.findById(roleIds, true)
-                  .stream()
-                  .collect(Collectors.toMap(RoleEntity::getId, Function.identity()))
+                .stream()
+                .collect(Collectors.toMap(RoleEntity::getId, Function.identity()))
                 : Map.of();
 
         Set<String> departmentIds = list.stream()
@@ -158,8 +154,8 @@ public class UserService extends BaseService<UserEntity, UserPageDto> {
 
         final Map<String, DepartmentEntity> departmentMap = ObjectUtils.isNotEmpty(departmentIds)
                 ? departmentService.findById(departmentIds, true)
-                  .stream()
-                  .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()))
+                .stream()
+                .collect(Collectors.toMap(DepartmentEntity::getId, Function.identity()))
                 : Map.of();
 
         for (UserEntity userEntity : list) {
